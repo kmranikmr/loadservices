@@ -1,0 +1,351 @@
+{
+  "FileName": "e:\\temp\\generated.json",
+  "SchemaName": "schema2",
+  "updatedConfig": {
+    "BaseClassFields": [
+      {
+        "name": "_id",
+        "dataType": 0,
+        "length": 0,
+        "map": "_id",
+        "innerFields": null
+      },
+      {
+        "name": "index",
+        "dataType": 1,
+        "length": 0,
+        "map": "index",
+        "innerFields": null
+      },
+      {
+        "name": "guid",
+        "dataType": 0,
+        "length": 0,
+        "map": "guid",
+        "innerFields": null
+      },
+      {
+        "name": "isActive",
+        "dataType": 3,
+        "length": 0,
+        "map": "isActive",
+        "innerFields": null
+      },
+      {
+        "name": "balance",
+        "dataType": 0,
+        "length": 0,
+        "map": "balance",
+        "innerFields": null
+      },
+      {
+        "name": "picture",
+        "dataType": 0,
+        "length": 0,
+        "map": "picture",
+        "innerFields": null
+      },
+      {
+        "name": "age",
+        "dataType": 1,
+        "length": 0,
+        "map": "age",
+        "innerFields": null
+      },
+      {
+        "name": "eyeColor",
+        "dataType": 0,
+        "length": 0,
+        "map": "eyeColor",
+        "innerFields": null
+      },
+      {
+        "name": "name",
+        "dataType": 0,
+        "length": 0,
+        "map": "name",
+        "innerFields": null
+      },
+      {
+        "name": "gender",
+        "dataType": 0,
+        "length": 0,
+        "map": "gender",
+        "innerFields": null
+      },
+      {
+        "name": "company",
+        "dataType": 0,
+        "length": 0,
+        "map": "company",
+        "innerFields": null
+      },
+      {
+        "name": "email",
+        "dataType": 0,
+        "length": 0,
+        "map": "email",
+        "innerFields": null
+      },
+      {
+        "name": "phone",
+        "dataType": 0,
+        "length": 0,
+        "map": "phone",
+        "innerFields": null
+      },
+      {
+        "name": "address",
+        "dataType": 0,
+        "length": 0,
+        "map": "address",
+        "innerFields": null
+      },
+      {
+        "name": "about",
+        "dataType": 0,
+        "length": 0,
+        "map": "about",
+        "innerFields": null
+      },
+      {
+        "name": "registered",
+        "dataType": 0,
+        "length": 0,
+        "map": "registered",
+        "innerFields": null
+      },
+      {
+        "name": "latitude",
+        "dataType": 2,
+        "length": 0,
+        "map": "latitude",
+        "innerFields": null
+      },
+      {
+        "name": "longitude",
+        "dataType": 2,
+        "length": 0,
+        "map": "longitude",
+        "innerFields": null
+      },
+      {
+        "name": "tags",
+        "dataType": 9,
+        "length": 0,
+        "map": "tags",
+        "innerFields": null
+      },
+      {
+        "name": "friends",
+        "dataType": 8,
+        "length": 0,
+        "map": "friends",
+        "innerFields": [
+          {
+            "name": "id",
+            "dataType": 1,
+            "length": 0,
+            "map": "id",
+            "innerFields": null
+          },
+          {
+            "name": "name",
+            "dataType": 0,
+            "length": 0,
+            "map": "name",
+            "innerFields": null
+          }
+        ]
+      },
+      {
+        "name": "greeting",
+        "dataType": 0,
+        "length": 0,
+        "map": "greeting",
+        "innerFields": null
+      },
+      {
+        "name": "favoriteFruit",
+        "dataType": 0,
+        "length": 0,
+        "map": "favoriteFruit",
+        "innerFields": null
+      }
+    ],
+
+    "ModelInfoList": [
+      {
+        "ModelName": "Model1",
+        "ModelFields": [
+          {
+            "name": "_id",
+            "dataType": 0,
+            "length": 0,
+            "map": "_id",
+            "innerFields": null
+          },
+          {
+            "name": "index",
+            "dataType": 1,
+            "length": 0,
+            "map": "index",
+            "innerFields": null
+          },
+          {
+            "name": "guid",
+            "dataType": 0,
+            "length": 0,
+            "map": "guid",
+            "innerFields": null
+          },
+          {
+            "name": "isActive",
+            "dataType": 3,
+            "length": 0,
+            "map": "isActive",
+            "innerFields": null
+          },
+          {
+            "name": "balance",
+            "dataType": 0,
+            "length": 0,
+            "map": "balance",
+            "innerFields": null
+          },
+          {
+            "name": "picture",
+            "dataType": 0,
+            "length": 0,
+            "map": "picture",
+            "innerFields": null
+          },
+          {
+            "name": "age",
+            "dataType": 1,
+            "length": 0,
+            "map": "age",
+            "innerFields": null
+          },
+          {
+            "name": "eyeColor",
+            "dataType": 0,
+            "length": 0,
+            "map": "eyeColor",
+            "innerFields": null
+          },
+          {
+            "name": "name",
+            "dataType": 0,
+            "length": 0,
+            "map": "name",
+            "innerFields": null
+          },
+          {
+            "name": "gender",
+            "dataType": 0,
+            "length": 0,
+            "map": "gender",
+            "innerFields": null
+          },
+          {
+            "name": "company",
+            "dataType": 0,
+            "length": 0,
+            "map": "company",
+            "innerFields": null
+          },
+          {
+            "name": "email",
+            "dataType": 0,
+            "length": 0,
+            "map": "email",
+            "innerFields": null
+          },
+          {
+            "name": "phone",
+            "dataType": 0,
+            "length": 0,
+            "map": "phone",
+            "innerFields": null
+          },
+          {
+            "name": "address",
+            "dataType": 0,
+            "length": 0,
+            "map": "address",
+            "innerFields": null
+          },
+          {
+            "name": "about",
+            "dataType": 0,
+            "length": 0,
+            "map": "about",
+            "innerFields": null
+          },
+          {
+            "name": "registered",
+            "dataType": 0,
+            "length": 0,
+            "map": "registered",
+            "innerFields": null
+          },
+          {
+            "name": "latitude",
+            "dataType": 2,
+            "length": 0,
+            "map": "latitude",
+            "innerFields": null
+          },
+          {
+            "name": "longitude",
+            "dataType": 2,
+            "length": 0,
+            "map": "longitude",
+            "innerFields": null
+          },
+          {
+            "name": "tags",
+            "dataType": 9,
+            "length": 0,
+            "map": "tags",
+            "innerFields": null
+          },
+          {
+            "name": "greeting",
+            "dataType": 0,
+            "length": 0,
+            "map": "greeting",
+            "innerFields": null
+          },
+          {
+            "name": "favoriteFruit",
+            "dataType": 0,
+            "length": 0,
+            "map": "favoriteFruit",
+            "innerFields": null
+          }
+        ]
+      },
+      {
+        "ModelName": "Model2",
+        "ModelFields": [
+          {
+            "name": "friendsid",
+            "dataType": 1,
+            "length": 0,
+            "map": "friends[].id",
+            "innerFields": null
+          },
+          {
+            "name": "friendsame",
+            "dataType": 0,
+            "length": 0,
+            "map": "friends[].name",
+            "innerFields": null
+          }
+        ]
+      }
+    ]
+  }
+}

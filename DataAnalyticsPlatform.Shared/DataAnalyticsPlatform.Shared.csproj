@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath></OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\bin\Release</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="JsonClassGeneratorLibCore\**" />
+    <EmbeddedResource Remove="JsonClassGeneratorLibCore\**" />
+    <None Remove="JsonClassGeneratorLibCore\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="CodeCompilerHelper.cs" />
+    <Compile Remove="Models\TwitterOriginal.cs" />
+    <Compile Remove="TransformationCodeGenerator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="9.0.0" />
+    <PackageReference Include="Bogus" Version="29.0.1" />
+    <PackageReference Include="ChoETL.JSON.NETStandard" Version="1.2.1" />
+    <PackageReference Include="CsvHelper" Version="12.1.2" />
+    <PackageReference Include="linqtotwitter" Version="5.0.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.7.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.10" />
+    <PackageReference Include="NJsonSchema" Version="9.13.22" />
+    <PackageReference Include="NJsonSchema.CodeGeneration.CSharp" Version="9.13.22" />
+    <PackageReference Include="Npgsql" Version="4.1.4" />
+    <PackageReference Include="PostgreSQLCopyHelper" Version="2.6.3" />
+    <PackageReference Include="System.CodeDom" Version="4.5.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="JsonClassGeneratorLibCore\JsonClassGeneratorLibCore.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Cord19Test.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Scripts\PostgresFunctions.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+<!-- <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+   <Exec Command="xcopy /y &quot;$(TargetPath)&quot; &quot;$(ProjectDir)\../DataAnalyticsWebApi\bin\Debug\&quot;&#xD;&#xA;xcopy /y &quot;$(TargetPath)&quot; &quot;$(ProjectDir)\../DataAnalyticsWebApi\bin\release\&quot;&#xD;&#xA;xcopy /y &quot;$(TargetPath)&quot; &quot;$(ProjectDir)\../LoadServiceApi\LoadServiceApi\bin\Debug\&quot;&#xD;&#xA;xcopy /y &quot;$(TargetPath)&quot; &quot;$(ProjectDir)\../LoadServiceApi\LoadServiceApi\bin\release\&quot;" />
+ </Target>
+-->
+</Project>

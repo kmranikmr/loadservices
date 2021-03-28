@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "DataAnalyticsPlatform.Service.MasterAPI": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

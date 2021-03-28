@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "DataAnalyticsPlatform.Service.Worker": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

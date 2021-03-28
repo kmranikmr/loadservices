@@ -1,0 +1,206 @@
+﻿CREATE TABLE IF NOT EXISTS schemaholder.binned (
+    col character varying(200),
+    colbin real,
+    col_name character varying(200)
+);
+
+CREATE TABLE IF NOT EXISTS schemaholder.correlations (
+    col_name character varying(200),
+    corr_name character varying(200),
+    corr_value real
+);
+
+CREATE TABLE IF NOT EXISTS schemaholder.result (
+    name text,
+    count real,
+    mean real,
+    std real,
+    min real,
+    max real,
+    p25 real,
+    p50 real,
+    p75 real
+);
+
+CREATE TABLE IF NOT EXISTS schemaholder.uniqueness (
+    num_records integer,
+    unique_ratio real,
+    col_name character varying(200)
+);
+CREATE TABLE IF NOT EXISTS schemaholder.usefulness (
+    col_name character varying(200),
+    missing_value_rate real
+);
+
+CREATE OR REPLACE FUNCTION schemaholder.bin(input text)
+ RETURNS SETOF schemaholder.binned
+ LANGUAGE plpython3u
+AS $function$
+from pandas import DataFrame
+from pandas.api.types import is_numeric_dtype
+import numpy as np
+import pandas as pd
+
+rv = plpy.execute(input)
+frame = []
+outframe = []
+outframe_list = []
+for i in rv:
+    if i is not None:
+        frame.append(i)
+df1 = DataFrame(frame)
+ddf9 = pd.DataFrame()
+df2 = df1.select_dtypes(include=np.number)
+
+for col in df2:
+    dseries = df2.groupby(pd.cut(df2[col], 10)).size()
+    dff = pd.DataFrame(dseries).reset_index()
+    dff.columns = ['col','colbin']
+    dff['col_name'] = col
+    for index, row in dff.iterrows():
+        outframe.append(row[0])
+        outframe.append(row[1])
+        outframe.append(row[2])
+        outframe_list.append(outframe)
+        outframe = []
+  
+return outframe_list
+$function$;
+
+CREATE OR REPLACE FUNCTION schemaholder.correlate(input text)
+ RETURNS SETOF schemaholder.correlations
+ LANGUAGE plpython3u
+AS $function$
+from pandas import DataFrame
+from pandas.api.types import is_numeric_dtype
+import numpy as np
+import pandas as pd
+
+
+
+rv = plpy.execute(input)
+frame = []
+outframe = []
+outframe_list = []
+for i in rv:
+    if i is not None:
+        frame.append(i)
+df1 = DataFrame(frame)
+ddf9 = pd.DataFrame()
+df2 = df1.select_dtypes(include=np.number)
+df2 = df2.corr()
+count = 0;
+query = ""
+
+
+for roww in df2:
+    for col in df2:
+        outframe.append(roww)
+        outframe.append(col)
+        outframe.append(df2.loc[roww,col])
+        outframe_list.append(outframe)
+        outframe = []
+  
+return outframe_list
+$function$;
+
+CREATE OR REPLACE FUNCTION schemaholder.stat(input text)
+ RETURNS SETOF schemaholder.result
+ LANGUAGE plpython3u
+AS $function$
+from pandas import DataFrame
+from pandas.api.types import is_numeric_dtype
+import numpy as np
+rv = plpy.execute(input)
+frame = []
+outframe = []
+outframe_list = []
+for i in rv:
+    if i is not None:
+        frame.append(i)
+       
+df1 = DataFrame(frame)
+obj_columns = list(df1.select_dtypes(include=['object']).columns.values)
+df1[obj_columns] = df1[obj_columns].replace([None], np.nan)
+#df1.fillna(0, inplace = True)
+df2 = df1.describe(include = 'all')  
+columns = list(df2)
+for i in columns:
+    outframe.append(i)
+    outframe.append(df2[i]['count'])
+    outframe.append(df2[i]['mean'])
+    outframe.append(df2[i]['std'])
+    outframe.append(df2[i]['min'])
+    outframe.append(df2[i]['max'])
+    outframe.append(df2[i]['25%'])
+    outframe.append(df2[i]['50%'])
+    outframe.append(df2[i]['75%'])
+    outframe_list.append(outframe);
+    outframe = []
+return outframe_list
+$function$;
+
+CREATE OR REPLACE FUNCTION schemaholder.unique(input text)
+ RETURNS SETOF schemaholder.uniqueness
+ LANGUAGE plpython3u
+AS $function$
+from pandas import DataFrame
+from pandas.api.types import is_numeric_dtype
+import numpy as np
+import pandas as pd
+
+
+
+rv = plpy.execute(input)
+frame = []
+outframe = []
+outframe_list = []
+for i in rv:
+    if i is not None:
+        frame.append(i)
+df1 = DataFrame(frame)
+df2 = df1.select_dtypes(include=np.number)
+n = df2.shape[0]
+for cardinality, column in sorted([(len(set(df2[c])), c) for c in df2.columns])[::-1]:
+    outframe.append(cardinality)
+    outframe.append(cardinality / n)
+    outframe.append(column)
+    outframe_list.append(outframe)
+    outframe = []
+
+
+  
+return outframe_list
+$function$;
+
+CREATE OR REPLACE FUNCTION schemaholder.useful(input text)
+ RETURNS SETOF schemaholder.usefulness
+ LANGUAGE plpython3u
+AS $function$
+from pandas import DataFrame, Series
+from pandas.api.types import is_numeric_dtype
+import numpy as np
+import pandas as pd
+
+
+
+rv = plpy.execute(input)
+frame = []
+outframe = []
+outframe_list = []
+for i in rv:
+    if i is not None:
+        frame.append(i)
+df1 = DataFrame(frame)
+
+df3 = (df1.isnull().sum() / df1.shape[0]).sort_values(ascending=False)
+for i, v in df3.items():
+    outframe.append(i)
+    outframe.append(v)
+    outframe_list.append(outframe)
+    outframe = []
+
+
+  
+return outframe_list
+$function$;

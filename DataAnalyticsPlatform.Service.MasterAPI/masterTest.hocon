@@ -1,0 +1,30 @@
+﻿ akka {
+            actor {
+              provider = cluster
+               deployment {
+                /masterNode/masterTaskRouter {
+                 router = round-robin-group
+                 routees.paths = ["/user/workerNode"]
+                 cluster {
+                    enabled = on
+                    allow-local-routees = on
+                    use-role = worker
+                   }
+                    }
+                }
+            }
+           
+            remote {
+              log-remote-lifecycle-events = DEBUG
+              dot-netty.tcp {
+                hostname = "localhost"
+                port = 0
+              }
+            }
+            cluster {
+              seed-nodes = ["akka.tcp://dap-actor-system@localhost:2551"]
+              auto-down-unreachable-after = 30s
+              allow-local-routees = on
+              roles = [master]
+            }
+          }

@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath></OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\bin\Release</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="SingleRecord.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="9.0.0" />
+    <PackageReference Include="CsvHelper" Version="12.1.2" />
+    <PackageReference Include="linqtotwitter" Version="5.0.0" />
+    <PackageReference Include="Mapster" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DataAnalyticsPlatform.Common\DataAnalyticsPlatform.Common.csproj" />
+    <ProjectReference Include="..\DataAnalyticsPlatform.Shared\DataAnalyticsPlatform.Shared.csproj" />
+  </ItemGroup>
+
+<!--  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy /y &quot;$(TargetPath)&quot; &quot;$(ProjectDir)../\DataAnalyticsWebApi\bin\Debug\&quot;&#xD;&#xA;xcopy /y &quot;$(TargetPath)&quot; &quot;$(ProjectDir)../\DataAnalyticsWebApi\bin\release\&quot;&#xD;&#xA;xcopy /y &quot;$(TargetPath)&quot; &quot;$(ProjectDir)../\LoadServiceApi\LoadServiceApi\bin\Debug\&quot;&#xD;&#xA;xcopy /y &quot;$(TargetPath)&quot; &quot;$(ProjectDir)../\LoadServiceApi\LoadServiceApi\bin\release\&quot;" />
+  </Target>
+-->
+</Project>

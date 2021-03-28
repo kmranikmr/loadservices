@@ -1,0 +1,291 @@
+{
+  "schemaId": "9c0a4177-2695-4ad7-a935-b133505077b1",
+  "modelsPreview": {
+    "Model1": [
+      {
+        "_id": "5ca664a7b350d03221f3d903",
+        "index": 0,
+        "guid": "6816f1b5-b016-40b5-a989-967b93e9afd6",
+        "isActive": true,
+        "balance": "$1,032.70",
+        "picture": "http://placehold.it/32x32",
+        "age": 29,
+        "eyeColor": "brown",
+        "name": "Isabelle Dominguez",
+        "gender": "female",
+        "company": "KENEGY",
+        "email": "isabelledominguez@kenegy.com",
+        "phone": "+1 (804) 534-3717",
+        "address": "296 Dewey Place, Chautauqua, Louisiana, 363",
+        "about": "Labore do tempor consectetur pariatur velit id do commodo laboris eu consequat velit aliqua consequat. Nisi enim ea do esse ex enim occaecat. Minim velit esse est laborum labore incididunt irure dolore sit enim irure reprehenderit quis fugiat. Proident adipisicing aute aliqua aliquip et non dolor ipsum ex eiusmod.\r\n",
+        "registered": "2014-07-14T07:14:43 +04:00",
+        "latitude": 38.270131,
+        "longitude": -156.177526,
+        "tags": [
+          "nulla",
+          "laboris",
+          "nulla",
+          "sint",
+          "ullamco",
+          "ut",
+          "labore"
+        ],
+        "greeting": "Hello, Isabelle Dominguez! You have 10 unread messages.",
+        "favoriteFruit": "banana",
+        "modelName": "Model1"
+      },
+      {
+        "_id": "5ca664a734cb808e98b3061b",
+        "index": 1,
+        "guid": "8374d1bd-5a16-4cec-ab19-30224a265f60",
+        "isActive": false,
+        "balance": "$3,383.04",
+        "picture": "http://placehold.it/32x32",
+        "age": 20,
+        "eyeColor": "brown",
+        "name": "Rios Hood",
+        "gender": "male",
+        "company": "UTARA",
+        "email": "rioshood@utara.com",
+        "phone": "+1 (909) 574-3790",
+        "address": "109 Midwood Street, Waikele, Pennsylvania, 5885",
+        "about": "Consectetur dolor irure quis cillum aliquip officia consectetur irure voluptate cupidatat. Sint ipsum consectetur nisi non quis officia sunt ipsum sint in aute ex laboris sit. Laborum qui labore velit ex velit adipisicing sit pariatur nulla. Consectetur nisi magna sit qui exercitation fugiat fugiat ipsum laborum duis. Veniam incididunt in consectetur cupidatat.\r\n",
+        "registered": "2017-10-27T09:39:44 +04:00",
+        "latitude": -25.49372,
+        "longitude": 59.885391,
+        "tags": [
+          "qui",
+          "eu",
+          "veniam",
+          "ut",
+          "incididunt",
+          "sit",
+          "pariatur"
+        ],
+        "greeting": "Hello, Rios Hood! You have 6 unread messages.",
+        "favoriteFruit": "banana",
+        "modelName": "Model1"
+      },
+      {
+        "_id": "5ca664a72ee9b37a1934f2c8",
+        "index": 2,
+        "guid": "7d154e10-620d-42c7-b449-77dd5e0ccbea",
+        "isActive": false,
+        "balance": "$3,442.12",
+        "picture": "http://placehold.it/32x32",
+        "age": 34,
+        "eyeColor": "blue",
+        "name": "Gabrielle Macdonald",
+        "gender": "female",
+        "company": "BULLZONE",
+        "email": "gabriellemacdonald@bullzone.com",
+        "phone": "+1 (941) 473-3113",
+        "address": "726 Grafton Street, Gloucester, Georgia, 2462",
+        "about": "Occaecat irure cillum ea qui nostrud ipsum occaecat quis quis Lorem nostrud et. Laboris veniam magna et enim dolor nostrud aliquip irure dolor proident aliqua ipsum dolore quis. Amet commodo nulla aliquip minim ex sunt. Exercitation aliqua voluptate Lorem qui in enim nostrud nulla qui magna id culpa nostrud. Non et duis id ad incididunt eiusmod labore ullamco id fugiat officia elit. Dolore nulla incididunt magna do ad deserunt nisi.\r\n",
+        "registered": "2015-10-24T12:44:02 +04:00",
+        "latitude": -76.488852,
+        "longitude": 103.106666,
+        "tags": [
+          "velit",
+          "non",
+          "consequat",
+          "nostrud",
+          "culpa",
+          "sint",
+          "aliquip"
+        ],
+        "greeting": "Hello, Gabrielle Macdonald! You have 10 unread messages.",
+        "favoriteFruit": "banana",
+        "modelName": "Model1"
+      },
+      {
+        "_id": "5ca664a7a19edc5ea55ccdaa",
+        "index": 3,
+        "guid": "29fce9e9-e887-44b9-a171-261cdd7d043f",
+        "isActive": true,
+        "balance": "$3,221.85",
+        "picture": "http://placehold.it/32x32",
+        "age": 31,
+        "eyeColor": "brown",
+        "name": "Essie Mendez",
+        "gender": "female",
+        "company": "GRONK",
+        "email": "essiemendez@gronk.com",
+        "phone": "+1 (970) 587-3277",
+        "address": "727 Bogart Street, Harviell, Michigan, 7261",
+        "about": "Do tempor eiusmod commodo laboris. Magna voluptate irure fugiat amet exercitation incididunt do. Pariatur Lorem labore amet est magna eiusmod sunt excepteur minim aute ad Lorem amet. Sit voluptate sint aute irure ex pariatur officia qui minim adipisicing commodo elit veniam qui. Culpa in consectetur ex incididunt nostrud consectetur do magna esse quis.\r\n",
+        "registered": "2018-05-02T02:40:04 +04:00",
+        "latitude": -11.385658,
+        "longitude": 123.68005,
+        "tags": [
+          "deserunt",
+          "duis",
+          "culpa",
+          "exercitation",
+          "elit",
+          "aute",
+          "duis"
+        ],
+        "greeting": "Hello, Essie Mendez! You have 4 unread messages.",
+        "favoriteFruit": "apple",
+        "modelName": "Model1"
+      },
+      {
+        "_id": "5ca664a7a25a16e93ef1acaf",
+        "index": 4,
+        "guid": "56f76aaf-c353-4ba1-baaa-f542c9c893f4",
+        "isActive": true,
+        "balance": "$3,105.75",
+        "picture": "http://placehold.it/32x32",
+        "age": 22,
+        "eyeColor": "blue",
+        "name": "Tamera Mayer",
+        "gender": "female",
+        "company": "MEDESIGN",
+        "email": "tameramayer@medesign.com",
+        "phone": "+1 (992) 538-3530",
+        "address": "505 Rewe Street, Floriston, Oklahoma, 6528",
+        "about": "Do dolore est commodo duis cupidatat quis nisi culpa cupidatat proident esse enim nisi. Anim consequat ipsum voluptate pariatur ex deserunt commodo amet amet proident. Laborum ut elit velit qui.\r\n",
+        "registered": "2014-02-11T11:19:50 +05:00",
+        "latitude": 61.738465,
+        "longitude": 164.234609,
+        "tags": [
+          "aute",
+          "eu",
+          "irure",
+          "id",
+          "culpa",
+          "dolore",
+          "culpa"
+        ],
+        "greeting": "Hello, Tamera Mayer! You have 10 unread messages.",
+        "favoriteFruit": "strawberry",
+        "modelName": "Model1"
+      },
+      {
+        "_id": "5ca664a71d9c950c0c06e42e",
+        "index": 5,
+        "guid": "8d7ec7d3-ddb9-4764-b442-894fe2cf2a98",
+        "isActive": false,
+        "balance": "$1,459.30",
+        "picture": "http://placehold.it/32x32",
+        "age": 25,
+        "eyeColor": "green",
+        "name": "Macias Beck",
+        "gender": "male",
+        "company": "VIDTO",
+        "email": "maciasbeck@vidto.com",
+        "phone": "+1 (876) 586-2081",
+        "address": "462 Manor Court, Delwood, Connecticut, 5856",
+        "about": "Eiusmod ipsum consectetur laboris adipisicing amet occaecat laboris incididunt sunt qui incididunt reprehenderit mollit. Officia esse cupidatat ex eu sunt quis elit culpa officia. Nulla consequat dolor amet nulla officia ipsum. Dolore aliquip incididunt deserunt ad deserunt anim occaecat minim aliquip.\r\n",
+        "registered": "2017-10-30T07:07:20 +04:00",
+        "latitude": 89.425165,
+        "longitude": 134.209504,
+        "tags": [
+          "mollit",
+          "sunt",
+          "aute",
+          "duis",
+          "id",
+          "do",
+          "non"
+        ],
+        "greeting": "Hello, Macias Beck! You have 10 unread messages.",
+        "favoriteFruit": "banana",
+        "modelName": "Model1"
+      }
+    ],
+    "Model2": [
+      {
+        "friendsid": 0,
+        "friendsame": "Elisabeth Sawyer",
+        "modelName": "Model2"
+      },
+      {
+        "friendsid": 1,
+        "friendsame": "Rena Quinn",
+        "modelName": "Model2"
+      },
+      {
+        "friendsid": 2,
+        "friendsame": "Armstrong Santos",
+        "modelName": "Model2"
+      },
+      {
+        "friendsid": 0,
+        "friendsame": "Calhoun Price",
+        "modelName": "Model2"
+      },
+      {
+        "friendsid": 1,
+        "friendsame": "Margarita Conrad",
+        "modelName": "Model2"
+      },
+      {
+        "friendsid": 2,
+        "friendsame": "Maura Long",
+        "modelName": "Model2"
+      },
+      {
+        "friendsid": 0,
+        "friendsame": "Fisher Rose",
+        "modelName": "Model2"
+      },
+      {
+        "friendsid": 1,
+        "friendsame": "Arnold Salas",
+        "modelName": "Model2"
+      },
+      {
+        "friendsid": 2,
+        "friendsame": "Marian Dyer",
+        "modelName": "Model2"
+      },
+      {
+        "friendsid": 0,
+        "friendsame": "Katelyn Cameron",
+        "modelName": "Model2"
+      },
+      {
+        "friendsid": 1,
+        "friendsame": "Gibbs Schwartz",
+        "modelName": "Model2"
+      },
+      {
+        "friendsid": 2,
+        "friendsame": "Myra Kent",
+        "modelName": "Model2"
+      },
+      {
+        "friendsid": 0,
+        "friendsame": "Skinner Bradford",
+        "modelName": "Model2"
+      },
+      {
+        "friendsid": 1,
+        "friendsame": "Antonia Cain",
+        "modelName": "Model2"
+      },
+      {
+        "friendsid": 2,
+        "friendsame": "Rosalyn Suarez",
+        "modelName": "Model2"
+      },
+      {
+        "friendsid": 0,
+        "friendsame": "Diane Powers",
+        "modelName": "Model2"
+      },
+      {
+        "friendsid": 1,
+        "friendsame": "Albert Richardson",
+        "modelName": "Model2"
+      },
+      {
+        "friendsid": 2,
+        "friendsame": "Lamb Galloway",
+        "modelName": "Model2"
+      }
+    ]
+  }
+}

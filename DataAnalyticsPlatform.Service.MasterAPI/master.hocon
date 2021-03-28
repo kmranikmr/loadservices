@@ -1,0 +1,34 @@
+﻿akka {
+	actor {
+		provider = cluster
+		deployment {            											
+			/masterNode/workerrouter  {
+				router =  round-robin-group
+                  routees.paths = ["/user/WorkerNode"]
+				cluster {
+					enabled = on
+					allow-local-routees = off
+					max-nr-of-instances-per-node = 1
+					use-role = "worker"
+				}
+			}			 
+		}
+		
+	}
+						
+	remote {
+                maximum-payload-bytes = 30000000 bytes
+		dot-netty.tcp {
+				hostname ="127.0.0.1"
+				port = 3551
+				maximum-frame-size = 25600000b
+			}
+	}			
+
+	cluster {
+		#will inject this node as a self-seed node at run-time
+		seed-nodes = ["akka.tcp://dap-actor-system@localhost:3551"] # address of seed node
+		roles = ["master"]
+	}
+}
+

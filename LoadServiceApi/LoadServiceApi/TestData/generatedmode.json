@@ -1,0 +1,1657 @@
+{
+	"modelId": null,
+	"schemaId": "1",
+	"classDefinition": "public partial class Media{\npublic int Order{get;set;}\npublic string MediaKey{get;set;}\npublic string MediaURL{get;set;}\npublic string ResourceRecordKey{get;set;}\npublic string ResourceName{get;set;}\npublic string ClassName{get;set;}\npublic string MediaCategory{get;set;}\npublic string MimeType{get;set;}\npublic string MediaObjectID{get;set;}\npublic string ShortDescription{get;set;}\n}\n\npublic partial class OriginalRecord {\npublic OriginalRecord(){ Init();}\npartial void Init();\npublic string StreetDirPrefix{get;set;}\npublic int BedroomsTotal{get;set;}\npublic string GreenWaterConservation{get;set;}\npublic string LivingAreaUnits{get;set;}\npublic bool CoolingYN{get;set;}\npublic string GreenSustainability{get;set;}\npublic string ListAgentKey{get;set;}\npublic string YearEstablished{get;set;}\npublic string CarportSpaces{get;set;}\npublic string LotSizeUnits{get;set;}\npublic string ContractStatusChangeDate{get;set;}\npublic string[] LaundryFeatures{get;set;}\npublic string[] Flooring{get;set;}\npublic int PhotosCount{get;set;}\npublic int FireplacesTotal{get;set;}\npublic string[] WaterfrontFeatures{get;set;}\npublic string SeniorCommunityYN{get;set;}\npublic string[] Cooling{get;set;}\npublic bool GarageYN{get;set;}\npublic string[] ExteriorFeatures{get;set;}\npublic string OtherParking{get;set;}\npublic string Make{get;set;}\npublic System.DateTime StatusChangeTimestamp{get;set;}\npublic double Longitude{get;set;}\npublic string BuyerAgentFullName{get;set;}\npublic string Skirt{get;set;}\npublic string CoBuyerAgentLastName{get;set;}\npublic string CarportYN{get;set;}\npublic string PublicRemarks{get;set;}\npublic string AssociationName{get;set;}\npublic string TaxExemptions{get;set;}\npublic string AssociationFeeFrequency{get;set;}\npublic string CrossStreet{get;set;}\npublic bool HeatingYN{get;set;}\npublic string CoBuyerAgentStateLicense{get;set;}\npublic string WaterBodyName{get;set;}\npublic string CoBuyerAgentFirstName{get;set;}\npublic string CoListOfficeName{get;set;}\npublic string RoadSurfaceType{get;set;}\npublic System.DateTime PriceChangeTimestamp{get;set;}\npublic string ListingKeyNumeric{get;set;}\npublic string ListingContractDate{get;set;}\npublic string Zoning{get;set;}\npublic string GreenIndoorAirQuality{get;set;}\npublic string[] Appliances{get;set;}\npublic string LivingAreaSource{get;set;}\npublic string MLSAreaMajor{get;set;}\npublic double TaxAnnualAmount{get;set;}\npublic string CoBuyerOfficeName{get;set;}\npublic string ListOfficeName{get;set;}\npublic string GreenLocation{get;set;}\npublic string MobileWidth{get;set;}\npublic string Basement{get;set;}\npublic string CurrentUse{get;set;}\npublic string OriginatingSystemKey{get;set;}\npublic string BusinessType{get;set;}\npublic string CountyOrParish{get;set;}\npublic double Latitude{get;set;}\npublic string BathroomsTotalDecimal{get;set;}\npublic string PropertyType{get;set;}\npublic System.DateTime PhotosChangeTimestamp{get;set;}\npublic string NumberOfPads{get;set;}\npublic int ListPrice{get;set;}\npublic string RoadFrontageType{get;set;}\npublic string OriginatingSystemName{get;set;}\npublic string GreenEnergyGeneration{get;set;}\npublic string AssociationYN{get;set;}\npublic string DOH1{get;set;}\npublic string MlsStatus{get;set;}\npublic string DOH2{get;set;}\npublic string DOH3{get;set;}\npublic string StreetNumber{get;set;}\npublic string CoListOfficeMlsId{get;set;}\npublic string LeaseTerm{get;set;}\npublic string ListingKey{get;set;}\npublic string StateOrProvince{get;set;}\npublic string CommonWalls{get;set;}\npublic string GreenBuildingVerificationType{get;set;}\npublic string StreetAdditionalInfo{get;set;}\npublic int CoveredSpaces{get;set;}\npublic string MiddleOrJuniorSchool{get;set;}\npublic string[] AssociationFeeIncludes{get;set;}\npublic string CoListAgentLastName{get;set;}\npublic string VirtualTourURLUnbranded{get;set;}\npublic string Gas{get;set;}\npublic string ElementarySchool{get;set;}\npublic string StreetDirSuffix{get;set;}\npublic string ListAgentFirstName{get;set;}\npublic string ListOfficeKey{get;set;}\npublic string FireplaceYN{get;set;}\npublic string Directions{get;set;}\npublic string BathroomsThreeQuarter{get;set;}\npublic string ListAgentFullName{get;set;}\npublic string YearBuiltEffective{get;set;}\npublic string AttachedGarageYN{get;set;}\npublic string StandardStatus{get;set;}\npublic string[] Roof{get;set;}\npublic string Stories{get;set;}\npublic string BuyerTeamName{get;set;}\npublic string ParcelNumber{get;set;}\npublic bool PoolPrivateYN{get;set;}\npublic string NumberOfUnitsLeased{get;set;}\npublic string[] FoundationDetails{get;set;}\npublic string BuilderName{get;set;}\npublic string[] View{get;set;}\npublic string BuyerAgentStateLicense{get;set;}\npublic string CoListAgentFirstName{get;set;}\npublic string PropertySubType{get;set;}\npublic string HighSchool{get;set;}\npublic string LeaseConsideredYN{get;set;}\npublic string[] Levels{get;set;}\npublic bool IDXParticipationYN{get;set;}\npublic string StreetSuffixModifier{get;set;}\npublic string ListAgentLastName{get;set;}\npublic string[] InteriorFeatures{get;set;}\npublic int BathroomsFull{get;set;}\npublic bool WaterfrontYN{get;set;}\npublic string LotSizeAcres{get;set;}\npublic string SubdivisionName{get;set;}\npublic string Fencing{get;set;}\npublic bool InternetAddressDisplayYN{get;set;}\npublic string ApprovalStatus{get;set;}\npublic string CloseDate{get;set;}\npublic string StreetSuffix{get;set;}\npublic string ListAgentMlsId{get;set;}\npublic string[] WaterSource{get;set;}\npublic string Topography{get;set;}\npublic string DoorFeatures{get;set;}\npublic string LotSizeDimensions{get;set;}\npublic string StoriesTotal{get;set;}\npublic System.DateTime ModificationTimestamp{get;set;}\npublic int YearBuilt{get;set;}\npublic string PropertyAttachedYN{get;set;}\npublic float[] Coordinates{get;set;}\npublic string BathroomsPartial{get;set;}\npublic string CoBuyerOfficeMlsId{get;set;}\npublic string ZoningDescription{get;set;}\npublic string Country{get;set;}\npublic string UnitNumber{get;set;}\npublic string OpenParkingYN{get;set;}\npublic string SerialXX{get;set;}\npublic string MobileLength{get;set;}\npublic string AssociationAmenities{get;set;}\npublic string OtherStructures{get;set;}\npublic string BodyType{get;set;}\npublic string ListOfficeMlsId{get;set;}\npublic string ClosePrice{get;set;}\npublic string RoomType{get;set;}\npublic string CoListAgentFullName{get;set;}\npublic string StreetNumberNumeric{get;set;}\npublic string SpaYN{get;set;}\npublic string SpaFeatures{get;set;}\npublic int LivingArea{get;set;}\npublic string BuyerAgentFirstName{get;set;}\npublic string CoListAgentStateLicense{get;set;}\npublic string[] ParkingFeatures{get;set;}\npublic string PostalCodePlus4{get;set;}\npublic int BathroomsHalf{get;set;}\npublic string PoolFeatures{get;set;}\npublic double LotSizeArea{get;set;}\npublic string[] Sewer{get;set;}\npublic string[] Heating{get;set;}\npublic string StructureType{get;set;}\npublic string Model{get;set;}\npublic string BathroomsOneQuarter{get;set;}\npublic string BuyerAgentLastName{get;set;}\npublic string MaloneId{get;set;}\npublic string CoListAgentMlsId{get;set;}\npublic string ListAgentStateLicense{get;set;}\npublic string StreetName{get;set;}\npublic string PatioAndPorchFeatures{get;set;}\npublic string[] Utilities{get;set;}\npublic string[] FireplaceFeatures{get;set;}\npublic string ListingId{get;set;}\npublic string WindowFeatures{get;set;}\npublic string SpecialListingConditions{get;set;}\npublic string CommunityFeatures{get;set;}\npublic string NewConstructionYN{get;set;}\npublic string HoursDaysofOperationDescription{get;set;}\npublic int BathroomsTotalInteger{get;set;}\npublic string ParkName{get;set;}\npublic string RoomsTotal{get;set;}\npublic string NumberOfBuildings{get;set;}\npublic string GarageSpaces{get;set;}\npublic string[] GreenEnergyEfficient{get;set;}\npublic Media[] Media{get;set;}\npublic string CapRate{get;set;}\npublic string RentIncludes{get;set;}\npublic string City{get;set;}\npublic string InternetEntireListingDisplayYN{get;set;}\npublic string SerialX{get;set;}\npublic bool InternetAutomatedValuationDisplayYN{get;set;}\npublic string UnitTypeType{get;set;}\npublic string[] AccessibilityFeatures{get;set;}\npublic string SerialU{get;set;}\npublic string HighSchoolDistrict{get;set;}\npublic string BuildingFeatures{get;set;}\npublic string SourceSystemKey{get;set;}\npublic string Ownership{get;set;}\npublic string Telephone{get;set;}\npublic string Exclusions{get;set;}\npublic string DirectionFaces{get;set;}\npublic string CopyrightNotice{get;set;}\npublic string SourceSystemName{get;set;}\npublic string License3{get;set;}\npublic string[] LotFeatures{get;set;}\npublic string PossibleUse{get;set;}\npublic string PostalCode{get;set;}\npublic string License1{get;set;}\npublic string License2{get;set;}\npublic string[] ConstructionMaterials{get;set;}\npublic string NumberOfUnitsTotal{get;set;}\npublic string BuyerOfficeName{get;set;}\npublic int AssociationFee{get;set;}\npublic string LotSizeSquareFeet{get;set;}\npublic string CoBuyerAgentFullName{get;set;}\npublic string ListingInputOriginalMedia{get;set;}\npublic string Electric{get;set;}\npublic string ArchitecturalStyle{get;set;}\npublic string UnparsedAddress{get;set;}\npublic string OpenParkingSpaces{get;set;}\npublic string InternetConsumerCommentYN{get;set;}\npublic string BuildingAreaTotal{get;set;}\npublic string YearBuiltSource{get;set;}\npublic string url{get;set;}\n}\n",
+	"classoDefinitionXML": null,
+  "modelObject": null,
+  "AssociatedFileId": [1],
+	"typeCoonfiguration": null,
+	"listOfFieldInfo": [
+		{
+			"name": "StreetDirPrefix",
+			"dataType": 0,
+			"length": 0,
+			"map": "StreetDirPrefix",
+			"innerFields": null
+		},
+		{
+			"name": "BedroomsTotal",
+			"dataType": 1,
+			"length": 0,
+			"map": "BedroomsTotal",
+			"innerFields": null
+		},
+		{
+			"name": "GreenWaterConservation",
+			"dataType": 0,
+			"length": 0,
+			"map": "GreenWaterConservation",
+			"innerFields": null
+		},
+		{
+			"name": "LivingAreaUnits",
+			"dataType": 0,
+			"length": 0,
+			"map": "LivingAreaUnits",
+			"innerFields": null
+		},
+		{
+			"name": "CoolingYN",
+			"dataType": 3,
+			"length": 0,
+			"map": "CoolingYN",
+			"innerFields": null
+		},
+		{
+			"name": "GreenSustainability",
+			"dataType": 0,
+			"length": 0,
+			"map": "GreenSustainability",
+			"innerFields": null
+		},
+		{
+			"name": "ListAgentKey",
+			"dataType": 0,
+			"length": 0,
+			"map": "ListAgentKey",
+			"innerFields": null
+		},
+		{
+			"name": "YearEstablished",
+			"dataType": 0,
+			"length": 0,
+			"map": "YearEstablished",
+			"innerFields": null
+		},
+		{
+			"name": "CarportSpaces",
+			"dataType": 0,
+			"length": 0,
+			"map": "CarportSpaces",
+			"innerFields": null
+		},
+		{
+			"name": "LotSizeUnits",
+			"dataType": 0,
+			"length": 0,
+			"map": "LotSizeUnits",
+			"innerFields": null
+		},
+		{
+			"name": "ContractStatusChangeDate",
+			"dataType": 0,
+			"length": 0,
+			"map": "ContractStatusChangeDate",
+			"innerFields": null
+		},
+		{
+			"name": "LaundryFeatures",
+			"dataType": 9,
+			"length": 0,
+			"map": "LaundryFeatures",
+			"innerFields": null
+		},
+		{
+			"name": "Flooring",
+			"dataType": 9,
+			"length": 0,
+			"map": "Flooring",
+			"innerFields": null
+		},
+		{
+			"name": "PhotosCount",
+			"dataType": 1,
+			"length": 0,
+			"map": "PhotosCount",
+			"innerFields": null
+		},
+		{
+			"name": "FireplacesTotal",
+			"dataType": 1,
+			"length": 0,
+			"map": "FireplacesTotal",
+			"innerFields": null
+		},
+		{
+			"name": "WaterfrontFeatures",
+			"dataType": 9,
+			"length": 0,
+			"map": "WaterfrontFeatures",
+			"innerFields": null
+		},
+		{
+			"name": "SeniorCommunityYN",
+			"dataType": 0,
+			"length": 0,
+			"map": "SeniorCommunityYN",
+			"innerFields": null
+		},
+		{
+			"name": "Cooling",
+			"dataType": 9,
+			"length": 0,
+			"map": "Cooling",
+			"innerFields": null
+		},
+		{
+			"name": "GarageYN",
+			"dataType": 3,
+			"length": 0,
+			"map": "GarageYN",
+			"innerFields": null
+		},
+		{
+			"name": "ExteriorFeatures",
+			"dataType": 9,
+			"length": 0,
+			"map": "ExteriorFeatures",
+			"innerFields": null
+		},
+		{
+			"name": "OtherParking",
+			"dataType": 0,
+			"length": 0,
+			"map": "OtherParking",
+			"innerFields": null
+		},
+		{
+			"name": "Make",
+			"dataType": 0,
+			"length": 0,
+			"map": "Make",
+			"innerFields": null
+		},
+		{
+			"name": "StatusChangeTimestamp",
+			"dataType": 6,
+			"length": 0,
+			"map": "StatusChangeTimestamp",
+			"innerFields": null
+		},
+		{
+			"name": "Longitude",
+			"dataType": 2,
+			"length": 0,
+			"map": "Longitude",
+			"innerFields": null
+		},
+		{
+			"name": "BuyerAgentFullName",
+			"dataType": 0,
+			"length": 0,
+			"map": "BuyerAgentFullName",
+			"innerFields": null
+		},
+		{
+			"name": "Skirt",
+			"dataType": 0,
+			"length": 0,
+			"map": "Skirt",
+			"innerFields": null
+		},
+		{
+			"name": "CoBuyerAgentLastName",
+			"dataType": 0,
+			"length": 0,
+			"map": "CoBuyerAgentLastName",
+			"innerFields": null
+		},
+		{
+			"name": "CarportYN",
+			"dataType": 0,
+			"length": 0,
+			"map": "CarportYN",
+			"innerFields": null
+		},
+		{
+			"name": "PublicRemarks",
+			"dataType": 0,
+			"length": 0,
+			"map": "PublicRemarks",
+			"innerFields": null
+		},
+		{
+			"name": "AssociationName",
+			"dataType": 0,
+			"length": 0,
+			"map": "AssociationName",
+			"innerFields": null
+		},
+		{
+			"name": "TaxExemptions",
+			"dataType": 0,
+			"length": 0,
+			"map": "TaxExemptions",
+			"innerFields": null
+		},
+		{
+			"name": "AssociationFeeFrequency",
+			"dataType": 0,
+			"length": 0,
+			"map": "AssociationFeeFrequency",
+			"innerFields": null
+		},
+		{
+			"name": "CrossStreet",
+			"dataType": 0,
+			"length": 0,
+			"map": "CrossStreet",
+			"innerFields": null
+		},
+		{
+			"name": "HeatingYN",
+			"dataType": 3,
+			"length": 0,
+			"map": "HeatingYN",
+			"innerFields": null
+		},
+		{
+			"name": "CoBuyerAgentStateLicense",
+			"dataType": 0,
+			"length": 0,
+			"map": "CoBuyerAgentStateLicense",
+			"innerFields": null
+		},
+		{
+			"name": "WaterBodyName",
+			"dataType": 0,
+			"length": 0,
+			"map": "WaterBodyName",
+			"innerFields": null
+		},
+		{
+			"name": "CoBuyerAgentFirstName",
+			"dataType": 0,
+			"length": 0,
+			"map": "CoBuyerAgentFirstName",
+			"innerFields": null
+		},
+		{
+			"name": "CoListOfficeName",
+			"dataType": 0,
+			"length": 0,
+			"map": "CoListOfficeName",
+			"innerFields": null
+		},
+		{
+			"name": "RoadSurfaceType",
+			"dataType": 0,
+			"length": 0,
+			"map": "RoadSurfaceType",
+			"innerFields": null
+		},
+		{
+			"name": "PriceChangeTimestamp",
+			"dataType": 6,
+			"length": 0,
+			"map": "PriceChangeTimestamp",
+			"innerFields": null
+		},
+		{
+			"name": "ListingKeyNumeric",
+			"dataType": 0,
+			"length": 0,
+			"map": "ListingKeyNumeric",
+			"innerFields": null
+		},
+		{
+			"name": "ListingContractDate",
+			"dataType": 0,
+			"length": 0,
+			"map": "ListingContractDate",
+			"innerFields": null
+		},
+		{
+			"name": "Zoning",
+			"dataType": 0,
+			"length": 0,
+			"map": "Zoning",
+			"innerFields": null
+		},
+		{
+			"name": "GreenIndoorAirQuality",
+			"dataType": 0,
+			"length": 0,
+			"map": "GreenIndoorAirQuality",
+			"innerFields": null
+		},
+		{
+			"name": "Appliances",
+			"dataType": 9,
+			"length": 0,
+			"map": "Appliances",
+			"innerFields": null
+		},
+		{
+			"name": "LivingAreaSource",
+			"dataType": 0,
+			"length": 0,
+			"map": "LivingAreaSource",
+			"innerFields": null
+		},
+		{
+			"name": "MLSAreaMajor",
+			"dataType": 0,
+			"length": 0,
+			"map": "MLSAreaMajor",
+			"innerFields": null
+		},
+		{
+			"name": "TaxAnnualAmount",
+			"dataType": 2,
+			"length": 0,
+			"map": "TaxAnnualAmount",
+			"innerFields": null
+		},
+		{
+			"name": "CoBuyerOfficeName",
+			"dataType": 0,
+			"length": 0,
+			"map": "CoBuyerOfficeName",
+			"innerFields": null
+		},
+		{
+			"name": "ListOfficeName",
+			"dataType": 0,
+			"length": 0,
+			"map": "ListOfficeName",
+			"innerFields": null
+		},
+		{
+			"name": "GreenLocation",
+			"dataType": 0,
+			"length": 0,
+			"map": "GreenLocation",
+			"innerFields": null
+		},
+		{
+			"name": "MobileWidth",
+			"dataType": 0,
+			"length": 0,
+			"map": "MobileWidth",
+			"innerFields": null
+		},
+		{
+			"name": "Basement",
+			"dataType": 0,
+			"length": 0,
+			"map": "Basement",
+			"innerFields": null
+		},
+		{
+			"name": "CurrentUse",
+			"dataType": 0,
+			"length": 0,
+			"map": "CurrentUse",
+			"innerFields": null
+		},
+		{
+			"name": "OriginatingSystemKey",
+			"dataType": 0,
+			"length": 0,
+			"map": "OriginatingSystemKey",
+			"innerFields": null
+		},
+		{
+			"name": "BusinessType",
+			"dataType": 0,
+			"length": 0,
+			"map": "BusinessType",
+			"innerFields": null
+		},
+		{
+			"name": "CountyOrParish",
+			"dataType": 0,
+			"length": 0,
+			"map": "CountyOrParish",
+			"innerFields": null
+		},
+		{
+			"name": "Latitude",
+			"dataType": 2,
+			"length": 0,
+			"map": "Latitude",
+			"innerFields": null
+		},
+		{
+			"name": "BathroomsTotalDecimal",
+			"dataType": 0,
+			"length": 0,
+			"map": "BathroomsTotalDecimal",
+			"innerFields": null
+		},
+		{
+			"name": "PropertyType",
+			"dataType": 0,
+			"length": 0,
+			"map": "PropertyType",
+			"innerFields": null
+		},
+		{
+			"name": "PhotosChangeTimestamp",
+			"dataType": 6,
+			"length": 0,
+			"map": "PhotosChangeTimestamp",
+			"innerFields": null
+		},
+		{
+			"name": "NumberOfPads",
+			"dataType": 0,
+			"length": 0,
+			"map": "NumberOfPads",
+			"innerFields": null
+		},
+		{
+			"name": "ListPrice",
+			"dataType": 1,
+			"length": 0,
+			"map": "ListPrice",
+			"innerFields": null
+		},
+		{
+			"name": "RoadFrontageType",
+			"dataType": 0,
+			"length": 0,
+			"map": "RoadFrontageType",
+			"innerFields": null
+		},
+		{
+			"name": "OriginatingSystemName",
+			"dataType": 0,
+			"length": 0,
+			"map": "OriginatingSystemName",
+			"innerFields": null
+		},
+		{
+			"name": "GreenEnergyGeneration",
+			"dataType": 0,
+			"length": 0,
+			"map": "GreenEnergyGeneration",
+			"innerFields": null
+		},
+		{
+			"name": "AssociationYN",
+			"dataType": 0,
+			"length": 0,
+			"map": "AssociationYN",
+			"innerFields": null
+		},
+		{
+			"name": "DOH1",
+			"dataType": 0,
+			"length": 0,
+			"map": "DOH1",
+			"innerFields": null
+		},
+		{
+			"name": "MlsStatus",
+			"dataType": 0,
+			"length": 0,
+			"map": "MlsStatus",
+			"innerFields": null
+		},
+		{
+			"name": "DOH2",
+			"dataType": 0,
+			"length": 0,
+			"map": "DOH2",
+			"innerFields": null
+		},
+		{
+			"name": "DOH3",
+			"dataType": 0,
+			"length": 0,
+			"map": "DOH3",
+			"innerFields": null
+		},
+		{
+			"name": "StreetNumber",
+			"dataType": 0,
+			"length": 0,
+			"map": "StreetNumber",
+			"innerFields": null
+		},
+		{
+			"name": "CoListOfficeMlsId",
+			"dataType": 0,
+			"length": 0,
+			"map": "CoListOfficeMlsId",
+			"innerFields": null
+		},
+		{
+			"name": "LeaseTerm",
+			"dataType": 0,
+			"length": 0,
+			"map": "LeaseTerm",
+			"innerFields": null
+		},
+		{
+			"name": "ListingKey",
+			"dataType": 0,
+			"length": 0,
+			"map": "ListingKey",
+			"innerFields": null
+		},
+		{
+			"name": "StateOrProvince",
+			"dataType": 0,
+			"length": 0,
+			"map": "StateOrProvince",
+			"innerFields": null
+		},
+		{
+			"name": "CommonWalls",
+			"dataType": 0,
+			"length": 0,
+			"map": "CommonWalls",
+			"innerFields": null
+		},
+		{
+			"name": "GreenBuildingVerificationType",
+			"dataType": 0,
+			"length": 0,
+			"map": "GreenBuildingVerificationType",
+			"innerFields": null
+		},
+		{
+			"name": "StreetAdditionalInfo",
+			"dataType": 0,
+			"length": 0,
+			"map": "StreetAdditionalInfo",
+			"innerFields": null
+		},
+		{
+			"name": "CoveredSpaces",
+			"dataType": 1,
+			"length": 0,
+			"map": "CoveredSpaces",
+			"innerFields": null
+		},
+		{
+			"name": "MiddleOrJuniorSchool",
+			"dataType": 0,
+			"length": 0,
+			"map": "MiddleOrJuniorSchool",
+			"innerFields": null
+		},
+		{
+			"name": "AssociationFeeIncludes",
+			"dataType": 9,
+			"length": 0,
+			"map": "AssociationFeeIncludes",
+			"innerFields": null
+		},
+		{
+			"name": "CoListAgentLastName",
+			"dataType": 0,
+			"length": 0,
+			"map": "CoListAgentLastName",
+			"innerFields": null
+		},
+		{
+			"name": "VirtualTourURLUnbranded",
+			"dataType": 0,
+			"length": 0,
+			"map": "VirtualTourURLUnbranded",
+			"innerFields": null
+		},
+		{
+			"name": "Gas",
+			"dataType": 0,
+			"length": 0,
+			"map": "Gas",
+			"innerFields": null
+		},
+		{
+			"name": "ElementarySchool",
+			"dataType": 0,
+			"length": 0,
+			"map": "ElementarySchool",
+			"innerFields": null
+		},
+		{
+			"name": "StreetDirSuffix",
+			"dataType": 0,
+			"length": 0,
+			"map": "StreetDirSuffix",
+			"innerFields": null
+		},
+		{
+			"name": "ListAgentFirstName",
+			"dataType": 0,
+			"length": 0,
+			"map": "ListAgentFirstName",
+			"innerFields": null
+		},
+		{
+			"name": "ListOfficeKey",
+			"dataType": 0,
+			"length": 0,
+			"map": "ListOfficeKey",
+			"innerFields": null
+		},
+		{
+			"name": "FireplaceYN",
+			"dataType": 0,
+			"length": 0,
+			"map": "FireplaceYN",
+			"innerFields": null
+		},
+		{
+			"name": "Directions",
+			"dataType": 0,
+			"length": 0,
+			"map": "Directions",
+			"innerFields": null
+		},
+		{
+			"name": "BathroomsThreeQuarter",
+			"dataType": 0,
+			"length": 0,
+			"map": "BathroomsThreeQuarter",
+			"innerFields": null
+		},
+		{
+			"name": "ListAgentFullName",
+			"dataType": 0,
+			"length": 0,
+			"map": "ListAgentFullName",
+			"innerFields": null
+		},
+		{
+			"name": "YearBuiltEffective",
+			"dataType": 0,
+			"length": 0,
+			"map": "YearBuiltEffective",
+			"innerFields": null
+		},
+		{
+			"name": "AttachedGarageYN",
+			"dataType": 0,
+			"length": 0,
+			"map": "AttachedGarageYN",
+			"innerFields": null
+		},
+		{
+			"name": "StandardStatus",
+			"dataType": 0,
+			"length": 0,
+			"map": "StandardStatus",
+			"innerFields": null
+		},
+		{
+			"name": "Roof",
+			"dataType": 9,
+			"length": 0,
+			"map": "Roof",
+			"innerFields": null
+		},
+		{
+			"name": "Stories",
+			"dataType": 0,
+			"length": 0,
+			"map": "Stories",
+			"innerFields": null
+		},
+		{
+			"name": "BuyerTeamName",
+			"dataType": 0,
+			"length": 0,
+			"map": "BuyerTeamName",
+			"innerFields": null
+		},
+		{
+			"name": "ParcelNumber",
+			"dataType": 0,
+			"length": 0,
+			"map": "ParcelNumber",
+			"innerFields": null
+		},
+		{
+			"name": "PoolPrivateYN",
+			"dataType": 3,
+			"length": 0,
+			"map": "PoolPrivateYN",
+			"innerFields": null
+		},
+		{
+			"name": "NumberOfUnitsLeased",
+			"dataType": 0,
+			"length": 0,
+			"map": "NumberOfUnitsLeased",
+			"innerFields": null
+		},
+		{
+			"name": "FoundationDetails",
+			"dataType": 9,
+			"length": 0,
+			"map": "FoundationDetails",
+			"innerFields": null
+		},
+		{
+			"name": "BuilderName",
+			"dataType": 0,
+			"length": 0,
+			"map": "BuilderName",
+			"innerFields": null
+		},
+		{
+			"name": "View",
+			"dataType": 9,
+			"length": 0,
+			"map": "View",
+			"innerFields": null
+		},
+		{
+			"name": "BuyerAgentStateLicense",
+			"dataType": 0,
+			"length": 0,
+			"map": "BuyerAgentStateLicense",
+			"innerFields": null
+		},
+		{
+			"name": "CoListAgentFirstName",
+			"dataType": 0,
+			"length": 0,
+			"map": "CoListAgentFirstName",
+			"innerFields": null
+		},
+		{
+			"name": "PropertySubType",
+			"dataType": 0,
+			"length": 0,
+			"map": "PropertySubType",
+			"innerFields": null
+		},
+		{
+			"name": "HighSchool",
+			"dataType": 0,
+			"length": 0,
+			"map": "HighSchool",
+			"innerFields": null
+		},
+		{
+			"name": "LeaseConsideredYN",
+			"dataType": 0,
+			"length": 0,
+			"map": "LeaseConsideredYN",
+			"innerFields": null
+		},
+		{
+			"name": "Levels",
+			"dataType": 9,
+			"length": 0,
+			"map": "Levels",
+			"innerFields": null
+		},
+		{
+			"name": "IDXParticipationYN",
+			"dataType": 3,
+			"length": 0,
+			"map": "IDXParticipationYN",
+			"innerFields": null
+		},
+		{
+			"name": "StreetSuffixModifier",
+			"dataType": 0,
+			"length": 0,
+			"map": "StreetSuffixModifier",
+			"innerFields": null
+		},
+		{
+			"name": "ListAgentLastName",
+			"dataType": 0,
+			"length": 0,
+			"map": "ListAgentLastName",
+			"innerFields": null
+		},
+		{
+			"name": "InteriorFeatures",
+			"dataType": 9,
+			"length": 0,
+			"map": "InteriorFeatures",
+			"innerFields": null
+		},
+		{
+			"name": "BathroomsFull",
+			"dataType": 1,
+			"length": 0,
+			"map": "BathroomsFull",
+			"innerFields": null
+		},
+		{
+			"name": "WaterfrontYN",
+			"dataType": 3,
+			"length": 0,
+			"map": "WaterfrontYN",
+			"innerFields": null
+		},
+		{
+			"name": "LotSizeAcres",
+			"dataType": 0,
+			"length": 0,
+			"map": "LotSizeAcres",
+			"innerFields": null
+		},
+		{
+			"name": "SubdivisionName",
+			"dataType": 0,
+			"length": 0,
+			"map": "SubdivisionName",
+			"innerFields": null
+		},
+		{
+			"name": "Fencing",
+			"dataType": 0,
+			"length": 0,
+			"map": "Fencing",
+			"innerFields": null
+		},
+		{
+			"name": "InternetAddressDisplayYN",
+			"dataType": 3,
+			"length": 0,
+			"map": "InternetAddressDisplayYN",
+			"innerFields": null
+		},
+		{
+			"name": "ApprovalStatus",
+			"dataType": 0,
+			"length": 0,
+			"map": "ApprovalStatus",
+			"innerFields": null
+		},
+		{
+			"name": "CloseDate",
+			"dataType": 0,
+			"length": 0,
+			"map": "CloseDate",
+			"innerFields": null
+		},
+		{
+			"name": "StreetSuffix",
+			"dataType": 0,
+			"length": 0,
+			"map": "StreetSuffix",
+			"innerFields": null
+		},
+		{
+			"name": "ListAgentMlsId",
+			"dataType": 0,
+			"length": 0,
+			"map": "ListAgentMlsId",
+			"innerFields": null
+		},
+		{
+			"name": "WaterSource",
+			"dataType": 9,
+			"length": 0,
+			"map": "WaterSource",
+			"innerFields": null
+		},
+		{
+			"name": "Topography",
+			"dataType": 0,
+			"length": 0,
+			"map": "Topography",
+			"innerFields": null
+		},
+		{
+			"name": "DoorFeatures",
+			"dataType": 0,
+			"length": 0,
+			"map": "DoorFeatures",
+			"innerFields": null
+		},
+		{
+			"name": "LotSizeDimensions",
+			"dataType": 0,
+			"length": 0,
+			"map": "LotSizeDimensions",
+			"innerFields": null
+		},
+		{
+			"name": "StoriesTotal",
+			"dataType": 0,
+			"length": 0,
+			"map": "StoriesTotal",
+			"innerFields": null
+		},
+		{
+			"name": "ModificationTimestamp",
+			"dataType": 6,
+			"length": 0,
+			"map": "ModificationTimestamp",
+			"innerFields": null
+		},
+		{
+			"name": "YearBuilt",
+			"dataType": 1,
+			"length": 0,
+			"map": "YearBuilt",
+			"innerFields": null
+		},
+		{
+			"name": "PropertyAttachedYN",
+			"dataType": 0,
+			"length": 0,
+			"map": "PropertyAttachedYN",
+			"innerFields": null
+		},
+		{
+			"name": "Coordinates",
+			"dataType": 11,
+			"length": 0,
+			"map": "Coordinates",
+			"innerFields": null
+		},
+		{
+			"name": "BathroomsPartial",
+			"dataType": 0,
+			"length": 0,
+			"map": "BathroomsPartial",
+			"innerFields": null
+		},
+		{
+			"name": "CoBuyerOfficeMlsId",
+			"dataType": 0,
+			"length": 0,
+			"map": "CoBuyerOfficeMlsId",
+			"innerFields": null
+		},
+		{
+			"name": "ZoningDescription",
+			"dataType": 0,
+			"length": 0,
+			"map": "ZoningDescription",
+			"innerFields": null
+		},
+		{
+			"name": "Country",
+			"dataType": 0,
+			"length": 0,
+			"map": "Country",
+			"innerFields": null
+		},
+		{
+			"name": "UnitNumber",
+			"dataType": 0,
+			"length": 0,
+			"map": "UnitNumber",
+			"innerFields": null
+		},
+		{
+			"name": "OpenParkingYN",
+			"dataType": 0,
+			"length": 0,
+			"map": "OpenParkingYN",
+			"innerFields": null
+		},
+		{
+			"name": "SerialXX",
+			"dataType": 0,
+			"length": 0,
+			"map": "SerialXX",
+			"innerFields": null
+		},
+		{
+			"name": "MobileLength",
+			"dataType": 0,
+			"length": 0,
+			"map": "MobileLength",
+			"innerFields": null
+		},
+		{
+			"name": "AssociationAmenities",
+			"dataType": 0,
+			"length": 0,
+			"map": "AssociationAmenities",
+			"innerFields": null
+		},
+		{
+			"name": "OtherStructures",
+			"dataType": 0,
+			"length": 0,
+			"map": "OtherStructures",
+			"innerFields": null
+		},
+		{
+			"name": "BodyType",
+			"dataType": 0,
+			"length": 0,
+			"map": "BodyType",
+			"innerFields": null
+		},
+		{
+			"name": "ListOfficeMlsId",
+			"dataType": 0,
+			"length": 0,
+			"map": "ListOfficeMlsId",
+			"innerFields": null
+		},
+		{
+			"name": "ClosePrice",
+			"dataType": 0,
+			"length": 0,
+			"map": "ClosePrice",
+			"innerFields": null
+		},
+		{
+			"name": "RoomType",
+			"dataType": 0,
+			"length": 0,
+			"map": "RoomType",
+			"innerFields": null
+		},
+		{
+			"name": "CoListAgentFullName",
+			"dataType": 0,
+			"length": 0,
+			"map": "CoListAgentFullName",
+			"innerFields": null
+		},
+		{
+			"name": "StreetNumberNumeric",
+			"dataType": 0,
+			"length": 0,
+			"map": "StreetNumberNumeric",
+			"innerFields": null
+		},
+		{
+			"name": "SpaYN",
+			"dataType": 0,
+			"length": 0,
+			"map": "SpaYN",
+			"innerFields": null
+		},
+		{
+			"name": "SpaFeatures",
+			"dataType": 0,
+			"length": 0,
+			"map": "SpaFeatures",
+			"innerFields": null
+		},
+		{
+			"name": "LivingArea",
+			"dataType": 1,
+			"length": 0,
+			"map": "LivingArea",
+			"innerFields": null
+		},
+		{
+			"name": "BuyerAgentFirstName",
+			"dataType": 0,
+			"length": 0,
+			"map": "BuyerAgentFirstName",
+			"innerFields": null
+		},
+		{
+			"name": "CoListAgentStateLicense",
+			"dataType": 0,
+			"length": 0,
+			"map": "CoListAgentStateLicense",
+			"innerFields": null
+		},
+		{
+			"name": "ParkingFeatures",
+			"dataType": 9,
+			"length": 0,
+			"map": "ParkingFeatures",
+			"innerFields": null
+		},
+		{
+			"name": "PostalCodePlus4",
+			"dataType": 0,
+			"length": 0,
+			"map": "PostalCodePlus4",
+			"innerFields": null
+		},
+		{
+			"name": "BathroomsHalf",
+			"dataType": 1,
+			"length": 0,
+			"map": "BathroomsHalf",
+			"innerFields": null
+		},
+		{
+			"name": "PoolFeatures",
+			"dataType": 0,
+			"length": 0,
+			"map": "PoolFeatures",
+			"innerFields": null
+		},
+		{
+			"name": "LotSizeArea",
+			"dataType": 2,
+			"length": 0,
+			"map": "LotSizeArea",
+			"innerFields": null
+		},
+		{
+			"name": "Sewer",
+			"dataType": 9,
+			"length": 0,
+			"map": "Sewer",
+			"innerFields": null
+		},
+		{
+			"name": "Heating",
+			"dataType": 9,
+			"length": 0,
+			"map": "Heating",
+			"innerFields": null
+		},
+		{
+			"name": "StructureType",
+			"dataType": 0,
+			"length": 0,
+			"map": "StructureType",
+			"innerFields": null
+		},
+		{
+			"name": "Model",
+			"dataType": 0,
+			"length": 0,
+			"map": "Model",
+			"innerFields": null
+		},
+		{
+			"name": "BathroomsOneQuarter",
+			"dataType": 0,
+			"length": 0,
+			"map": "BathroomsOneQuarter",
+			"innerFields": null
+		},
+		{
+			"name": "BuyerAgentLastName",
+			"dataType": 0,
+			"length": 0,
+			"map": "BuyerAgentLastName",
+			"innerFields": null
+		},
+		{
+			"name": "MaloneId",
+			"dataType": 0,
+			"length": 0,
+			"map": "MaloneId",
+			"innerFields": null
+		},
+		{
+			"name": "CoListAgentMlsId",
+			"dataType": 0,
+			"length": 0,
+			"map": "CoListAgentMlsId",
+			"innerFields": null
+		},
+		{
+			"name": "ListAgentStateLicense",
+			"dataType": 0,
+			"length": 0,
+			"map": "ListAgentStateLicense",
+			"innerFields": null
+		},
+		{
+			"name": "StreetName",
+			"dataType": 0,
+			"length": 0,
+			"map": "StreetName",
+			"innerFields": null
+		},
+		{
+			"name": "PatioAndPorchFeatures",
+			"dataType": 0,
+			"length": 0,
+			"map": "PatioAndPorchFeatures",
+			"innerFields": null
+		},
+		{
+			"name": "Utilities",
+			"dataType": 9,
+			"length": 0,
+			"map": "Utilities",
+			"innerFields": null
+		},
+		{
+			"name": "FireplaceFeatures",
+			"dataType": 9,
+			"length": 0,
+			"map": "FireplaceFeatures",
+			"innerFields": null
+		},
+		{
+			"name": "ListingId",
+			"dataType": 0,
+			"length": 0,
+			"map": "ListingId",
+			"innerFields": null
+		},
+		{
+			"name": "WindowFeatures",
+			"dataType": 0,
+			"length": 0,
+			"map": "WindowFeatures",
+			"innerFields": null
+		},
+		{
+			"name": "SpecialListingConditions",
+			"dataType": 0,
+			"length": 0,
+			"map": "SpecialListingConditions",
+			"innerFields": null
+		},
+		{
+			"name": "CommunityFeatures",
+			"dataType": 0,
+			"length": 0,
+			"map": "CommunityFeatures",
+			"innerFields": null
+		},
+		{
+			"name": "NewConstructionYN",
+			"dataType": 0,
+			"length": 0,
+			"map": "NewConstructionYN",
+			"innerFields": null
+		},
+		{
+			"name": "HoursDaysofOperationDescription",
+			"dataType": 0,
+			"length": 0,
+			"map": "HoursDaysofOperationDescription",
+			"innerFields": null
+		},
+		{
+			"name": "BathroomsTotalInteger",
+			"dataType": 1,
+			"length": 0,
+			"map": "BathroomsTotalInteger",
+			"innerFields": null
+		},
+		{
+			"name": "ParkName",
+			"dataType": 0,
+			"length": 0,
+			"map": "ParkName",
+			"innerFields": null
+		},
+		{
+			"name": "RoomsTotal",
+			"dataType": 0,
+			"length": 0,
+			"map": "RoomsTotal",
+			"innerFields": null
+		},
+		{
+			"name": "NumberOfBuildings",
+			"dataType": 0,
+			"length": 0,
+			"map": "NumberOfBuildings",
+			"innerFields": null
+		},
+		{
+			"name": "GarageSpaces",
+			"dataType": 0,
+			"length": 0,
+			"map": "GarageSpaces",
+			"innerFields": null
+		},
+		{
+			"name": "GreenEnergyEfficient",
+			"dataType": 9,
+			"length": 0,
+			"map": "GreenEnergyEfficient",
+			"innerFields": null
+		},
+		{
+			"name": "Media",
+			"dataType": 8,
+			"length": 0,
+			"map": "Media",
+			"innerFields": [
+				{
+					"name": "Order",
+					"dataType": 1,
+					"length": 0,
+					"map": "Order",
+					"innerFields": null
+				},
+				{
+					"name": "MediaKey",
+					"dataType": 0,
+					"length": 0,
+					"map": "MediaKey",
+					"innerFields": null
+				},
+				{
+					"name": "MediaURL",
+					"dataType": 0,
+					"length": 0,
+					"map": "MediaURL",
+					"innerFields": null
+				},
+				{
+					"name": "ResourceRecordKey",
+					"dataType": 0,
+					"length": 0,
+					"map": "ResourceRecordKey",
+					"innerFields": null
+				},
+				{
+					"name": "ResourceName",
+					"dataType": 0,
+					"length": 0,
+					"map": "ResourceName",
+					"innerFields": null
+				},
+				{
+					"name": "ClassName",
+					"dataType": 0,
+					"length": 0,
+					"map": "ClassName",
+					"innerFields": null
+				},
+				{
+					"name": "MediaCategory",
+					"dataType": 0,
+					"length": 0,
+					"map": "MediaCategory",
+					"innerFields": null
+				},
+				{
+					"name": "MimeType",
+					"dataType": 0,
+					"length": 0,
+					"map": "MimeType",
+					"innerFields": null
+				},
+				{
+					"name": "MediaObjectID",
+					"dataType": 0,
+					"length": 0,
+					"map": "MediaObjectID",
+					"innerFields": null
+				},
+				{
+					"name": "ShortDescription",
+					"dataType": 0,
+					"length": 0,
+					"map": "ShortDescription",
+					"innerFields": null
+				}
+			]
+		},
+		{
+			"name": "CapRate",
+			"dataType": 0,
+			"length": 0,
+			"map": "CapRate",
+			"innerFields": null
+		},
+		{
+			"name": "RentIncludes",
+			"dataType": 0,
+			"length": 0,
+			"map": "RentIncludes",
+			"innerFields": null
+		},
+		{
+			"name": "City",
+			"dataType": 0,
+			"length": 0,
+			"map": "City",
+			"innerFields": null
+		},
+		{
+			"name": "InternetEntireListingDisplayYN",
+			"dataType": 0,
+			"length": 0,
+			"map": "InternetEntireListingDisplayYN",
+			"innerFields": null
+		},
+		{
+			"name": "SerialX",
+			"dataType": 0,
+			"length": 0,
+			"map": "SerialX",
+			"innerFields": null
+		},
+		{
+			"name": "InternetAutomatedValuationDisplayYN",
+			"dataType": 3,
+			"length": 0,
+			"map": "InternetAutomatedValuationDisplayYN",
+			"innerFields": null
+		},
+		{
+			"name": "UnitTypeType",
+			"dataType": 0,
+			"length": 0,
+			"map": "UnitTypeType",
+			"innerFields": null
+		},
+		{
+			"name": "AccessibilityFeatures",
+			"dataType": 9,
+			"length": 0,
+			"map": "AccessibilityFeatures",
+			"innerFields": null
+		},
+		{
+			"name": "SerialU",
+			"dataType": 0,
+			"length": 0,
+			"map": "SerialU",
+			"innerFields": null
+		},
+		{
+			"name": "HighSchoolDistrict",
+			"dataType": 0,
+			"length": 0,
+			"map": "HighSchoolDistrict",
+			"innerFields": null
+		},
+		{
+			"name": "BuildingFeatures",
+			"dataType": 0,
+			"length": 0,
+			"map": "BuildingFeatures",
+			"innerFields": null
+		},
+		{
+			"name": "SourceSystemKey",
+			"dataType": 0,
+			"length": 0,
+			"map": "SourceSystemKey",
+			"innerFields": null
+		},
+		{
+			"name": "Ownership",
+			"dataType": 0,
+			"length": 0,
+			"map": "Ownership",
+			"innerFields": null
+		},
+		{
+			"name": "Telephone",
+			"dataType": 0,
+			"length": 0,
+			"map": "Telephone",
+			"innerFields": null
+		},
+		{
+			"name": "Exclusions",
+			"dataType": 0,
+			"length": 0,
+			"map": "Exclusions",
+			"innerFields": null
+		},
+		{
+			"name": "DirectionFaces",
+			"dataType": 0,
+			"length": 0,
+			"map": "DirectionFaces",
+			"innerFields": null
+		},
+		{
+			"name": "CopyrightNotice",
+			"dataType": 0,
+			"length": 0,
+			"map": "CopyrightNotice",
+			"innerFields": null
+		},
+		{
+			"name": "SourceSystemName",
+			"dataType": 0,
+			"length": 0,
+			"map": "SourceSystemName",
+			"innerFields": null
+		},
+		{
+			"name": "License3",
+			"dataType": 0,
+			"length": 0,
+			"map": "License3",
+			"innerFields": null
+		},
+		{
+			"name": "LotFeatures",
+			"dataType": 9,
+			"length": 0,
+			"map": "LotFeatures",
+			"innerFields": null
+		},
+		{
+			"name": "PossibleUse",
+			"dataType": 0,
+			"length": 0,
+			"map": "PossibleUse",
+			"innerFields": null
+		},
+		{
+			"name": "PostalCode",
+			"dataType": 0,
+			"length": 0,
+			"map": "PostalCode",
+			"innerFields": null
+		},
+		{
+			"name": "License1",
+			"dataType": 0,
+			"length": 0,
+			"map": "License1",
+			"innerFields": null
+		},
+		{
+			"name": "License2",
+			"dataType": 0,
+			"length": 0,
+			"map": "License2",
+			"innerFields": null
+		},
+		{
+			"name": "ConstructionMaterials",
+			"dataType": 9,
+			"length": 0,
+			"map": "ConstructionMaterials",
+			"innerFields": null
+		},
+		{
+			"name": "NumberOfUnitsTotal",
+			"dataType": 0,
+			"length": 0,
+			"map": "NumberOfUnitsTotal",
+			"innerFields": null
+		},
+		{
+			"name": "BuyerOfficeName",
+			"dataType": 0,
+			"length": 0,
+			"map": "BuyerOfficeName",
+			"innerFields": null
+		},
+		{
+			"name": "AssociationFee",
+			"dataType": 1,
+			"length": 0,
+			"map": "AssociationFee",
+			"innerFields": null
+		},
+		{
+			"name": "LotSizeSquareFeet",
+			"dataType": 0,
+			"length": 0,
+			"map": "LotSizeSquareFeet",
+			"innerFields": null
+		},
+		{
+			"name": "CoBuyerAgentFullName",
+			"dataType": 0,
+			"length": 0,
+			"map": "CoBuyerAgentFullName",
+			"innerFields": null
+		},
+		{
+			"name": "ListingInputOriginalMedia",
+			"dataType": 0,
+			"length": 0,
+			"map": "ListingInputOriginalMedia",
+			"innerFields": null
+		},
+		{
+			"name": "Electric",
+			"dataType": 0,
+			"length": 0,
+			"map": "Electric",
+			"innerFields": null
+		},
+		{
+			"name": "ArchitecturalStyle",
+			"dataType": 0,
+			"length": 0,
+			"map": "ArchitecturalStyle",
+			"innerFields": null
+		},
+		{
+			"name": "UnparsedAddress",
+			"dataType": 0,
+			"length": 0,
+			"map": "UnparsedAddress",
+			"innerFields": null
+		},
+		{
+			"name": "OpenParkingSpaces",
+			"dataType": 0,
+			"length": 0,
+			"map": "OpenParkingSpaces",
+			"innerFields": null
+		},
+		{
+			"name": "InternetConsumerCommentYN",
+			"dataType": 0,
+			"length": 0,
+			"map": "InternetConsumerCommentYN",
+			"innerFields": null
+		},
+		{
+			"name": "BuildingAreaTotal",
+			"dataType": 0,
+			"length": 0,
+			"map": "BuildingAreaTotal",
+			"innerFields": null
+		},
+		{
+			"name": "YearBuiltSource",
+			"dataType": 0,
+			"length": 0,
+			"map": "YearBuiltSource",
+			"innerFields": null
+		},
+		{
+			"name": "url",
+			"dataType": 0,
+			"length": 0,
+			"map": "url",
+			"innerFields": null
+		}
+	]
+}

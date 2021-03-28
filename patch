@@ -1,0 +1,73 @@
+diff --git a/.gitignore b/.gitignore
+index 141ae4f..9f5ad3f 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -16,3 +16,20 @@
+ /DataAnalyticsPlatform.Application/obj
+ /DataAnalyticsPlatform.Writers/bin/Debug/netstandard2.0
+ /DataAnalyticsPlatform.Application/bin/Debug/netcoreapp2.0
++/bin
++/DataAnalyticsPlatform.Actors/bin/Release/netstandard2.0
++/DataAnalyticsPlatform.Application/bin/Release/netcoreapp2.0
++/DataAnalyticsPlatform.Common/bin/Release
++/DataAnalyticsPlatform.Common/obj/Debug
++/DataAnalyticsPlatform.Common/obj/Release
++/DataAnalyticsPlatform.Readers/bin/Release/netstandard2.0
++/DataAnalyticsPlatform.Shared/bin/Release/netstandard2.0
++/DataAnalyticsPlatform.Shared.Test/obj/Debug/netcoreapp2.0
++/DataAnalyticsPlatform.Shared.Test/obj
++/DataAnalyticsPlatform.SharedUtils/bin/Debug/netstandard2.0
++/DataAnalyticsPlatform.SharedUtils/bin/Debug
++/DataAnalyticsPlatform.SharedUtils/bin/Release
++/DataAnalyticsPlatform.SharedUtils/obj
++/DataAnalyticsPlatform.Writers/bin/Release/netstandard2.0
++/DataAnalyticsWebApi/bin
++*.cache
+diff --git a/DataAnalyticsPlatform.sln b/DataAnalyticsPlatform.sln
+index 06f3c9c..58b47be 100644
+--- a/DataAnalyticsPlatform.sln
++++ b/DataAnalyticsPlatform.sln
+@@ -16,13 +16,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAnalyticsPlatform.Appli
+ EndProject
+ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAnalyticsPlatform.Writers", "DataAnalyticsPlatform.Writers\DataAnalyticsPlatform.Writers.csproj", "{522A5C4D-3319-425F-9306-D62BAEE9FF24}"
+ EndProject
+-<<<<<<< HEAD
+ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAnalyticsPlatform.Shared.Test", "DataAnalyticsPlatform.Shared.Test\DataAnalyticsPlatform.Shared.Test.csproj", "{4E21440F-6C80-4732-B777-6A307FCBF26C}"
+ EndProject
+-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAnalyticsWebApi", "DataAnalyticsWebApi\DataAnalyticsWebApi.csproj", "{09A5205F-A0B5-45F5-BD2F-5C635F04511D}"
++Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAnalyticsWebApi", "DataAnalyticsWebApi\DataAnalyticsWebApi.csproj", "{09A5205F-A0B5-45F5-BD2F-5C635F04511D}"
++EndProject
++Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAnalyticsPlatform.Common", "DataAnalyticsPlatform.Common\DataAnalyticsPlatform.Common.csproj", "{4F8673DA-93F2-40A6-B39D-71375254897F}"
++EndProject
++Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAnalyticsPlatform.SharedUtils", "DataAnalyticsPlatform.SharedUtils\DataAnalyticsPlatform.SharedUtils.csproj", "{E48E08B4-3032-47FF-AD8B-022530DBB098}"
+ EndProject
+-=======
+->>>>>>> bd1e8ab303fa9d869ee7ce67e73f9a4ef53286e7
+ Global
+ 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+ 		Debug|Any CPU = Debug|Any CPU
+@@ -49,7 +50,6 @@ Global
+ 		{522A5C4D-3319-425F-9306-D62BAEE9FF24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+ 		{522A5C4D-3319-425F-9306-D62BAEE9FF24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+ 		{522A5C4D-3319-425F-9306-D62BAEE9FF24}.Release|Any CPU.Build.0 = Release|Any CPU
+-<<<<<<< HEAD
+ 		{4E21440F-6C80-4732-B777-6A307FCBF26C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+ 		{4E21440F-6C80-4732-B777-6A307FCBF26C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+ 		{4E21440F-6C80-4732-B777-6A307FCBF26C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+@@ -58,8 +58,14 @@ Global
+ 		{09A5205F-A0B5-45F5-BD2F-5C635F04511D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+ 		{09A5205F-A0B5-45F5-BD2F-5C635F04511D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+ 		{09A5205F-A0B5-45F5-BD2F-5C635F04511D}.Release|Any CPU.Build.0 = Release|Any CPU
+-=======
+->>>>>>> bd1e8ab303fa9d869ee7ce67e73f9a4ef53286e7
++		{4F8673DA-93F2-40A6-B39D-71375254897F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
++		{4F8673DA-93F2-40A6-B39D-71375254897F}.Debug|Any CPU.Build.0 = Debug|Any CPU
++		{4F8673DA-93F2-40A6-B39D-71375254897F}.Release|Any CPU.ActiveCfg = Release|Any CPU
++		{4F8673DA-93F2-40A6-B39D-71375254897F}.Release|Any CPU.Build.0 = Release|Any CPU
++		{E48E08B4-3032-47FF-AD8B-022530DBB098}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
++		{E48E08B4-3032-47FF-AD8B-022530DBB098}.Debug|Any CPU.Build.0 = Debug|Any CPU
++		{E48E08B4-3032-47FF-AD8B-022530DBB098}.Release|Any CPU.ActiveCfg = Release|Any CPU
++		{E48E08B4-3032-47FF-AD8B-022530DBB098}.Release|Any CPU.Build.0 = Release|Any CPU
+ 	EndGlobalSection
+ 	GlobalSection(SolutionProperties) = preSolution
+ 		HideSolutionNode = FALSE

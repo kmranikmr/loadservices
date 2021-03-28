@@ -1,0 +1,58 @@
+version: '3.4'
+
+services:
+
+  dataanalyticsplatform.service.masterapi:
+    image: dataanalyticsplatformservicemasterapi
+    build:
+      context: .
+      dockerfile: DataAnalyticsPlatform.Service.MasterAPI/Dockerfile
+    ports:
+      - "3551:3551"
+
+    environment:
+      ACTORSYSTEM: "dap-actor-system"
+      # The cluster IP (bit of a misnomer, here it's the hostname) is derived from the service name (lighthouse)
+      CLUSTER_IP: dataanalyticsplatform.service.masterapi
+      CLUSTER_PORT: 3551
+      CLUSTER_SEEDS: "akka.tcp://dap-actor-system@dataanalyticsplatform.service.masterapi:3551"
+
+  loadserviceapi:
+    image: loadserviceapi
+    build:
+      context: .
+      dockerfile: LoadServiceApi/LoadServiceApi/Dockerfile
+    ports:
+      - "6003:6003"
+    volumes:
+      - ~/datafile:/app/StaticFiles
+
+    depends_on:
+      - "dataanalyticsplatform.service.masterapi"  
+    environment:
+      #ACTORSYSTEM: "dap-actor-system"
+      # The cluster IP (bit of a misnomer, here it's the hostname) is derived from the service name (lighthouse)
+      CLUSTER_IP: loadserviceapi
+      CLUSTER_PORT: 0
+      CLUSTER_SEEDS: "akka.tcp://dap-actor-system@dataanalyticsplatform.service.masterapi:3551"
+    
+  
+  dataanalyticsplatform.service.worker:
+    image: dataanalyticsplatformserviceworker
+    build:
+      context: .
+      dockerfile: DataAnalyticsPlatform.Service.Worker/Dockerfile
+    volumes:
+      - ~/datafile:/app/StaticFiles
+    environment:
+      #ACTORSYSTEM: "dap-actor-system"
+      # The cluster IP (bit of a misnomer, here it's the hostname) is derived from the service name (lighthouse)
+      CLUSTER_IP: dataanalyticsplatform.service.worker
+      #CLUSTER_IP: 
+      CLUSTER_PORT: 0
+      CLUSTER_SEEDS: "akka.tcp://dap-actor-system@dataanalyticsplatform.service.masterapi:3551"
+      #CLUSTER_SEEDS: "akka.tcp://dap-actor-system@192.168.1.13:3551"
+    depends_on:
+      - "dataanalyticsplatform.service.masterapi"
+
+ 

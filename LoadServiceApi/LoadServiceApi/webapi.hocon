@@ -1,0 +1,40 @@
+﻿  akka{ 
+     
+            
+             actor{ 
+              provider = cluster
+              
+             deployment {
+								/tasker/taskrouter {
+									router =  round-robin-group
+                  routees.paths = ["/user/masterNode"]
+									cluster {
+											enabled = on
+											allow-local-routees = off
+											use-role = master
+									}
+								}                
+							}
+
+						
+            } 
+            
+          remote{ 
+            maximum-payload-bytes = 30000000 bytes
+             helios.tcp{ 
+              transport-class = "Akka.Remote.Transport.Helios.HeliosTcpTransport, Akka.Remote" 
+               transport-protocol = tcp 
+               port =10001 
+               hostname="127.0.0.1"
+               maximum-frame-size = 4000000b
+             } 
+           } 
+
+		
+           
+           cluster {
+						
+							seed-nodes = ["akka.tcp://dap-actor-system@localhost:3551"]
+							roles = [api]
+						}
+         } 
