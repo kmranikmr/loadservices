@@ -161,7 +161,7 @@ namespace DataAnalyticsPlatform.Actors.Worker
                 {
                     if (ingestionJob.ReaderConfiguration.TypeConfig.ModelInfoList != null)
                     {
-                        string url = $"http://idapt.duckdns.org:6002/api/workflowattempts/projectrigger/{ingestionJob.ReaderConfiguration.ProjectId}";
+                        string url = $"http://ec2basedservicealb-760561316.us-east-1.elb.amazonaws.com:6002/api/workflowattempts/projectrigger/{ingestionJob.ReaderConfiguration.ProjectId}";
                         var client = new RestClient(url);
                         foreach (var model in ingestionJob.ReaderConfiguration.TypeConfig.ModelInfoList)
                         {
