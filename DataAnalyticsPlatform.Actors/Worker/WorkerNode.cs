@@ -148,6 +148,7 @@ namespace DataAnalyticsPlatform.Actors.Worker
                     
                 
                     Console.WriteLine("IngestionJob Check");
+                    IngestionJob tbd = null;
                     foreach ( var j in ingestionJob)
                     {
                         Console.WriteLine("checking jobs");
@@ -157,9 +158,13 @@ namespace DataAnalyticsPlatform.Actors.Worker
                             if (((JobDone)x).FileId == j.ReaderConfiguration.SourcePathId)
                             {
                                 SendAttempt(x, j);
-                                ingestionJob.Remove(j);
+                                tbd = j;
                             }
                         }
+                    }
+                    if(tbd != null)
+                    {
+                        ingestionJob.Remove(tbd);
                     }
                 
                 }
