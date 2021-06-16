@@ -153,7 +153,7 @@ namespace DataAnalyticsPlatform.Actors.Worker
                         Console.WriteLine("checking jobs");
                         if (j.ReaderConfiguration != null)
                         {
-                            Console.WriteLine((((JobDone)x).FileId.ToString() + " " + j.ReaderConfiguration.SourcePathId.ToString());
+                            Console.WriteLine(((JobDone)x).FileId.ToString() + " " + j.ReaderConfiguration.SourcePathId.ToString());
                             if (((JobDone)x).FileId == j.ReaderConfiguration.SourcePathId)
                             {
                                 SendAttempt(x, j);
