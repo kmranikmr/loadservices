@@ -39,7 +39,8 @@ namespace DataAnalyticsPlatform.Actors.Worker
         public event EventHandler<JobDone> JobComplete;
         public delegate void MyEventHandler(object sender, int e);
         public string _connectionString { get; set; }
-        public IngestionJob ingestionJob { get; set; }
+        //public IngestionJob ingestionJob { get; set; }
+        public List<IngestionJob> ingestionJob { get; set; }
         //private async void backgroundWorker1_DoWork(int jobId, int fileId)// object sender, System.ComponentModel.DoWorkEventArgs e)
         //{
         //    string connectionString = @"Server = localhost\\SQLEXPRESS; Database = dap_master; Trusted_Connection = True; ";
@@ -54,7 +55,8 @@ namespace DataAnalyticsPlatform.Actors.Worker
         public void UpdateJobProcess(object sender, IngestionJob job)
         {
             Console.WriteLine("Worker Node UpdateJobProcess");
-            ingestionJob = job;
+            //ingestionJob = job;
+             ingestionJob.Add(job);
             Console.WriteLine(" job at update process " + job.ReaderConfiguration.TypeConfig.ModelInfoList[0].ModelId.ToString() + " " + job.ReaderConfiguration.TypeConfig.ModelInfoList[0].ModelName );
             string connectionString = job.ControlTableConnectionString;//"Server = localhost\\SQLEXPRESS; Database = dap_master; Trusted_Connection = True; ";// @"Server = dapdb.cqzm7ymwpoc8.us-east-1.rds.amazonaws.com; Database = dap_master; User Id = admin; Password = dapdata123";//// @"Server = localhost\\SQLEXPRESS; Database = dap_master; Trusted_Connection = True; ";
             _connectionString = connectionString;
@@ -79,6 +81,7 @@ namespace DataAnalyticsPlatform.Actors.Worker
         }
         public WorkerNode(int maxNumberofConcurretWorker)
         {
+            ingestionJob = new List<IngestionJob>();
             _maxNumberofConcurretWorker = maxNumberofConcurretWorker;
             JobProcess += UpdateJobProcess;
             JobComplete += UpdateJobComplete;
@@ -141,7 +144,24 @@ namespace DataAnalyticsPlatform.Actors.Worker
 
                 if (ingestionJob != null)//lets take th eingetsio njob and send the info to datsaervice for projecttrigger
                 {
-                    SendAttempt(x);
+                    //SendAttempt(x);
+                    
+                
+                    Console.WriteLine("IngestionJob Check");
+                    foreach ( var j in ingestionJob)
+                    {
+                        Console.WriteLine("checking jobs");
+                        if (j.ReaderConfiguration != null)
+                        {
+                            Console.WriteLine((((JobDone)x).FileId.ToString() + " " + j.ReaderConfiguration.SourcePathId.ToString());
+                            if (((JobDone)x).FileId == j.ReaderConfiguration.SourcePathId)
+                            {
+                                SendAttempt(x, j);
+                                ingestionJob.Remove(j);
+                            }
+                        }
+                    }
+                
                 }
                 Console.WriteLine(" Worker Node before Master Done");
             });
@@ -155,24 +175,24 @@ namespace DataAnalyticsPlatform.Actors.Worker
             });
         }
 
-        public async void SendAttempt(JobDone  x)
+        public async void SendAttempt(JobDone  x,  IngestionJob ij))
         {
-            if (ingestionJob.JobId == x.JobId)
+            if (ij.JobId == x.JobId)
             {
-                if (ingestionJob.ReaderConfiguration.TypeConfig != null)
+                if (ij.ReaderConfiguration.TypeConfig != null)
                 {
-                    if (ingestionJob.ReaderConfiguration.TypeConfig.ModelInfoList != null)
+                    if (ij.ReaderConfiguration.TypeConfig.ModelInfoList != null)
                     {
-                        string url = $"http://ec2basedservicealb-760561316.us-east-1.elb.amazonaws.com:6002/api/workflowattempts/projectrigger/{ingestionJob.ReaderConfiguration.ProjectId}";
+                        string url = $"http://ec2basedservicealb-760561316.us-east-1.elb.amazonaws.com:6002/api/workflowattempts/projectrigger/{ij.ReaderConfiguration.ProjectId}";
                         var client = new RestClient(url);
-                        foreach (var model in ingestionJob.ReaderConfiguration.TypeConfig.ModelInfoList)
+                        foreach (var model in ij.ReaderConfiguration.TypeConfig.ModelInfoList)
                         {
                             IngestedData modeData = new IngestedData
                             {
-                                UserId = ingestionJob.UserId,
+                                UserId = ij.UserId,
                                 ModelId = model.ModelId,
-                                SchemaId = ingestionJob.ReaderConfiguration.TypeConfig.SchemaId,
-                                ProjectId = ingestionJob.ReaderConfiguration.ProjectId,
+                                SchemaId = ij.ReaderConfiguration.TypeConfig.SchemaId,
+                                ProjectId = ij.ReaderConfiguration.ProjectId,
                                 jobId = x.JobId
                             };
 
