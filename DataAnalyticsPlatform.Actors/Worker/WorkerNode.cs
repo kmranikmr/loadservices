@@ -175,7 +175,7 @@ namespace DataAnalyticsPlatform.Actors.Worker
             });
         }
 
-        public async void SendAttempt(JobDone  x,  IngestionJob ij))
+        public async void SendAttempt(JobDone  x,  IngestionJob ij)
         {
             if (ij.JobId == x.JobId)
             {
