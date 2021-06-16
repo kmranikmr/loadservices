@@ -55,6 +55,7 @@ namespace DataAnalyticsPlatform.Actors.Worker
         {
             Console.WriteLine("Worker Node UpdateJobProcess");
             ingestionJob = job;
+            Console.WriteLine(" job at update process " + job.ReaderConfiguration.TypeConfig.ModelInfoList[0].ModelId.ToString() + " " + job.ReaderConfiguration.TypeConfig.ModelInfoList[0].ModelName );
             string connectionString = job.ControlTableConnectionString;//"Server = localhost\\SQLEXPRESS; Database = dap_master; Trusted_Connection = True; ";// @"Server = dapdb.cqzm7ymwpoc8.us-east-1.rds.amazonaws.com; Database = dap_master; User Id = admin; Password = dapdata123";//// @"Server = localhost\\SQLEXPRESS; Database = dap_master; Trusted_Connection = True; ";
             _connectionString = connectionString;
             var options = SqlServerDbContextOptionsExtensions.UseSqlServer(new DbContextOptionsBuilder<DAPDbContext>(), connectionString).Options;
@@ -66,11 +67,12 @@ namespace DataAnalyticsPlatform.Actors.Worker
 
         public async void UpdateJobComplete(object sender, JobDone job)
         {
-            Console.WriteLine("Worker Node UpdateJobComplete");
+            Console.WriteLine("Worker Node UpdateJobComplete " + job.FileId);
             string connectionString = _connectionString;//@"Server = localhost\\SQLEXPRESS; Database = dap_master; Trusted_Connection = True; ";// "Server = dapdb.cqzm7ymwpoc8.us-east-1.rds.amazonaws.com; Database = dap_master; User Id = admin; Password = dapdata123"; //@"Server = localhost\\SQLEXPRESS; Database = dap_master; Trusted_Connection = True; ";
             var options = SqlServerDbContextOptionsExtensions.UseSqlServer(new DbContextOptionsBuilder<DAPDbContext>(), connectionString).Options;
             var dbContext = new DAPDbContext(options);
             _repo = new Repository(dbContext, null);
+             
             var x = _repo.UpdateJobStatusSync(job.JobId, 3, job.FileId);
             var y = _repo.UpdateJobEnd(job.JobId, job.FileId);
             
