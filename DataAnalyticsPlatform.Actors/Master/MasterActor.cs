@@ -132,7 +132,7 @@ namespace DataAnalyticsPlatform.Actors.Master
                 if (_numberOfRunningJob < MaxNummberOfParallerJob)
                 {
                     var job = _jobs.Dequeue();
-
+                    Console.WriteLine(" Model at dequeue " + job.ReaderConfiguration.TypeConfig.ModelInfoList[0].ModelId.ToString() + " " +job.ReaderConfiguration.TypeConfig.ModelInfoList[0].ModelName );  
                     //_workerActors.Tell(job);
                     if (MasterRouterActor != null )
                     {
