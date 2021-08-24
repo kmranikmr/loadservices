@@ -6,6 +6,7 @@ using DataAnalyticsPlatform.Shared.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 
 namespace DataAnalyticsPlatform.Actors.Processors
 {
@@ -93,7 +94,7 @@ namespace DataAnalyticsPlatform.Actors.Processors
 
                 if (result)
                 {
-                    record.FileName = Path.GetFileName(ingestionJob.ReaderConfiguration.SourcePath);
+                    record.FileName = Path.GetFileName(_ingestionJob.ReaderConfiguration.SourcePath);
                     //send result to sender
                     Sender.Tell(record);
                 }
