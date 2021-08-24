@@ -11,5 +11,7 @@ namespace DataAnalyticsPlatform.Shared.Interfaces
         long RecordId { get; set; }
         long FileId { get; set; }
         //Entity Instance { get; set; }
+
+        string FileName{get;set;}
     }
 }
