@@ -11,6 +11,7 @@ namespace DataAnalyticsPlatform.Shared.Models
         public object Instance { get; set; }//public Entity Instance { get; set; }//
         public long RecordId { get; set; }
         public long FileId { get; set; }
+        public string FileName { get; set; }
         public SingleRecord(object instance)
         {
             Instance = instance;// (Entity)instance;
