@@ -93,6 +93,7 @@ namespace DataAnalyticsPlatform.Actors.Processors
 
                 if (result)
                 {
+                    record.FileName = Path.GetFileName(ingestionJob.ReaderConfiguration.SourcePath);
                     //send result to sender
                     Sender.Tell(record);
                 }
