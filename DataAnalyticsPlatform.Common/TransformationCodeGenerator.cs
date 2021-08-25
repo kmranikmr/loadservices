@@ -269,7 +269,7 @@ namespace DataAnalyticsPlatform.Common
             }
             return name;
         }
-        public List<Type> Code(TypeConfig typeConfig, int jobid = 0)
+        public List<Type> Code(TypeConfig typeConfig, int jobid = 0,  string Filename = "")
         {
             List<string> classNames = new List<string>();
             string code = "";
@@ -297,6 +297,7 @@ namespace DataAnalyticsPlatform.Common
             }
             f += "public int fileid{get;set;}\n";
             f += "public long sessionid{get;set;}\n";
+             f += "public string FileName{get;set;}\n";
             f += "}\n";
             code = f;
             foreach (ModelInfo modelInfo in typeConfig.ModelInfoList)
@@ -334,6 +335,7 @@ namespace DataAnalyticsPlatform.Common
                 }
                 f += "public int fileid{get;set;}\n";
                 f += "public long sessionid{get;set;}\n";
+                  f += "public string FileName{get;set;}\n";
                 f += "}\n";
                 //f += "}\n";
                 code += f;
@@ -457,6 +459,7 @@ namespace DataAnalyticsPlatform.Common
                 {
                     memberMethodMap.Statements.Add(new CodeSnippetStatement(ModelNameTrim + "." + "rowid" + "=" + "rowid" + ";"));
                     memberMethodMap.Statements.Add(new CodeSnippetStatement(ModelNameTrim + "." + "sessionid" + "=" + jobid + ";"));
+                    memberMethodMap.Statements.Add(new CodeSnippetStatement(ModelNameTrim + "." + "FileName" + "=" + Filename + ";"));
                     memberMethodValues.Statements.Add(new CodeSnippetStatement(","));
                     memberMethodProps.Statements.Add(new CodeSnippetStatement(","));
                     memberMethodValues.Statements.Add(new CodeSnippetStatement($"{ModelNameTrim}.rowid "));
@@ -465,7 +468,10 @@ namespace DataAnalyticsPlatform.Common
                     memberMethodProps.Statements.Add(new CodeSnippetStatement(","));
                     memberMethodValues.Statements.Add(new CodeSnippetStatement($"{ModelNameTrim}.sessionid "));
                     memberMethodProps.Statements.Add(new CodeSnippetStatement($"\"sessionid\""));
-               
+                    memberMethodValues.Statements.Add(new CodeSnippetStatement(","));
+                    memberMethodProps.Statements.Add(new CodeSnippetStatement(","));
+                    memberMethodValues.Statements.Add(new CodeSnippetStatement($"{ModelNameTrim}.FileName "));
+                    memberMethodProps.Statements.Add(new CodeSnippetStatement($"\"FileName\""));               
 
                 }
                 memberMethodValues.Statements.Add(new CodeSnippetStatement("}.ToArray();"));
