@@ -64,7 +64,7 @@ namespace DataAnalyticsPlatform.Actors.Worker
                     TransformationCodeGenerator codegen = new TransformationCodeGenerator();
                     if (x.ReaderConfiguration.SourcePath.EndsWith(".csv"))
                     {
-                        types = codegen.Code(x.ReaderConfiguration.TypeConfig, x.JobId);
+                        types = codegen.Code(x.ReaderConfiguration.TypeConfig, x.JobId,  Path.GetFileName(x.ReaderConfiguration.SourcePath));
                     }
                     else if (x.ReaderConfiguration.SourcePath.EndsWith(".json"))
                     {
