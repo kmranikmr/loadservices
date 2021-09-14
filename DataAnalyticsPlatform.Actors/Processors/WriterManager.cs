@@ -60,7 +60,7 @@ namespace DataAnalyticsPlatform.Actors.Processors
                     _writer = Writers.Factory.GetWriter(writerConf);
                     _writer.SchemaName = _schemaName != string.Empty ? _schemaName : "public";
                     //_writer.CreateTables((List<BaseModel>)null, "", "", "");
-                    _coordinatorActor.Tell(new CreateSchemaPostgres(_writer.SchemaName, writerConf.ConnectionString));
+                   // _coordinatorActor.Tell(new CreateSchemaPostgres(_writer.SchemaName, writerConf.ConnectionString));
                 }
             }
             TablesCreated = new Dictionary<string, bool>();
