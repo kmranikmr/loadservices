@@ -27,6 +27,29 @@ namespace DataAnalyticsPlatform.Actors.Master
             this.previewRegsitry = provider.previewRegistry;
             this.LoadActor = provider.Get();
         }
+        public bool CreateSchema(string connectionString, string schemaName)
+        {
+             using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+                {
+                   try
+                    {
+                    connection.Open();
+
+                    using (NpgsqlCommand command = connection.CreateCommand())
+                    {
+                        command.CommandText = string.Format("create schema if not exists " + schemaName);
+
+                        command.ExecuteNonQuery();
+
+                    }
+                   }catch(Exception ex)
+                   {
+
+                   }
+                }
+
+        }
+
 
         public async Task<int> Execute(int userId, string FileName, List<TypeConfig> typeConfigList, int FileId = 1, int jobId = 1, string configuration = "", int projectId = -1, string connectionString = "", string postgresConnString = "", DataAccess.Models.Writer[] writers = null, string elasticSearchString = "")
         {
@@ -62,7 +85,10 @@ namespace DataAnalyticsPlatform.Actors.Master
                         else
                         {
                             writerTest = new Writers.WriterConfiguration(Shared.Types.DestinationType.RDBMS, connectionString: postgresConnString, ModelMap: null);
-                            
+                            var _schemaName = conf.TypeConfig.SchemaName.Replace(" ", string.Empty);
+                            _schemaName = conf.ProjectId != -1 ? _schemaName + "_" + conf.ProjectId +"_"+ userId: _schemaName;
+                            CreateSchema(postgresConnString, _schemaName);
+                             
                             //Search Path=public;/Server =localhost; User Id = dev; Password = nwdidb19; Database = nwdi_ts; Port=5433;CommandTimeout=0
                         }
                         if (projectId != -1)
