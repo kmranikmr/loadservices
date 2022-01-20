@@ -96,10 +96,23 @@ namespace DataAnalyticsPlatform.Shared
             return code;
         }
 
-
+        public List<string> skip10Lines(string path)
+        { 
+           int count=0;
+           List<string> lines=new List<string>();
+           foreach(var line in File.ReadLines(path))
+           {
+              if(count==10)
+                 break;
+              lines.Add(line);
+             count++;
+           }
+           return lines;
+        }
         public List<FieldInfo> GetAllFields(string filePath, ref string className, string delimiter = ",", string classAttribute = "", string propertyAttribute = "", CsvReaderConfiguration csvReaderConfiguration= null)
         {
-
+            try
+            {
             List<FieldInfo> listOfFieldInfo = new List<FieldInfo>();
 
             char _delimiter = ',';
@@ -112,10 +125,18 @@ namespace DataAnalyticsPlatform.Shared
                 _delimiter = delimiter.ToCharArray()[0];
             }
             // char _delimiter = delimiter.ToCharArray()[0];
-            List<string> lines = (List<string>)File.ReadLines(filePath).Skip((int)csvReaderConfiguration?.skipLines).Take(10).ToList();
+            if ( File.Exists(filePath) )
+            {
+                 long length = new System.IO.FileInfo(filePath).Length;
+                 Console.WriteLine(filePath + "exists " + " "  + length + " " +(int)csvReaderConfiguration?.skipLines);
+            }
+            
+            List<string> lines = skip10Lines(filePath);//(List<string>)File.ReadLines(filePath).Skip((int)csvReaderConfiguration?.skipLines).Take(10).ToList();
+            if ( lines == null ) { Console.WriteLine("null lines");}
+            Console.WriteLine(lines.Count);
             string[] columnNames = lines.First().Split(_delimiter).Select(str => str.Trim()).ToArray();
             string[] data = lines.Skip(1).ToArray();
-
+            Console.WriteLine("COlumnNames Length " + columnNames.Length);
             for (int columnIndex = 0; columnIndex < columnNames.Length; columnIndex++)
             {
                 var col = columnNames[columnIndex];
@@ -146,10 +167,15 @@ namespace DataAnalyticsPlatform.Shared
                 FieldInfo fi = new FieldInfo(columnName, GetDatatype(_delimiter, data, columnIndex, columnName, propertyAttribute));
                 fi.DisplayName = displayName;
                 listOfFieldInfo.Add(fi);
+                Console.WriteLine("DisplayName "+fi.DisplayName);
             }
 
             return listOfFieldInfo;
-           
+           }catch(Exception ex)
+          {
+             Console.WriteLine(ex.Message);
+              return null;
+           }
         }
 
         public static string[] SplitCSVReg(string input)
