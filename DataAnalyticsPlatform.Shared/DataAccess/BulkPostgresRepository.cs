@@ -88,7 +88,7 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
         public void Write(List<TEntity> entities)
         {
             ImporterInfo importerInfo = null;
-
+            Console.WriteLine("_importersDictionaryByTableName " + _importersDictionaryByTableName.Count);
             if (_importersDictionaryByTableName.ContainsKey(entities[0].ModelName) == false)
             {
                 importerInfo = new ImporterInfo();
@@ -98,11 +98,12 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
                 importerInfo.Columns = GetColumns(entities[0]);
 
                 CreateTable(importerInfo.GetCreateTableStatement(_schemaName));
-
+                Console.WriteLine("_importersDictionaryByTableName name " + entities[0].ModelName);
                 _importersDictionaryByTableName.Add(importerInfo.TableName, importerInfo);
             }
             else
             {
+
                 importerInfo = _importersDictionaryByTableName[entities[0].ModelName];
             }
 
