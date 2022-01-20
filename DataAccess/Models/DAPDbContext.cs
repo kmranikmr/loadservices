@@ -530,6 +530,10 @@ namespace DataAccess.Models
                     .HasColumnName("created_on")
                     .HasDefaultValueSql("(getdate())");
 
+                entity.Property(e => e.ModelSize)
+                   .HasColumnName("model_size")
+                   .HasDefaultValueSql("((0))");
+
                 entity.Property(e => e.IsActive)
                     .IsRequired()
                     .HasColumnName("is_active")
