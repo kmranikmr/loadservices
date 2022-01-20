@@ -17,7 +17,7 @@ using DataAnalyticsPlatform.Common;
 using DataAnalyticsPlatform.Common.Twitter;
 using AutoMapper;
 using DataAnalyticsPlatform.Shared.DataAccess;
-
+using System.IO;
 //using DataAnalyticsPlatform.Common;
 //using DataAnalyticsPlatform.Actors.messages;
 
@@ -149,7 +149,7 @@ namespace DataAnalyticsPlatform.Actors
                 {
                     if (um.FileName.EndsWith(".csv"))
                     {
-                        types = codegen.Code(um.typeConfig);
+                        types = codegen.Code(um.typeConfig,0, Path.GetFileName(um.FileName));
                     }else if ( um.FileName.EndsWith(".json"))
                     {
                         types = codegen.CodeJSON(um.typeConfig);
