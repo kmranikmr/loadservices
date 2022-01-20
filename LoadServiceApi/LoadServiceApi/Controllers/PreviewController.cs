@@ -476,7 +476,7 @@ namespace LoadServiceApi
     
                             var thisSchema = projectSchema.Where(x => x.SchemaName == previewUpdate.SchemaName).FirstOrDefault();
                             //add automtaion folder
-                            var folderName = Path.Combine("AutoIngestion", "UserData_" + userId + "\\" + thisSchema.Project.ProjectName+"_"+ thisSchema.SchemaName);
+                            var folderName = Path.Combine("AutoIngestion", "UserData_" + userId , thisSchema.Project.ProjectName);//+"_"+ thisSchema.SchemaName);
 
                             var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
                             if (!Directory.Exists(pathToSave))
