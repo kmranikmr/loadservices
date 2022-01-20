@@ -7,6 +7,12 @@ services:
     build:
       context: .
       dockerfile: DataAnalyticsPlatform.Service.MasterAPI/Dockerfile
+    
+    volumes:
+      - /mnt/efs:/app/StaticFiles
+      - /mnt/efs:/app/AutoIngestion
+    environment:
+      "DOTNET_USE_POLLING_FILE_WATCHER": 1    
     ports:
       - "3551:3551"
 
@@ -25,8 +31,8 @@ services:
     ports:
       - "6003:6003"
     volumes:
-      - ~/datafile:/app/StaticFiles
-
+      - /mnt/efs:/app/StaticFiles
+      - /mnt/efs:/app/AutoIngestion
     depends_on:
       - "dataanalyticsplatform.service.masterapi"  
     environment:
@@ -43,7 +49,8 @@ services:
       context: .
       dockerfile: DataAnalyticsPlatform.Service.Worker/Dockerfile
     volumes:
-      - ~/datafile:/app/StaticFiles
+      - /mnt/efs:/app/StaticFiles
+      - /mnt/efs:/app/AutoIngestion
     environment:
       #ACTORSYSTEM: "dap-actor-system"
       # The cluster IP (bit of a misnomer, here it's the hostname) is derived from the service name (lighthouse)
@@ -55,4 +62,3 @@ services:
     depends_on:
       - "dataanalyticsplatform.service.masterapi"
 
- 
