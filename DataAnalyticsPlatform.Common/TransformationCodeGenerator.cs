@@ -459,7 +459,7 @@ namespace DataAnalyticsPlatform.Common
                 {
                     memberMethodMap.Statements.Add(new CodeSnippetStatement(ModelNameTrim + "." + "rowid" + "=" + "rowid" + ";"));
                     memberMethodMap.Statements.Add(new CodeSnippetStatement(ModelNameTrim + "." + "sessionid" + "=" + jobid + ";"));
-                    memberMethodMap.Statements.Add(new CodeSnippetStatement(ModelNameTrim + "." + "FileName" + "=" + Filename + ";"));
+                    memberMethodMap.Statements.Add(new CodeSnippetStatement(ModelNameTrim + "." + "FileName" + "=" + "\""+ Filename + "\""+ ";"));
                     memberMethodValues.Statements.Add(new CodeSnippetStatement(","));
                     memberMethodProps.Statements.Add(new CodeSnippetStatement(","));
                     memberMethodValues.Statements.Add(new CodeSnippetStatement($"{ModelNameTrim}.rowid "));
