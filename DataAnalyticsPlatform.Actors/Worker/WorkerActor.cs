@@ -8,6 +8,7 @@ using Akka.Event;
 using DataAnalyticsPlatform.Common;
 using System.Linq;
 using DataAnalyticsPlatform.Shared.Models;
+using System.IO;
 
 namespace DataAnalyticsPlatform.Actors.Worker
 {
@@ -64,6 +65,7 @@ namespace DataAnalyticsPlatform.Actors.Worker
                     TransformationCodeGenerator codegen = new TransformationCodeGenerator();
                     if (x.ReaderConfiguration.SourcePath.EndsWith(".csv"))
                     {
+                        Console.WriteLine("filename passed" + x.ReaderConfiguration.SourcePath);
                         types = codegen.Code(x.ReaderConfiguration.TypeConfig, x.JobId,  Path.GetFileName(x.ReaderConfiguration.SourcePath));
                     }
                     else if (x.ReaderConfiguration.SourcePath.EndsWith(".json"))
