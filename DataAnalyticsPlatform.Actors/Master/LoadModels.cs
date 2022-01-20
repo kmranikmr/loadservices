@@ -12,6 +12,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static DataAnalyticsPlatform.Actors.Master.MasterActor;
+using Npgsql;
+
 
 namespace DataAnalyticsPlatform.Actors.Master
 {
@@ -44,9 +46,11 @@ namespace DataAnalyticsPlatform.Actors.Master
                     }
                    }catch(Exception ex)
                    {
-
+                     return false;
                    }
+                  return true;
                 }
+            return false;
 
         }
 
