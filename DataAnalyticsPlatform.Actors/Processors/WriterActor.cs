@@ -165,15 +165,21 @@ namespace DataAnalyticsPlatform.Actors.Processors
         {
 
             var sizeMap = _writer.DataSize();
-            List<ModelSizeData> sizeData = new List<ModelSizeData>();
+            Console.WriteLine(" AroundPostStop ");
+            List <ModelSizeData> sizeData = new List<ModelSizeData>();
             foreach (var item in sizeMap)
             {
+                Console.WriteLine(" AroundPostStop " + item.Key + " " + item.Value);
                 ModelSizeData data = new ModelSizeData
                 {
                     ModelName = item.Key,
                     Size = item.Value
                 };
                 sizeData.Add(data);
+            }
+            if (sizeMap == null || sizeMap.Count == 0)
+            {
+                Console.WriteLine(" AroundPostStop sizeMap is null or 0");
             }
             _writerManager.Tell(sizeData);
             _writer.Dispose();

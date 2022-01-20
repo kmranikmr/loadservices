@@ -63,15 +63,19 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
         }
         public Dictionary<string, long?> DataSize()
         {
+            Console.WriteLine("BulkPostgresRepo : DataSize " + _connectionString + " " + _schemaName);
             using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString))
             {
                 connection.Open();
                 Dictionary<string, long?> tableSize = new Dictionary<string, long?>();
                 using (NpgsqlCommand command = connection.CreateCommand())
                 {
+                    Console.WriteLine("BulkPostgresRepo : DataSize command ");
                     foreach (var it1 in _importersDictionaryByTableName)
                     {
+                        Console.WriteLine("BulkPostgresRepo : DataSize command " + it1.Key);
                         command.CommandText = $"SELECT pg_total_relation_size('\"{_schemaName}\".\"{it1.Key}\"')";
+                        Console.WriteLine("BulkPostgresRepo : DataSize command execute" + command.CommandText);
                         var num = (long?)(int)command.ExecuteScalar();
                         tableSize.Add(it1.Key, num);
                     }
