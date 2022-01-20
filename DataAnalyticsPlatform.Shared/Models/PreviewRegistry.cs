@@ -140,18 +140,30 @@ namespace DataAnalyticsPlatform.Shared.Models
 
         public EnumSchemaDiffType CompareBaseFields(List<FieldInfo> infieldInfoList, List<FieldInfo> otherFieldInfoList)
         {
+            Console.WriteLine("CompareBaseFields ");
             if (infieldInfoList == null || otherFieldInfoList == null) return EnumSchemaDiffType.None;
             if ( infieldInfoList.Count != otherFieldInfoList.Count )
             {
+                Console.WriteLine("EnumSchemaDiffType.DiffBaseModels");
                 return EnumSchemaDiffType.DiffBaseModels;
             }
+             Console.WriteLine("checking detailed");
             bool rv = Helper.ScrambledEquals(infieldInfoList, otherFieldInfoList);
+            for ( int j = 0; j < infieldInfoList.Count; j++)
+            {
+                 Console.WriteLine(infieldInfoList[j].Name + " " + otherFieldInfoList[j].Name + " " + 
+                          infieldInfoList[j].DisplayName + " " + otherFieldInfoList[j].DisplayName);
+	    }
+
             if ((infieldInfoList.All(item => otherFieldInfoList.Contains(item)) &&
                otherFieldInfoList.All(item => infieldInfoList.Contains(item))))
             {
+                Console.WriteLine("Same Base");
                 return EnumSchemaDiffType.SameBase;
                 //same base
             }
+            Console.WriteLine("Diff Base");
+
             return EnumSchemaDiffType.DiffBaseModels;
         }
         public EnumSchemaDiffType CompareTypeConfigDetailed(TypeConfig inTypeConfig, TypeConfig otherConfig)
