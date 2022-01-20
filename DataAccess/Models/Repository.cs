@@ -126,7 +126,19 @@ namespace DataAccess.Models
         #endregion
 
         #region Schema
-
+        public SchemaModel UpdateModelSize(int userId, int modelId, int size)
+        {
+            IQueryable<SchemaModel> query = _context.SchemaModels;
+            var sm = query.Where(x => x.UserId == userId && x.ModelId == modelId).FirstOrDefault();
+            if (sm != null)
+            {
+                sm.ModelSize = size;
+                _context.Entry(sm).Property(x => x.ModelSize).IsModified = true;
+                _context.SaveChanges();
+                return sm;
+            }
+            return null;
+        }
         public async Task<ProjectSchema[]> GetSchemasAsync(int userId, int projectId, bool includeModels = false)
         {
             IQueryable<ProjectSchema> query = _context.ProjectSchemas;

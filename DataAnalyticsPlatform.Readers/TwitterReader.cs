@@ -58,10 +58,15 @@ namespace DataAnalyticsPlatform.Readers
             {
                 CredentialStore = new SingleUserInMemoryCredentialStore
                 {
-                    ConsumerKey = "lGKPJML9GIVeEgzv4RbuOhjsh",//((TwitterConfiguration)conf.ConfigurationDetails).twitterAccess.key3,
-                    ConsumerSecret = "LIKdQnpsRbBID9Jof9HgNME7Kmuynwah8vWSWhjGbI3wDNDYRQ",//((TwitterConfiguration)conf.ConfigurationDetails).twitterAccess.key4,
-                    AccessToken = "28496275-zYn9MCSpxa582fgfIPnSo2qwkfAYisRS0GZGycli4",//((TwitterConfiguration)conf.ConfigurationDetails).twitterAccess.key1,
-                    AccessTokenSecret = "BBLuEw2FmwPyaXeJrjvdsHSNyF9FKUxQ0YAixgvI6Tjs1"//((TwitterConfiguration)conf.ConfigurationDetails).twitterAccess.key2
+                    //ConsumerKey = "lGKPJML9GIVeEgzv4RbuOhjsh",//((TwitterConfiguration)conf.ConfigurationDetails).twitterAccess.key3,
+                    //ConsumerSecret = "LIKdQnpsRbBID9Jof9HgNME7Kmuynwah8vWSWhjGbI3wDNDYRQ",//((TwitterConfiguration)conf.ConfigurationDetails).twitterAccess.key4,
+                    //AccessToken = "28496275-zYn9MCSpxa582fgfIPnSo2qwkfAYisRS0GZGycli4",//((TwitterConfiguration)conf.ConfigurationDetails).twitterAccess.key1,
+                    //AccessTokenSecret = "BBLuEw2FmwPyaXeJrjvdsHSNyF9FKUxQ0YAixgvI6Tjs1"//((TwitterConfiguration)conf.ConfigurationDetails).twitterAccess.key2
+                    ConsumerKey = "i78CO6iTEuLGh8dJbgH6dma1w",//((TwitterConfiguration)conf.ConfigurationDetails).twitterAccess.key3,
+                    ConsumerSecret = "sVwVsi1seEShjIURZWNz6Ht5mEUtcszYMGyjnQp5WaJq6ZmLSp",//((TwitterConfiguration)conf.ConfigurationDetails).twitterAccess.key4,
+                    AccessToken = "28496275-ibBJKL6muFzfoWqAI4Q87U7qTc4mhBJMENWxH06H3",//((TwitterConfiguration)conf.ConfigurationDetails).twitterAccess.key1,
+                    AccessTokenSecret = "I7pg2SJhPzmxxCr8sDEUEVBeOhfhfGOUlMXLSs7F6Gjmn"//((TwitterConfiguration)conf.ConfigurationDetails).twitterAccess.key2
+
                 }
             };
             twitterContext = new TwitterContext(auth);

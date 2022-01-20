@@ -34,7 +34,7 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
 
         private string _connectionString;
 
-        private Dictionary<string, ImporterInfo> _importersDictionaryByTableName;
+        public Dictionary<string, ImporterInfo> _importersDictionaryByTableName;
 
         public BulkPostgresRepository(string connectionString, string schemaName)
         {
@@ -60,6 +60,25 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
                     command.ExecuteNonQuery();
                 }
             }
+        }
+        public Dictionary<string, long?> DataSize()
+        {
+            using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString))
+            {
+                connection.Open();
+                Dictionary<string, long?> tableSize = new Dictionary<string, long?>();
+                using (NpgsqlCommand command = connection.CreateCommand())
+                {
+                    foreach (var it1 in _importersDictionaryByTableName)
+                    {
+                        command.CommandText = $"SELECT pg_total_relation_size('\"{_schemaName}\".\"{it1.Key}\"')";
+                        var num = (long?)(int)command.ExecuteScalar();
+                        tableSize.Add(it1.Key, num);
+                    }
+                    return tableSize;
+                }
+            }
+            return null;
         }
 
         public void Write(List<TEntity> entities)

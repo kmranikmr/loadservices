@@ -7,6 +7,7 @@ using DataAnalyticsPlatform.Shared.DataModels;
 using DataAnalyticsPlatform.Shared.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace DataAnalyticsPlatform.Actors.Processors
@@ -156,6 +157,10 @@ namespace DataAnalyticsPlatform.Actors.Processors
                 //  _repo.UpdateJobEnd(_ingestionJob.JobId, _ingestionJob.ReaderConfiguration.SourcePathId);
                 //kill coordinator
                 Self.Tell(PoisonPill.Instance);
+            });
+            Receive<List<WriterActor.ModelSizeData>>(x =>
+            {
+                _masterActor.Tell(x);
             });
         }
 

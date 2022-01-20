@@ -43,6 +43,11 @@ namespace DataAnalyticsPlatform.Writers
         {
             return false;
         }
+
+        public override Dictionary<string, long?> DataSize()
+        {
+            return null;
+        }
         public override void Write(IRecord record)
         {
 

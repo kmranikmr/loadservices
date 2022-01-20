@@ -19,7 +19,7 @@ namespace DataAccess.Models
         public DateTime CreatedOn { get; set; }
         public bool? IsActive { get; set; }
         public bool IsDeleted { get; set; }
-
+        public long? ModelSize { get; set; }
         public Project Project { get; set; }
         public ProjectSchema Schema { get; set; }
         public ICollection<ModelMetadata> ModelMetadatas { get; set; }

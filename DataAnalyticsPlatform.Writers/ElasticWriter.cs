@@ -55,6 +55,10 @@ namespace DataAnalyticsPlatform.Writers
         {
            
         }
+        public override Dictionary<string, long?> DataSize()
+        {
+            return null;
+        }
         public override void Write(IRecord record)
         {
             //LogInfo(Helper.GetJson(record.Instance));

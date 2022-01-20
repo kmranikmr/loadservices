@@ -15,7 +15,11 @@ namespace DataAnalyticsPlatform.Actors.Processors
     public class WriterActor : ReceiveActor
     {
         #region Messages
-
+        public class ModelSizeData
+        {
+            public string ModelName { get; set; }
+            public long? Size { get; set; }
+        }
         public class WriteRecord
         {
             public IRecord Record { get; private set; }
@@ -55,6 +59,7 @@ namespace DataAnalyticsPlatform.Actors.Processors
         private IWriter _writer = null;
         private IWriter _elasticWriter = null;
         IngestionJob _ingestionJob;
+        private IActorRef _writerManager;
         public string _schemaName { get; set; }
 
         // public Dictionary<string, List<BaseModel>> _modelList;
@@ -103,6 +108,7 @@ namespace DataAnalyticsPlatform.Actors.Processors
             {
                 try
                 {
+                    _writerManager = Sender;
                     if (x.Record != null)
                     {
                         _writer.Write(x.Record);
@@ -157,9 +163,23 @@ namespace DataAnalyticsPlatform.Actors.Processors
         }
         public override void AroundPostStop()
         {
-            
+
+            var sizeMap = _writer.DataSize();
+            List<ModelSizeData> sizeData = new List<ModelSizeData>();
+            foreach (var item in sizeMap)
+            {
+                ModelSizeData data = new ModelSizeData
+                {
+                    ModelName = item.Key,
+                    Size = item.Value
+                };
+                sizeData.Add(data);
+            }
+            _writerManager.Tell(sizeData);
             _writer.Dispose();
-            if(_elasticWriter != null)
+
+
+            if (_elasticWriter != null)
             _elasticWriter.Dispose();
         }
         private void _writer_OnInfo(object sender, Shared.ExceptionUtils.InfoArgument e)

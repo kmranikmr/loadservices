@@ -178,6 +178,41 @@ namespace DataAnalyticsPlatform.Actors.Worker
                     _ingestionMonitorActor.Tell(x);
                 }
             });
+            Receive<List<WriterActor.ModelSizeData>>(x =>
+            {
+                Console.WriteLine("ModelSizeData");
+                foreach (var s in x)
+                {
+                    foreach (var j in ingestionJob)
+                    { 
+                        if (j.ReaderConfiguration.TypeConfig != null)
+                        {
+                            if (j.ReaderConfiguration.TypeConfig.ModelInfoList != null)
+                            {
+                                foreach (var model in j.ReaderConfiguration.TypeConfig.ModelInfoList)
+                                {
+                                    if (model.ModelName == s.ModelName)
+                                    {
+                                        Console.WriteLine("ModelSizeData " + model.ModelName);
+                                        if (ingestionJob != null)
+                                        {
+                                            Console.WriteLine("ModelSizeData Updating");
+                                            string connectionString = j.ControlTableConnectionString;//"Server = localhost\\SQLEXPRESS; Database = dap_master; Trusted_Connection = True; ";// @"Server = dapdb.cqzm7ymwpoc8.us-east-1.rds.amazonaws.com; Database = dap_master; User Id = admin; Password = dapdata123";//// @"Server = localhost\\SQLEXPRESS; Database = dap_master; Trusted_Connection = True; ";
+                                            _connectionString = connectionString;
+                                            var options = SqlServerDbContextOptionsExtensions.UseSqlServer(new DbContextOptionsBuilder<DAPDbContext>(), connectionString).Options;
+                                            var dbContext = new DAPDbContext(options, connectionString);
+                                            _repo = new Repository(dbContext, null);
+                                            Console.WriteLine("ModelSizeData Updating Call");
+                                            _repo.UpdateModelSize(j.UserId, model.ModelId, (int)s.Size);
+                                            Console.WriteLine("ModelSizeData Updating done " + s.Size + " " + model.ModelId + " " + s.ModelName);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                     }
+                }
+            });
         }
 
         public async void SendAttempt(JobDone  x,  IngestionJob ij)

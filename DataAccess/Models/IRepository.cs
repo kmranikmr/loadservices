@@ -34,6 +34,7 @@ namespace DataAccess.Models
         Task<bool> DeleteSchema(int userId, int projectId, int schemaId);
         //Jobs
         Task<Job[]> GetJobsInProject(int userId, int projectId);
+        SchemaModel UpdateModelSize(int userId, int modelId, int size);
         Task<Job[]> GetJobSummary(int projectId);
         Task<Job> GetJobAsync(int userId, int projectId);
         int GetNewJobId();

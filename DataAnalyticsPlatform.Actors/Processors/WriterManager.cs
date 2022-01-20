@@ -133,6 +133,7 @@ namespace DataAnalyticsPlatform.Actors.Processors
                 Console.WriteLine("WriterManagerDead");
                 Self.Tell(PoisonPill.Instance);
             });
+            Receive<List<ModelSizeData>>(x => { _coordinatorActor.Tell(x); });
         }
 
         //protected override SupervisorStrategy SupervisorStrategy()

@@ -23,7 +23,7 @@ namespace DataAnalyticsPlatform.Writers
         public event EventHandler<ErrorArgument> OnError;
 
         public event EventHandler<InfoArgument> OnInfo;
-
+        public abstract Dictionary<string, long?> DataSize();
         public abstract void Write(IRecord record);
         public abstract void Write(object record);
         public abstract void Write(List<object> record);

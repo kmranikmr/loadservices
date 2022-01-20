@@ -59,6 +59,11 @@ namespace DataAnalyticsPlatform.Writers
             //}
             // repository.Dispose();
         }
+
+        public override Dictionary<string, long?> DataSize()
+        {
+            return repository.DataSize();
+        }
         public override void Write(object record)
         {
             if (record is IEnumerable)

@@ -37,7 +37,10 @@ namespace DataAnalyticsPlatform.Writers
 
            
         }
-
+        public override Dictionary<string, long?> DataSize()
+        {
+            return null;
+        }
         public override bool CreateTables(List<BaseModel> model, string db, string schema, string table)
         {
             return false;

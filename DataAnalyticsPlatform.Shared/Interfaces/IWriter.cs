@@ -20,5 +20,6 @@ namespace DataAnalyticsPlatform.Shared.Interfaces
         event EventHandler<ErrorArgument> OnError;
 
         event EventHandler<InfoArgument> OnInfo;
+        Dictionary<string, long?> DataSize();
     }
 }
