@@ -164,9 +164,11 @@ namespace DataAnalyticsPlatform.Actors.Processors
         public override void AroundPostStop()
         {
 
+          
+            _writer.Dispose();
             var sizeMap = _writer.DataSize();
             Console.WriteLine(" AroundPostStop ");
-            List <ModelSizeData> sizeData = new List<ModelSizeData>();
+            List<ModelSizeData> sizeData = new List<ModelSizeData>();
             foreach (var item in sizeMap)
             {
                 Console.WriteLine(" AroundPostStop " + item.Key + " " + item.Value);
@@ -182,8 +184,6 @@ namespace DataAnalyticsPlatform.Actors.Processors
                 Console.WriteLine(" AroundPostStop sizeMap is null or 0");
             }
             _writerManager.Tell(sizeData);
-            _writer.Dispose();
-
 
             if (_elasticWriter != null)
             _elasticWriter.Dispose();
