@@ -76,8 +76,17 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
                         Console.WriteLine("BulkPostgresRepo : DataSize command " + it1.Key);
                         command.CommandText = $"SELECT pg_total_relation_size('{_schemaName}.{it1.Key}')";
                         Console.WriteLine("BulkPostgresRepo : DataSize command execute" + command.CommandText);
-                        var num = (long?)(int)command.ExecuteScalar();
-                        tableSize.Add(it1.Key, num);
+                        var num = command.ExecuteScalar();
+                        num= (num == DBNull.Value) ? null : num;
+                        if (num != null)
+                        {
+                            long? result = Convert.ToInt64(num);
+                            tableSize.Add(it1.Key, result);
+                        }
+                        else
+                        {
+                            tableSize.Add(it1.Key, null);
+                        }
                     }
                     return tableSize;
                 }
