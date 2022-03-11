@@ -136,7 +136,7 @@ namespace DataAnalyticsPlatform.Actors.Automation
             Receive<WatchForFiles>(f =>
             {
                 Console.WriteLine(" warch for file " + f.Path);
-                IEnumerable<string> files = Directory.EnumerateFiles(f.Path, "*.*", SearchOption.AllDirectories);
+                IEnumerable<string> files = Directory.EnumerateFiles(f.Path, "*.*", SearchOption.TopDirectoryOnly);
                 foreach (string file in files)
                 {
                     if (_files.TryGetValue(file, out DateTime existingTime))
