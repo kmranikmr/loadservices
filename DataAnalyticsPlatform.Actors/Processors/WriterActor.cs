@@ -118,18 +118,22 @@ namespace DataAnalyticsPlatform.Actors.Processors
                     _writerManager = Sender;
                     if (x.Record != null)
                     {
-                        _writer.Write(x.Record);
+                        Console.WriteLine("WriterActor x.Record");
+
+                       _writer.Write(x.Record);
                         if (_elasticWriter != null)
                             _elasticWriter.Write(x.Record);
                     }
                     else if (x.Model != null)
                     {
+                        Console.WriteLine("WriterActor x.Model");
                         _writer.Write(x.Model);
                         if (_elasticWriter != null)
                             _elasticWriter.Write(x.Model);
                     }
                     else if (x.Objects != null)
                     {
+                        Console.WriteLine("WriterActor x.Objects");
                         _writer.Write(x.Objects);
                         if (_elasticWriter != null)
                             _elasticWriter.Write(x.Objects);
