@@ -77,11 +77,13 @@ namespace DataAnalyticsPlatform.Actors.Master
         public PreviewRegistry _previewRegistry;
         public string ConnectionString{get; set;}
         public string PostgresConnection { get; set; }
-        public MasterActor(PreviewRegistry registry = null, string connectionString = "", string postgresConnection = "")//: this()//, IActorRef actorRef = null
+        public string ElasticConnection { get; set; }
+        public MasterActor(PreviewRegistry registry = null, string connectionString = "", string postgresConnection = "", string elasticconnstring = "")//: this()//, IActorRef actorRef = null
         {
             _jobs = new Queue<IngestionJob>();
             ConnectionString = connectionString;
             PostgresConnection = postgresConnection;
+            ElasticConnection = elasticconnstring;
             ReceiveBlock();
           //  MasterRouterActor = actorRef;
         }
@@ -166,7 +168,7 @@ namespace DataAnalyticsPlatform.Actors.Master
                 Context.WatchWith(_workerNodes, new WorkersRouterIsDead());
 
                 _automationCoordinator = Context.ActorOf(
-                      Props.Create(() => new AutomationCoordinator(Self, ConnectionString, PostgresConnection)), AutomationCoordinator);
+                      Props.Create(() => new AutomationCoordinator(Self, ConnectionString, PostgresConnection, ElasticConnection)), AutomationCoordinator);
 
                 
             }

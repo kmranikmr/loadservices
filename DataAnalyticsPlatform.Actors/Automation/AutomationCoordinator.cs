@@ -44,6 +44,8 @@ namespace DataAnalyticsPlatform.Actors.Automation
 
         private string postgresConnection;
 
+        private string elasticConnString;
+
         private readonly ILoggingAdapter _logger = Context.GetLogger();
 
         private Repository _repository;
@@ -57,13 +59,13 @@ namespace DataAnalyticsPlatform.Actors.Automation
         public PreviewRegistry previewRegistry;
 
         public IActorRef MasterActor { get; set; }
-        public AutomationCoordinator(IActorRef masterRef, string dbConnectionString, string postgresString)
+        public AutomationCoordinator(IActorRef masterRef, string dbConnectionString, string postgresString, string elasticconnstring = "")
         {
             _connectionString = dbConnectionString;
 
             Console.WriteLine(dbConnectionString);
             MasterActor = masterRef;
-
+            elasticConnString = elasticconnstring;
             postgresConnection = postgresString;
             previewRegistry = new PreviewRegistry();
             
@@ -300,7 +302,7 @@ namespace DataAnalyticsPlatform.Actors.Automation
                     {
                        
                     
-                          await Execute(pf.UserId, fullPath, new List<TypeConfig> { retSchema }, pf.ProjectFileId, jobId, Configuration, pf.ProjectId, _connectionString, postgresConnection, writer); 
+                          await Execute(pf.UserId, fullPath, new List<TypeConfig> { retSchema }, pf.ProjectFileId, jobId, Configuration, pf.ProjectId, _connectionString, postgresConnection, writer, elasticConnString); 
                     }
                 }
             }
@@ -403,7 +405,7 @@ namespace DataAnalyticsPlatform.Actors.Automation
                         WriterConfiguration writerTest = null;
                         if (writer.WriterTypeId == 4)
                         {
-                            writerTest = new Writers.WriterConfiguration(Shared.Types.DestinationType.ElasticSearch, connectionString: "http://192.168.1.11:9200", ModelMap: null);//Search Path=public;/Server =localhost; User Id = dev; Password = nwdidb19; Database = nwdi_ts; Port=5433;CommandTimeout=0
+                            writerTest = new Writers.WriterConfiguration(Shared.Types.DestinationType.ElasticSearch, connectionString: elasticSearchString, ModelMap: null);//Search Path=public;/Server =localhost; User Id = dev; Password = nwdidb19; Database = nwdi_ts; Port=5433;CommandTimeout=0
                         }
                         else
                         {
