@@ -120,7 +120,7 @@ namespace DataAnalyticsPlatform.Actors.Processors
                     {
                         Console.WriteLine("WriterActor x.Record");
 
-                       _writer.Write(x.Record);
+                        _writer.Write(x.Record);
                         if (_elasticWriter != null)
                             _elasticWriter.Write(x.Record);
                     }
@@ -133,7 +133,7 @@ namespace DataAnalyticsPlatform.Actors.Processors
                     }
                     else if (x.Objects != null)
                     {
-                        Console.WriteLine("WriterActor x.Objects");
+                        //Console.WriteLine("WriterActor x.Objects");
                         if (_writer == null)
                         {
                             Console.WriteLine("WriterActor _writer null");
@@ -142,7 +142,7 @@ namespace DataAnalyticsPlatform.Actors.Processors
                         if (_elasticWriter != null)
                             _elasticWriter.Write(x.Objects);
                     }
-                }catch (Exception ex)
+                } catch (Exception ex)
                 {
                     throw new WriterException("Writer Error", ex, 0, Sender);
                 }
@@ -166,14 +166,18 @@ namespace DataAnalyticsPlatform.Actors.Processors
             //        //}                   
             //    }
             //});
-            Receive<ConsistentHashableEnvelope>(x=>
+            Receive<ConsistentHashableEnvelope>(x =>
                 {
                     object x1 = x.HashKey;
-            });
-            Receive<NoMoreTransformRecord>(x=>
+                });
+            Receive<NoMoreTransformRecord>(x =>
                 {
                     Console.WriteLine("NoMoreTransformRecord at WriterActor");
                     Context.Stop(Self);
+                });
+            ReceiveAny(x =>
+            {
+                Console.WriteLine("Writeractor receiveany" + x.GetType());
             });
         }
         public override void AroundPostStop()

@@ -69,11 +69,12 @@ namespace DataAnalyticsPlatform.Writers
             if (record is IEnumerable)
             {
                 var list = ((IEnumerable<BaseModel>)record);
-
+                Console.WriteLine("RDBMS bulk IEnumerable");
                 _mylist.AddRange(list);
             }
             else
             {
+                Console.WriteLine("RDBMS bulk not IEnumerable" + record.GetType());
                 _mylist.Add((BaseModel)record);
             }
             //_mylist.Add(record);
@@ -101,16 +102,18 @@ namespace DataAnalyticsPlatform.Writers
         }
         public override void Write(IRecord record)
         {
-            
+            Console.WriteLine("RDBMS bulk record no imp" + record.GetType());
         }
 
         public override void Write(List<object> record)
         {
-              
+            Console.WriteLine("RDBMS bulk List<object> record" + record.GetType());
         }
         public override void Write(List<BaseModel> record)
         {
-            repository.Write(record);
+            Console.WriteLine("RDBMS Bulkl writer List<BaseModel> ");
+
+          repository.Write(record);
 
             //throw new NotImplementedException();
         }
