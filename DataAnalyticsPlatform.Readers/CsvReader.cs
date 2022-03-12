@@ -69,6 +69,7 @@ namespace DataAnalyticsPlatform.Readers
 
         public CsvReader(ReaderConfiguration conf) : base (conf)
         {
+            Console.WriteLine("CsvReader Conf" + conf.SourcePath);
             _streamReader = new StreamReader(conf.SourcePath);
 
             FileId = Helper.GetFileId(conf.SourcePath);
@@ -77,6 +78,7 @@ namespace DataAnalyticsPlatform.Readers
 
             if ( conf.ConfigurationDetails != null )
             {
+                Console.WriteLine("CsvReader ConfigurationDetails" + conf.ConfigurationDetails.readerName);
                 csvReaderConfiguration  = (CsvReaderConfiguration)conf.ConfigurationDetails;
             }
             int skipLines = csvReaderConfiguration != null ? csvReaderConfiguration.skipLines : 0;
@@ -87,8 +89,9 @@ namespace DataAnalyticsPlatform.Readers
 
             if (conf.ModelMap != null)
             {
+                Console.WriteLine("CsvReader ModelMap is Available");
 
-              
+
                 _csvDataReader.Configuration.IgnoreBlankLines = true;
                 _csvDataReader.Configuration.PrepareHeaderForMatch = (header, index) => { var headervar = Regex.Replace(header, @"\s", string.Empty); return headervar; };
                 _csvDataReader.Configuration.HeaderValidated = null;
@@ -128,8 +131,10 @@ namespace DataAnalyticsPlatform.Readers
             bool result = false;
             try
             {
+
                 if (_csvDataReader.Read())
                 {
+                   
                     // var t1 = GetConfiguration().ModelType.GetType().UnderlyingSystemType;
                     var rec = _csvDataReader.GetRecord(GetConfiguration().ModelType);//OriginalRecord>();//(
 
@@ -141,12 +146,14 @@ namespace DataAnalyticsPlatform.Readers
                 }
                 else
                 {
+                    Console.WriteLine("Error CsvReader GetRecords Count " + _recordCount);
                     record = null;
                     Dispose();
                 }
             }
             catch(Exception ex)
             {
+                Console.WriteLine("Error CsvReader GetRecords " + ex.Message);
                 record = null;
                 //GetRecords(out record);
                 //Dispose();

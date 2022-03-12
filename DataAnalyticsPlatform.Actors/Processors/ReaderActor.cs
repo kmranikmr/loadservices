@@ -96,7 +96,10 @@ namespace DataAnalyticsPlatform.Actors.Processors
                 {
                     if (_ingestionJob != null && _ingestionJob?.ReaderConfiguration != null && _ingestionJob.ReaderConfiguration.SourcePath != null)
                     {
-                        record.FileName = Path.GetFileName(_ingestionJob?.ReaderConfiguration?.SourcePath);
+                        if (record != null)
+                        {
+                            record.FileName = Path.GetFileName(_ingestionJob?.ReaderConfiguration?.SourcePath);
+                        }
                     }
                     //send result to sender
                     Sender.Tell(record);
