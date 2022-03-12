@@ -30,7 +30,7 @@ namespace DataAnalyticsPlatform.Service.MasterAPI
 
             ConnectionString = GetAppStringSetting("DbConnectionString", null);
             PostgresString = GetAppStringSetting("Postgres", null);
-            DAPClusterSystem = ActorSystem.Create("dap-actor-system", config.BootstrapFromDocker());
+            DAPClusterSystem = ActorSystem.Create("dap-actor-system", config);//config.BootstrapFromDocker()
             SpawnMaster();
             return true;
         }
@@ -61,9 +61,11 @@ namespace DataAnalyticsPlatform.Service.MasterAPI
 
         public bool SpawnMaster()
         {
-          //  this.MasterRouter = DAPClusterSystem.ActorOf(Props.Create(() => new MasterTaskRouter()), "masterTaskRouter");//acto
-            MasterActor = DAPClusterSystem.ActorOf(Props.Create(() => new MasterActor(null,ConnectionString, PostgresString)), "masterNode");
-            
+            //  this.MasterRouter = DAPClusterSystem.ActorOf(Props.Create(() => new MasterTaskRouter()), "masterTaskRouter");//acto
+            string el = "http://idapt.duckdns.org:9200";
+            MasterActor = DAPClusterSystem.ActorOf(Props.Create(() => new MasterActor(null,ConnectionString, PostgresString,el )), "masterNode");
+
+
             return true;
         }
 
