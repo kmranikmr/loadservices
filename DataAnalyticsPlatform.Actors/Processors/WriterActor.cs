@@ -142,6 +142,10 @@ namespace DataAnalyticsPlatform.Actors.Processors
                         if (_elasticWriter != null)
                             _elasticWriter.Write(x.Objects);
                     }
+                    else
+                    {
+                        Console.WriteLine("WriterActor diff type" + x.GetType());
+                    }
                 } catch (Exception ex)
                 {
                     throw new WriterException("Writer Error", ex, 0, Sender);

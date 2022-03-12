@@ -132,11 +132,11 @@ namespace DataAnalyticsPlatform.Actors.Automation
                 pf.UserId = x.AutomationModel.CreatedBy;
                 WriteProjectFile(pf);
 
-                Thread.Sleep(5000);
+                Thread.Sleep(10000);
 
                 //is this a good time to trigger ingestion
                 CallLoadModel(pf);
-                Thread.Sleep(2000);
+                Thread.Sleep(10000);
 
             });
 
@@ -306,7 +306,7 @@ namespace DataAnalyticsPlatform.Actors.Automation
             }
         }
 
-        public async Task<int> Execute(int userId, string FileName, List<TypeConfig> typeConfigList, int FileId = 1, int jobId = 1, string configuration = "", int projectId = -1, string connectionString = "", string postgresConnString = "", DataAccess.Models.Writer[] writers = null)
+        public async Task<int> Execute(int userId, string FileName, List<TypeConfig> typeConfigList, int FileId = 1, int jobId = 1, string configuration = "", int projectId = -1, string connectionString = "", string postgresConnString = "", DataAccess.Models.Writer[] writers = null, string elasticSearchString = "")
         {
             Func<int> Function = new Func<int>(() =>
             {
@@ -342,7 +342,7 @@ namespace DataAnalyticsPlatform.Actors.Automation
                         WriterConfiguration writerTest = null;
                         if (writer.WriterTypeId == 4)
                         {
-                            writerTest = new Writers.WriterConfiguration(Shared.Types.DestinationType.ElasticSearch, connectionString: "http://192.168.1.11:9200", ModelMap: null);//Search Path=public;/Server =localhost; User Id = dev; Password = nwdidb19; Database = nwdi_ts; Port=5433;CommandTimeout=0
+                            writerTest = new Writers.WriterConfiguration(Shared.Types.DestinationType.ElasticSearch, connectionString: elasticSearchString, ModelMap: null);//Search Path=public;/Server =localhost; User Id = dev; Password = nwdidb19; Database = nwdi_ts; Port=5433;CommandTimeout=0
                         }
                         else
                         {
