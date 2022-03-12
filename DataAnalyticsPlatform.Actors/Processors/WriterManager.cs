@@ -136,6 +136,8 @@ namespace DataAnalyticsPlatform.Actors.Processors
             Receive<NoMoreTransformRecord>(x =>
             {
                 Console.WriteLine("NoMoreTransformRecord");
+                if (_writerPool == null)
+                    Console.WriteLine("WriterManager _writerPool null");
                 _writerPool.Tell(x);
             });
             //WriterManagerDead

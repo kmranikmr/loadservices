@@ -134,6 +134,10 @@ namespace DataAnalyticsPlatform.Actors.Processors
                     else if (x.Objects != null)
                     {
                         Console.WriteLine("WriterActor x.Objects");
+                        if (_writer == null)
+                        {
+                            Console.WriteLine("WriterActor _writer null");
+                        }
                         _writer.Write(x.Objects);
                         if (_elasticWriter != null)
                             _elasticWriter.Write(x.Objects);
