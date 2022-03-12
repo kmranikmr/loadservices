@@ -52,6 +52,11 @@ namespace DataAnalyticsPlatform.Actors.Processors
             _coordinatorActor = cordinatorActor;
             _schemaName = j.ReaderConfiguration.TypeConfig.SchemaName.Replace(" ", string.Empty);
             _schemaName = j.ReaderConfiguration.ProjectId != -1 ? _schemaName + "_" + j.ReaderConfiguration.ProjectId +"_"+ j.UserId: _schemaName;
+            Console.WriteLine("WriterManager _schemaName" + _schemaName);
+            if (_ingestionJob.WriterConfiguration == null )
+            {
+                Console.WriteLine("WriterManager Null WriterConfiguration");
+            }
             foreach (var writerConf in _ingestionJob.WriterConfiguration)
             {
                 if (writerConf.DestinationType != Shared.Types.DestinationType.ElasticSearch)
@@ -59,8 +64,9 @@ namespace DataAnalyticsPlatform.Actors.Processors
                     writerConf.SchemaName = _schemaName;
                     _writer = Writers.Factory.GetWriter(writerConf);
                     _writer.SchemaName = _schemaName != string.Empty ? _schemaName : "public";
+                    Console.WriteLine("WriterManager  _writer.SchemaName" + _writer.SchemaName);
                     //_writer.CreateTables((List<BaseModel>)null, "", "", "");
-                   // _coordinatorActor.Tell(new CreateSchemaPostgres(_writer.SchemaName, writerConf.ConnectionString));
+                    // _coordinatorActor.Tell(new CreateSchemaPostgres(_writer.SchemaName, writerConf.ConnectionString));
                 }
             }
             TablesCreated = new Dictionary<string, bool>();
@@ -72,7 +78,7 @@ namespace DataAnalyticsPlatform.Actors.Processors
             Receive<WriteRecord>(x =>
             {
                 _recordCount++;
-
+                Console.WriteLine("WriterManager  WriteRecord");
                 if (x.Model != null)
                {
                     Console.WriteLine("model List received");
@@ -85,10 +91,13 @@ namespace DataAnalyticsPlatform.Actors.Processors
                }
                else if (x.Objects != null)
                 {
+                    Console.WriteLine("WriterManager  Objects");
                     //var Lists = (IEnumerable<object>)x.Objects;
                     var Lists = (IEnumerable<BaseModel>)x.Objects;
 
                     var Grouped = Lists.GroupBy(y => ((BaseModel)y).ModelName);
+                    if (Grouped != null )
+                    Console.WriteLine("WriterManager  Objects Grouped Count" + Grouped.Count());
                     // foreach (IEnumerable<object> list in Grouped)
                     foreach (IEnumerable<BaseModel> list in Grouped)
                     {
@@ -107,7 +116,9 @@ namespace DataAnalyticsPlatform.Actors.Processors
                 }
                 else if(x.Record != null)
                 {
+                    Console.WriteLine("WriterManager  Record");
                     string key = _ingestionJob.ReaderConfiguration.TypeConfig.SchemaName;
+                    Console.WriteLine("WriterManager  key" + key);
                     if (!TablesCreated.TryGetValue(key, out bool truth))
                     {
                         var obj = new List<object>();

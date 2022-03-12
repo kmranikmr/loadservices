@@ -70,20 +70,27 @@ namespace DataAnalyticsPlatform.Actors.Processors
             _schemaName = j.ReaderConfiguration.TypeConfig.SchemaName.Replace(" ",string.Empty);
              
             _schemaName = j.ReaderConfiguration.ProjectId != -1 ? _schemaName + "_" + j.ReaderConfiguration.ProjectId+"_"+j.UserId : _schemaName;
-
+            Console.WriteLine("WriterActor  _schemaName" + _schemaName);
+            if (_ingestionJob.WriterConfiguration == null)
+            {
+                Console.WriteLine("WriterActor  WriterConfiguration Null");
+            }
             foreach (var writerConf in _ingestionJob.WriterConfiguration)
             {
                 if (writerConf.DestinationType != Shared.Types.DestinationType.ElasticSearch)
                 {
                     writerConf.SchemaName = _schemaName;
                     _writer = Writers.Factory.GetWriter(writerConf);
+
                     _writer.SchemaName = _schemaName != string.Empty ? _schemaName : "public";
-                  
+                    Console.WriteLine("WriterActor  WriterConfiguration _writer.SchemaName"  + _writer.SchemaName);
+
                 }
                 if (writerConf.DestinationType == Shared.Types.DestinationType.ElasticSearch)
                 {
                     _elasticWriter = Writers.Factory.GetWriter(writerConf); //new ElasticWriter("http://192.168.1.11:9200");
                     _elasticWriter.SchemaName = _schemaName;
+                    Console.WriteLine("WriterActor  WriterConfiguration    _elasticWriter.SchemaName " + _elasticWriter.SchemaName);
                 }
             }
 
