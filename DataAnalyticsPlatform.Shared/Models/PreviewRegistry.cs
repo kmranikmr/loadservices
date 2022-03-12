@@ -145,7 +145,7 @@ namespace DataAnalyticsPlatform.Shared.Models
             if ( infieldInfoList.Count != otherFieldInfoList.Count )
             {
                 Console.WriteLine("EnumSchemaDiffType.DiffBaseModels");
-                return EnumSchemaDiffType.DiffBaseModels;
+               // return EnumSchemaDiffType.DiffBaseModels;
             }
              Console.WriteLine("checking detailed");
             bool rv = Helper.ScrambledEquals(infieldInfoList, otherFieldInfoList);
