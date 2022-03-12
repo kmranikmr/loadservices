@@ -78,7 +78,7 @@ namespace DataAnalyticsPlatform.Actors.Processors
             Receive<WriteRecord>(x =>
             {
                 _recordCount++;
-                Console.WriteLine("WriterManager  WriteRecord");
+              //  Console.WriteLine("WriterManager  WriteRecord");
                 if (x.Model != null)
                {
                     Console.WriteLine("model List received");
@@ -91,13 +91,13 @@ namespace DataAnalyticsPlatform.Actors.Processors
                }
                else if (x.Objects != null)
                 {
-                    Console.WriteLine("WriterManager  Objects");
+                    //Console.WriteLine("WriterManager  Objects");
                     //var Lists = (IEnumerable<object>)x.Objects;
                     var Lists = (IEnumerable<BaseModel>)x.Objects;
 
                     var Grouped = Lists.GroupBy(y => ((BaseModel)y).ModelName);
                     if (Grouped != null )
-                    Console.WriteLine("WriterManager  Objects Grouped Count" + Grouped.Count());
+                   // Console.WriteLine("WriterManager  Objects Grouped Count" + Grouped.Count());
                     // foreach (IEnumerable<object> list in Grouped)
                     foreach (IEnumerable<BaseModel> list in Grouped)
                     {
