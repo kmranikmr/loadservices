@@ -30,7 +30,7 @@ namespace DataAnalyticsPlatform.Service.MasterAPI
 
             ConnectionString = GetAppStringSetting("DbConnectionString", null);
             PostgresString = GetAppStringSetting("Postgres", null);
-            DAPClusterSystem = ActorSystem.Create("dap-actor-system", config);//config.BootstrapFromDocker()
+            DAPClusterSystem = ActorSystem.Create("dap-actor-system", config.BootstrapFromDocker());//config.BootstrapFromDocker()
             SpawnMaster();
             return true;
         }
