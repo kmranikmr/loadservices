@@ -43,7 +43,9 @@ namespace DataAnalyticsPlatform.Writers
 
         public override Dictionary<string, long?> DataSize()
         {
-            return null;
+            Dictionary<string, long?> temp = new Dictionary<string, long?>();
+            temp.Add("dap", 1000);
+            return temp;
         }
         public override void Write(IRecord record)
         {
@@ -55,8 +57,8 @@ namespace DataAnalyticsPlatform.Writers
             if (record is IEnumerable)
             {
                 var list = ((IEnumerable<BaseModel>)record);
-                Console.WriteLine("WriteMongo ");
-                Console.WriteLine("modelname"+((BaseModel)list.ElementAt(0)).ModelName);
+              
+               
                 //_list.GetEnumerator().MoveNext();
                 string tableName = SchemaName + ((BaseModel)list.ElementAt(0)).ModelName;
                 if  (!_mylistDict.ContainsKey(tableName))
@@ -116,13 +118,17 @@ namespace DataAnalyticsPlatform.Writers
 
         public void Dump(string tableName)
         {
+            Console.WriteLine("Dump");
             _database.GetCollection<object>(tableName).InsertManyAsync(_mylistDict[tableName]);
+            Console.WriteLine("DumpDone");
             //_collection.InsertManyAsync(_mylist);
         }
         public override void Dispose()
         {
+            
             foreach (var kvp in _mylistDict)
             {
+                Console.WriteLine("Dispose" + kvp.Key);
                 if (kvp.Value.Count > 0)
                 {
                     Dump(kvp.Key);
