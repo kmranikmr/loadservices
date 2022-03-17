@@ -55,7 +55,7 @@ namespace DataAnalyticsPlatform.Actors.Master
         }
 
 
-        public async Task<int> Execute(int userId, string FileName, List<TypeConfig> typeConfigList, int FileId = 1, int jobId = 1, string configuration = "", int projectId = -1, string connectionString = "", string postgresConnString = "", DataAccess.Models.Writer[] writers = null, string elasticSearchString = "")
+        public async Task<int> Execute(int userId, string FileName, List<TypeConfig> typeConfigList, int FileId = 1, int jobId = 1, string configuration = "", int projectId = -1, string connectionString = "", string postgresConnString = "", DataAccess.Models.Writer[] writers = null, string elasticSearchString = "", string mongoDBString = "")
         {
             Func<int> Function = new Func<int>(() =>
             {
@@ -86,13 +86,18 @@ namespace DataAnalyticsPlatform.Actors.Master
                         {
                             writerTest = new Writers.WriterConfiguration(Shared.Types.DestinationType.ElasticSearch, connectionString: elasticSearchString, ModelMap: null);//Search Path=public;/Server =localhost; User Id = dev; Password = nwdidb19; Database = nwdi_ts; Port=5433;CommandTimeout=0
                         }
+                        else if (writer.WriterTypeId == 3)
+                        {
+                            //mongo 
+                            writerTest = new Writers.WriterConfiguration(Shared.Types.DestinationType.Mongo, connectionString: mongoDBString, ModelMap: null);
+                        }
                         else
                         {
                             writerTest = new Writers.WriterConfiguration(Shared.Types.DestinationType.RDBMS, connectionString: postgresConnString, ModelMap: null);
                             var _schemaName = conf.TypeConfig.SchemaName.Replace(" ", string.Empty);
-                            _schemaName = conf.ProjectId != -1 ? _schemaName + "_" + conf.ProjectId +"_"+ userId: _schemaName;
+                            _schemaName = conf.ProjectId != -1 ? _schemaName + "_" + conf.ProjectId + "_" + userId : _schemaName;
                             CreateSchema(postgresConnString, _schemaName);
-                             
+
                             //Search Path=public;/Server =localhost; User Id = dev; Password = nwdidb19; Database = nwdi_ts; Port=5433;CommandTimeout=0
                         }
                         if (projectId != -1)

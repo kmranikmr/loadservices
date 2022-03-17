@@ -22,6 +22,10 @@ namespace DataAnalyticsPlatform.Service.MasterAPI
         protected IActorRef MasterRouter;
         public string ConnectionString{get; set;}
         public string PostgresString { get; set; }
+
+        public string ElasticString { get; set; }
+
+        public string MongoString { get; set; }
         public Task WhenTerminated => DAPClusterSystem.WhenTerminated;
 
         public bool Start()
@@ -30,6 +34,8 @@ namespace DataAnalyticsPlatform.Service.MasterAPI
 
             ConnectionString = GetAppStringSetting("DbConnectionString", null);
             PostgresString = GetAppStringSetting("Postgres", null);
+            ElasticString = GetAppStringSetting("Elastic", null);
+            MongoString = GetAppStringSetting("Mongo", null);
             DAPClusterSystem = ActorSystem.Create("dap-actor-system", config.BootstrapFromDocker());//config.BootstrapFromDocker()
             SpawnMaster();
             return true;
@@ -62,8 +68,8 @@ namespace DataAnalyticsPlatform.Service.MasterAPI
         public bool SpawnMaster()
         {
             //  this.MasterRouter = DAPClusterSystem.ActorOf(Props.Create(() => new MasterTaskRouter()), "masterTaskRouter");//acto
-            string el = "http://idapt.duckdns.org:9200";
-            MasterActor = DAPClusterSystem.ActorOf(Props.Create(() => new MasterActor(null,ConnectionString, PostgresString,el )), "masterNode");
+            string el = ElasticString;// "http://idapt.duckdns.org:9200";
+            MasterActor = DAPClusterSystem.ActorOf(Props.Create(() => new MasterActor(null,ConnectionString, PostgresString,el, MongoString )), "masterNode");
 
 
             return true;

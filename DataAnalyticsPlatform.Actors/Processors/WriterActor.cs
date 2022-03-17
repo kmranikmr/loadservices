@@ -92,6 +92,15 @@ namespace DataAnalyticsPlatform.Actors.Processors
                     _elasticWriter.SchemaName = _schemaName;
                     Console.WriteLine("WriterActor  WriterConfiguration    _elasticWriter.SchemaName " + _elasticWriter.SchemaName);
                 }
+                else
+                {
+                    if (writerConf.DestinationType == Shared.Types.DestinationType.Mongo)
+                    {
+                        _elasticWriter = Writers.Factory.GetWriter(writerConf); //new ElasticWriter("http://192.168.1.11:9200");
+                        _elasticWriter.SchemaName = _schemaName;
+                        Console.WriteLine("WriterActor  WriterConfiguration    _elasticWriter.SchemaName " + _elasticWriter.SchemaName);
+                    }
+                }
             }
 
          //   _modelList = new List<object>(); //new Dictionary<string, List<BaseModel>>();

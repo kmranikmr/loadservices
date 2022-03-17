@@ -14,6 +14,7 @@ using Entity = DataAnalyticsPlatform.Shared.DataModels.Entity;
 using DataAnalyticsPlatform.SharedUtils;
 using DataAnalyticsPlatform.Common;
 using DataAnalyticsPlatform.Shared.DataAccess;
+using System.Collections;
 
 namespace DataAnalyticsPlatform.Writers
 {
@@ -25,15 +26,18 @@ namespace DataAnalyticsPlatform.Writers
         IMongoDatabase _database = null;
 
         //IMongoCollection<Entity> _collection;
-        IMongoCollection<object> _collection;
+        Dictionary<string, IMongoCollection<object>> _collection;
+
+        public Dictionary<string, List<object>> _mylistDict;
+
         public MongoWriter(string connectionString) : base(connectionString, Shared.Types.DestinationType.Mongo)
         {
             _client = new MongoClient(new MongoUrl(connectionString));
 
-            _database = _client.GetDatabase("growApp");
+            _database = _client.GetDatabase("dap");//_database.GetCollection<Entity>("table");
 
-            _collection = _database.GetCollection<object>("table");//_database.GetCollection<Entity>("table");
-
+            _collection = new Dictionary<string, IMongoCollection<object>>();
+            _mylistDict = new Dictionary<string, List<object>>();
         }
         public override bool CreateTables(List<object> model, string db, string schema, string table)
         {
@@ -51,12 +55,49 @@ namespace DataAnalyticsPlatform.Writers
         public override void Write(IRecord record)
         {
 
-            _collection.InsertOne((BaseModel)record.Instance);
+            //_collection.InsertOne((BaseModel)record.Instance);
         }
         public override void Write(object record)
         {
+            if (record is IEnumerable)
+            {
+                var _list = ((IEnumerable<BaseModel>)record);
+                _list.GetEnumerator().MoveNext();
+                string tableName = SchemaName + ((BaseModel)_list.GetEnumerator().Current).ModelName;
+                if  (!_mylistDict.ContainsKey(tableName))
+                {
+                    _mylistDict.Add(tableName, new List<object>());
+                }
+                _mylistDict[tableName].AddRange(_list);
+                
+                if (_mylistDict[tableName].Count > 100)
+                {
+                    Dump(tableName);
+                    _mylistDict[tableName].Clear();
+                }
+            }
+            else
+            {
+                string tableName = SchemaName + ((BaseModel)record).ModelName;
+                if (!_mylistDict.ContainsKey(tableName))
+                {
+                    _mylistDict.Add(tableName, new List<object>());
+                }
+                _mylistDict[tableName].Add((BaseModel)record);
+                if (_mylistDict[tableName].Count > 100)
+                {
+                    Dump(tableName);
+                    _mylistDict[tableName].Clear();
+                }
+            }
 
-            _collection.InsertOne(record);
+            //if (_mylist.Count >= 100)
+            //{
+            //    // _mylist.ForEach(x => { ((BaseModel)x).Props = null; ((BaseModel)x).Values = null; });
+            //    Dump();
+            //    _mylist.Clear();
+            //}
+            // _collection.InsertOne(record);
         }
         public override void Write(List<BaseModel> record)
         {
@@ -64,11 +105,34 @@ namespace DataAnalyticsPlatform.Writers
         }
         public override void Write(List<object> record)
         {
+            Write(record);
+            //if (!_mylistDict.ContainsKey(tableName))
+            //{
+            //}
+            //_mylist.AddRange(record);
 
-            _collection.InsertManyAsync(record);
+            //if (_mylist.Count >= 10)
+            //{
+            //    Dump();
+            //    _mylist.Clear();
+            //}
+            ///_collection.InsertManyAsync(record);
+        }
+
+        public void Dump(string tableName)
+        {
+            _database.GetCollection<object>(tableName).InsertManyAsync(_mylistDict[tableName]);
+            //_collection.InsertManyAsync(_mylist);
         }
         public override void Dispose()
         {
+            foreach (var kvp in _mylistDict)
+            {
+                if (kvp.Value.Count > 0)
+                {
+                    Dump(kvp.Key);
+                }
+            }
         }
     }
 }

@@ -44,6 +44,7 @@ namespace LoadServiceApi.Controllers
         private string _connectionString;
         private string _postgresWriter;
         private string _elasticSearch;
+        private string _mongoDBString;
         //  private LoadModels LoadModels { get; set; }
         //IHubContext<ProgressHub> progressHubContext,
         public LoadDataController( IRepository repo, IMapper mapper, LoadModels LoadModels, IOptions<ConnectionStringsConfig> optionsAccessor)//LoadModels LoadModels)
@@ -57,7 +58,8 @@ namespace LoadServiceApi.Controllers
             this.LoadModels = LoadModels;
             _connectionString = optionsAccessor.Value.DefaultConnection;
             _postgresWriter = optionsAccessor.Value.PostgresConnection;
-           _elasticSearch = optionsAccessor.Value.ElasticSearchString; 
+           _elasticSearch = optionsAccessor.Value.ElasticSearchString;
+            _mongoDBString = optionsAccessor.Value.MongoDBString;
            // this.LoadModels = LoadModels;
         }
 
@@ -184,11 +186,11 @@ namespace LoadServiceApi.Controllers
                     retSchema = await CheckSchemaAndUpdate(ProjectId, readerTypeId, fullPath, file.ProjectFileId, TypeConfigList, Configuration);
                     if (retSchema == null) continue;
                     
-                    await LoadModels.Execute(userId, fullPath, new List<TypeConfig> { retSchema }, file.ProjectFileId, jobId, Configuration, ProjectId, _connectionString, _postgresWriter, writer,_elasticSearch);
+                    await LoadModels.Execute(userId, fullPath, new List<TypeConfig> { retSchema }, file.ProjectFileId, jobId, Configuration, ProjectId, _connectionString, _postgresWriter, writer,_elasticSearch, _mongoDBString);
                 }
                 else
                 {
-                    await LoadModels.Execute(userId, fullPath, TypeConfigList, file.ProjectFileId, jobId, Configuration, ProjectId, _connectionString, _postgresWriter, writer,_elasticSearch);
+                    await LoadModels.Execute(userId, fullPath, TypeConfigList, file.ProjectFileId, jobId, Configuration, ProjectId, _connectionString, _postgresWriter, writer,_elasticSearch, _mongoDBString);
                 }
               
                 

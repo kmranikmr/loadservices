@@ -75,11 +75,13 @@ namespace WebApplication1
             var connectionString = Configuration.GetConnectionString("localDb");
             var postgresConnectionString = Configuration.GetConnectionString("postgresdb");
              var elasticSearchString = Configuration.GetConnectionString("elasticSearch");
+            var mongoDB = Configuration.GetConnectionString("mongoDB");
             services.Configure<ConnectionStringsConfig>(option => option.DefaultConnection = connectionString );
             services.Configure<ConnectionStringsConfig>(option => option.PostgresConnection = postgresConnectionString);
-            services.Configure<ConnectionStringsConfig>(option => option.ElasticSearchString = elasticSearchString); 
-         //  var repository = new PgRepository<object>(postgresConnectionString, "");
-          //  repository.CreateSchema("schema1_1014_2");
+            services.Configure<ConnectionStringsConfig>(option => option.ElasticSearchString = elasticSearchString);
+            services.Configure<ConnectionStringsConfig>(option => option.MongoDBString = mongoDB);
+            //  var repository = new PgRepository<object>(postgresConnectionString, "");
+            //  repository.CreateSchema("schema1_1014_2");
             //var connection = @"Server=(localdb)\mssqllocaldb;Database=Blogging;Trusted_Connection=True;ConnectRetryCount=0";
             services.AddDbContext<DAPDbContext>(options => options.UseSqlServer(connectionString));
             services.AddScoped<IRepository, Repository>();

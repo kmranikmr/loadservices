@@ -45,6 +45,8 @@ namespace DataAnalyticsPlatform.Actors.Automation
         private string postgresConnection;
 
         private string elasticConnString;
+        
+        private string mongoConnection;
 
         private readonly ILoggingAdapter _logger = Context.GetLogger();
 
@@ -59,7 +61,7 @@ namespace DataAnalyticsPlatform.Actors.Automation
         public PreviewRegistry previewRegistry;
 
         public IActorRef MasterActor { get; set; }
-        public AutomationCoordinator(IActorRef masterRef, string dbConnectionString, string postgresString, string elasticconnstring = "")
+        public AutomationCoordinator(IActorRef masterRef, string dbConnectionString, string postgresString, string elasticconnstring = "", string mongoconnstring = "")
         {
             _connectionString = dbConnectionString;
 
@@ -67,6 +69,7 @@ namespace DataAnalyticsPlatform.Actors.Automation
             MasterActor = masterRef;
             elasticConnString = elasticconnstring;
             postgresConnection = postgresString;
+            mongoConnection = mongoconnstring;
             previewRegistry = new PreviewRegistry();
             
             AutoAdd += AddtoProjectFile;
@@ -302,13 +305,13 @@ namespace DataAnalyticsPlatform.Actors.Automation
                     {
                        
                     
-                          await Execute(pf.UserId, fullPath, new List<TypeConfig> { retSchema }, pf.ProjectFileId, jobId, Configuration, pf.ProjectId, _connectionString, postgresConnection, writer, elasticConnString); 
+                          await Execute(pf.UserId, fullPath, new List<TypeConfig> { retSchema }, pf.ProjectFileId, jobId, Configuration, pf.ProjectId, _connectionString, postgresConnection, writer, elasticConnString, mongoConnection); 
                     }
                 }
             }
         }
 
-        public async Task<int> Execute(int userId, string FileName, List<TypeConfig> typeConfigList, int FileId = 1, int jobId = 1, string configuration = "", int projectId = -1, string connectionString = "", string postgresConnString = "", DataAccess.Models.Writer[] writers = null, string elasticSearchString = "")
+        public async Task<int> Execute(int userId, string FileName, List<TypeConfig> typeConfigList, int FileId = 1, int jobId = 1, string configuration = "", int projectId = -1, string connectionString = "", string postgresConnString = "", DataAccess.Models.Writer[] writers = null, string elasticSearchString = "", string mongoString = "")
         {
             Func<int> Function = new Func<int>(() =>
             {
@@ -345,6 +348,10 @@ namespace DataAnalyticsPlatform.Actors.Automation
                         if (writer.WriterTypeId == 4)
                         {
                             writerTest = new Writers.WriterConfiguration(Shared.Types.DestinationType.ElasticSearch, connectionString: elasticSearchString, ModelMap: null);//Search Path=public;/Server =localhost; User Id = dev; Password = nwdidb19; Database = nwdi_ts; Port=5433;CommandTimeout=0
+                        }
+                        else if (writer.WriterTypeId == 3)
+                        {
+                            writerTest = new Writers.WriterConfiguration(Shared.Types.DestinationType.Mongo, connectionString: mongoString, ModelMap: null);//Search Path=public;/Server =localhost; User Id = dev; Password = nwdidb19; Database = nwdi_ts; Port=5433;CommandTimeout=0
                         }
                         else
                         {
