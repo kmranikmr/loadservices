@@ -5,16 +5,9 @@ using DataAnalyticsPlatform.Shared.Interfaces;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using MongoDB.Bson;
-
-using DataAnalyticsPlatform.Shared.DataModels;
-//using DataAnalyticsPlatform.Common;
-using Entity = DataAnalyticsPlatform.Shared.DataModels.Entity;
-using DataAnalyticsPlatform.SharedUtils;
-using DataAnalyticsPlatform.Common;
 using DataAnalyticsPlatform.Shared.DataAccess;
 using System.Collections;
+using System.Linq;
 
 namespace DataAnalyticsPlatform.Writers
 {
@@ -61,14 +54,16 @@ namespace DataAnalyticsPlatform.Writers
         {
             if (record is IEnumerable)
             {
-                var _list = ((IEnumerable<BaseModel>)record);
-                _list.GetEnumerator().MoveNext();
-                string tableName = SchemaName + ((BaseModel)_list.GetEnumerator().Current).ModelName;
+                var list = ((IEnumerable<BaseModel>)record);
+                Console.WriteLine("WriteMongo ");
+                Console.WriteLine("modelname"+((BaseModel)list.ElementAt(0)).ModelName);
+                //_list.GetEnumerator().MoveNext();
+                string tableName = SchemaName + ((BaseModel)list.ElementAt(0)).ModelName;
                 if  (!_mylistDict.ContainsKey(tableName))
                 {
                     _mylistDict.Add(tableName, new List<object>());
                 }
-                _mylistDict[tableName].AddRange(_list);
+                _mylistDict[tableName].AddRange(list);
                 
                 if (_mylistDict[tableName].Count > 100)
                 {
