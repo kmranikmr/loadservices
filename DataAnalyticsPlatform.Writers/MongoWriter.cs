@@ -68,8 +68,9 @@ namespace DataAnalyticsPlatform.Writers
                 {
                     _database.CreateCollection(tableName, new CreateCollectionOptions
                     {
-                        Capped = true
-                      
+                        Capped = true,
+                        MaxSize = 102400,
+                        MaxDocuments = 200,
                     });
                     _mylistDict.Add(tableName, new List<object>());
                 }
