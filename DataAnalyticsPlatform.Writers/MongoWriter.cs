@@ -26,7 +26,9 @@ namespace DataAnalyticsPlatform.Writers
         public MongoWriter(string connectionString) : base(connectionString, Shared.Types.DestinationType.Mongo)
         {
             Console.WriteLine("connectionString" + connectionString);
-            _client = new MongoClient(new MongoUrl(connectionString));
+            var settings = MongoClientSettings.FromConnectionString
+                ("mongodb://deephouseio:Idap3336@cluster0-shard-00-00.aka48.mongodb.net:27017,cluster0-shard-00-01.aka48.mongodb.net:27017,cluster0-shard-00-02.aka48.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=atlas-14dq3v-shard-0&authSource=admin&retryWrites=true&w=majority");
+            _client = new MongoClient(settings);
 
             _database = _client.GetDatabase("dap");//_database.GetCollection<Entity>("table");
 
