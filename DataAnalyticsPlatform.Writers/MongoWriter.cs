@@ -27,7 +27,7 @@ namespace DataAnalyticsPlatform.Writers
         {
             Console.WriteLine("connectionString" + connectionString);
             var settings = MongoClientSettings.FromConnectionString
-                ("mongodb://deephouseio:Idap3336@cluster0-shard-00-00.aka48.mongodb.net:27017,cluster0-shard-00-01.aka48.mongodb.net:27017,cluster0-shard-00-02.aka48.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=atlas-14dq3v-shard-0&authSource=admin&retryWrites=true&w=majority");
+                ("mongodb://deephouseio:Idap3336@cluster0-shard-00-00.aka48.mongodb.net:27017,cluster0-shard-00-01.aka48.mongodb.net:27017,cluster0-shard-00-02.aka48.mongodb.net:27017/dap?ssl=true&replicaSet=atlas-14dq3v-shard-0&authSource=admin&retryWrites=true&w=majority");
             _client = new MongoClient(settings);
 
             _database = _client.GetDatabase("dap");//_database.GetCollection<Entity>("table");
@@ -66,6 +66,11 @@ namespace DataAnalyticsPlatform.Writers
                 string tableName = SchemaName + ((BaseModel)list.ElementAt(0)).ModelName;
                 if  (!_mylistDict.ContainsKey(tableName))
                 {
+                    _database.CreateCollection(tableName, new CreateCollectionOptions
+                    {
+                        Capped = true
+                      
+                    });
                     _mylistDict.Add(tableName, new List<object>());
                 }
                 _mylistDict[tableName].AddRange(list);
@@ -122,8 +127,16 @@ namespace DataAnalyticsPlatform.Writers
         public void Dump(string tableName)
         {
             Console.WriteLine("Dump" + _mylistDict[tableName].Count);
-            _database.GetCollection<object>(tableName).InsertManyAsync(_mylistDict[tableName]);
-            Console.WriteLine("DumpDone");
+            try
+            {
+                var col = _database.GetCollection<object>(tableName);
+
+                col.InsertMany(_mylistDict[tableName]);
+                Console.WriteLine("DumpDone");
+            }catch(Exception ex)
+            {
+                Console.WriteLine("DumpError" +ex.Message);
+            }
             //_collection.InsertManyAsync(_mylist);
         }
         public override void Dispose()
