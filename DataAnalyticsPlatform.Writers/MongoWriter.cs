@@ -25,6 +25,7 @@ namespace DataAnalyticsPlatform.Writers
 
         public MongoWriter(string connectionString) : base(connectionString, Shared.Types.DestinationType.Mongo)
         {
+            Console.WriteLine("connectionString" + connectionString);
             _client = new MongoClient(new MongoUrl(connectionString));
 
             _database = _client.GetDatabase("dap");//_database.GetCollection<Entity>("table");
@@ -118,7 +119,7 @@ namespace DataAnalyticsPlatform.Writers
 
         public void Dump(string tableName)
         {
-            Console.WriteLine("Dump");
+            Console.WriteLine("Dump" + _mylistDict[tableName].Count);
             _database.GetCollection<object>(tableName).InsertManyAsync(_mylistDict[tableName]);
             Console.WriteLine("DumpDone");
             //_collection.InsertManyAsync(_mylist);
