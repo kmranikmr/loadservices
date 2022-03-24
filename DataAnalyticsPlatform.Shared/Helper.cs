@@ -78,7 +78,7 @@ namespace DataAnalyticsPlatform.Shared
                     return false;
                 }
             }
-            return cnt.Values.All(c => c == 0);
+            return true;// cnt.Values.All(c => c == 0) ;
         }
 
         public static async Task<bool> IsFileReady(string filename)

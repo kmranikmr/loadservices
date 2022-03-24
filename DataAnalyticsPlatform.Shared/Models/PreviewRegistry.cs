@@ -149,14 +149,16 @@ namespace DataAnalyticsPlatform.Shared.Models
             }
              Console.WriteLine("checking detailed");
             bool rv = Helper.ScrambledEquals(infieldInfoList, otherFieldInfoList);
+            Console.WriteLine("checking detailed " + rv);
             for ( int j = 0; j < infieldInfoList.Count; j++)
             {
                  Console.WriteLine(infieldInfoList[j].Name + " " + otherFieldInfoList[j].Name + " " + 
                           infieldInfoList[j].DisplayName + " " + otherFieldInfoList[j].DisplayName);
 	    }
 
-            if ((infieldInfoList.All(item => otherFieldInfoList.Contains(item)) &&
-               otherFieldInfoList.All(item => infieldInfoList.Contains(item))))
+           // if ((infieldInfoList.All(item => otherFieldInfoList.Contains(item)) &&
+             //  otherFieldInfoList.All(item => infieldInfoList.Contains(item))))
+            if(otherFieldInfoList.All(item => infieldInfoList.Contains(item)) || rv)
             {
                 Console.WriteLine("Same Base");
                 return EnumSchemaDiffType.SameBase;

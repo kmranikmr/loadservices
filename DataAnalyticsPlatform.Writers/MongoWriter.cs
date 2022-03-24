@@ -63,17 +63,10 @@ namespace DataAnalyticsPlatform.Writers
               
                
                 //_list.GetEnumerator().MoveNext();
-                string tableName = SchemaName + ((BaseModel)list.ElementAt(0)).ModelName;
+                string tableName = SchemaName +"."+ ((BaseModel)list.ElementAt(0)).ModelName;
                 if  (!_mylistDict.ContainsKey(tableName))
                 {
-                    //if (_database.)
-                    //_database.CreateCollection(tableName, new CreateCollectionOptions
-                    //{
-                    //    Capped = true,
-                    //    MaxSize = 102400,
-                    //    MaxDocuments = 20
-                       
-                    //});
+               
                     _mylistDict.Add(tableName, new List<object>());
                 }
                 _mylistDict[tableName].AddRange(list);
@@ -86,7 +79,7 @@ namespace DataAnalyticsPlatform.Writers
             }
             else
             {
-                string tableName = SchemaName + ((BaseModel)record).ModelName;
+                string tableName = SchemaName +"."+ ((BaseModel)record).ModelName;
                 if (!_mylistDict.ContainsKey(tableName))
                 {
                     _mylistDict.Add(tableName, new List<object>());
