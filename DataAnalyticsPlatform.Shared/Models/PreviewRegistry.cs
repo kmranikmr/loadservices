@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using Newtonsoft.Json;
+using System.Collections;
 
 namespace DataAnalyticsPlatform.Shared.Models
 {
@@ -137,6 +138,48 @@ namespace DataAnalyticsPlatform.Shared.Models
             DiffBaseModels
 
         }
+        public class FieldInfoComparer : IEqualityComparer<FieldInfo>
+        {
+            //public int Compare(FieldInfo x, FieldInfo y)
+            //{
+            //    if (x == null)
+            //    {
+            //        if (y == null)
+            //        {
+            //            return 0;
+            //        }
+            //        else
+            //        {
+            //            return -1;
+            //        }
+            //    }
+            //    else
+            //    {
+            //        if (y == null)
+            //        {
+            //            return 1;
+            //        }
+            //        else
+            //        {
+            //            int retVal = x.Name.CompareTo(y.Name);
+
+            //            return retVal;
+            //        }
+            //    }
+            //}
+
+            public bool Equals(FieldInfo x, FieldInfo y)
+            {
+                return x.Name.ToLower() == y.Name.ToLower();
+                //throw new NotImplementedException();
+            }
+
+            public int GetHashCode(FieldInfo obj)
+            {
+                return 0;
+                //throw new NotImplementedException();
+            }
+        }
 
         public EnumSchemaDiffType CompareBaseFields(List<FieldInfo> infieldInfoList, List<FieldInfo> otherFieldInfoList)
         {
@@ -149,7 +192,7 @@ namespace DataAnalyticsPlatform.Shared.Models
             }
              Console.WriteLine("checking detailed");
             bool rv = Helper.ScrambledEquals(infieldInfoList, otherFieldInfoList);
-            Console.WriteLine("checking detailed " + rv);
+            Console.WriteLine("checking detailed " + rv); 
             for ( int j = 0; j < infieldInfoList.Count; j++)
             {
                  Console.WriteLine(infieldInfoList[j].Name + " " + otherFieldInfoList[j].Name + " " + 
@@ -158,8 +201,8 @@ namespace DataAnalyticsPlatform.Shared.Models
 
             // if ((infieldInfoList.All(item => otherFieldInfoList.Contains(item)) &&
             //  otherFieldInfoList.All(item => infieldInfoList.Contains(item))))
-            var intersected = otherFieldInfoList.Intersect(infieldInfoList);
-            if (intersected.Count() == otherFieldInfoList.Count)//otherFieldInfoList.All(item => infieldInfoList.Contains(item)) || rv)
+            var intersected = otherFieldInfoList.Intersect(infieldInfoList, new FieldInfoComparer());
+            if (intersected.Count() == otherFieldInfoList.Count || rv)//otherFieldInfoList.All(item => infieldInfoList.Contains(item)) || rv)
             {
                 Console.WriteLine("Same Base");
                 return EnumSchemaDiffType.SameBase;
