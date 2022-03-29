@@ -210,6 +210,7 @@ namespace LoadServiceApi
                             EnumCompare == PreviewRegistry.EnumSchemaDiffType.SameModelsBase)
                         {
                             //same schema
+                            Console.WriteLine("SAme schema detailedconfigcheck");
                             newSchema = false;
 
 
@@ -224,11 +225,13 @@ namespace LoadServiceApi
                             if (EnumCompare != PreviewRegistry.EnumSchemaDiffType.SameBase &&
                             EnumCompare != PreviewRegistry.EnumSchemaDiffType.SameModelsBase)
                             {
+                                Console.WriteLine("DIFF! schema detailedconfigcheck");
                                 retConfig.Add(oneTypeconfig);
                             }
                         }
                         else
                         {
+                            Console.WriteLine("DIFF! schema detailedconfigcheck 2");
                             retConfig.Add(oneTypeconfig);
                         }
 

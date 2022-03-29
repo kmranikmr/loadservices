@@ -191,7 +191,7 @@ namespace DataAnalyticsPlatform.Shared.Models
                // return EnumSchemaDiffType.DiffBaseModels;
             }
              Console.WriteLine("checking detailed");
-            bool rv = Helper.ScrambledEquals(infieldInfoList, otherFieldInfoList);
+            bool rv = Helper.ScrambledEquals(infieldInfoList.Select(x=>x.Name).ToList(), otherFieldInfoList.Select(x=>x.Name).ToList());
             Console.WriteLine("checking detailed " + rv); 
             for ( int j = 0; j < infieldInfoList.Count; j++)
             {
