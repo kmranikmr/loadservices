@@ -222,13 +222,14 @@ namespace DataAnalyticsPlatform.Shared.Models
             if ((inTypeConfig.BaseClassFields.Count != otherConfig.BaseClassFields.Count)
                 || (inTypeConfig.ModelInfoList.Count > 0 && otherConfig.ModelInfoList.Count > 0  && inTypeConfig.ModelInfoList.Count != otherConfig.ModelInfoList.Count))
             {
-                return EnumSchemaDiffType.DiffBaseModels;
+                Console.WriteLine("EnumSchemaDiffType.DiffBaseModels");
+                //return EnumSchemaDiffType.DiffBaseModels;
             }
-            bool rv = Helper.ScrambledEquals(inTypeConfig.BaseClassFields, otherConfig.BaseClassFields);
+            bool rv = Helper.ScrambledEquals(inTypeConfig.BaseClassFields.Select(x => x.Name).ToList(), otherConfig.BaseClassFields.Select(x => x.Name).ToList());
             var t1 = inTypeConfig.BaseClassFields.Except(otherConfig.BaseClassFields).ToList();
             var t2 = otherConfig.BaseClassFields.Except(inTypeConfig.BaseClassFields).ToList();
             if ((inTypeConfig.BaseClassFields.All(item => otherConfig.BaseClassFields.Contains(item)) &&
-                otherConfig.BaseClassFields.All(item => inTypeConfig.BaseClassFields.Contains(item))))
+                otherConfig.BaseClassFields.All(item => inTypeConfig.BaseClassFields.Contains(item)))  || rv )
             {
                 same_base = true;
                 //same base
