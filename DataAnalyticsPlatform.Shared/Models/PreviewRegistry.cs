@@ -201,8 +201,9 @@ namespace DataAnalyticsPlatform.Shared.Models
 
             // if ((infieldInfoList.All(item => otherFieldInfoList.Contains(item)) &&
             //  otherFieldInfoList.All(item => infieldInfoList.Contains(item))))
-            var intersected = otherFieldInfoList.Intersect(infieldInfoList, new FieldInfoComparer());
-            if (intersected.Count() == otherFieldInfoList.Count || rv)//otherFieldInfoList.All(item => infieldInfoList.Contains(item)) || rv)
+            //var intersected = otherFieldInfoList.Intersect(infieldInfoList, new FieldInfoComparer());
+            //intersected.Count() == otherFieldInfoList.Count ||
+            if ( rv)//otherFieldInfoList.All(item => infieldInfoList.Contains(item)) || rv)
             {
                 Console.WriteLine("Same Base");
                 return EnumSchemaDiffType.SameBase;
