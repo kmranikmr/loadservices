@@ -193,11 +193,11 @@ namespace DataAnalyticsPlatform.Shared.Models
              Console.WriteLine("checking detailed");
             bool rv = Helper.ScrambledEquals(infieldInfoList.Select(x=>x.Name).ToList(), otherFieldInfoList.Select(x=>x.Name).ToList());
             Console.WriteLine("checking detailed " + rv); 
-            for ( int j = 0; j < infieldInfoList.Count; j++)
-            {
-                 Console.WriteLine(infieldInfoList[j].Name + " " + otherFieldInfoList[j].Name + " " + 
-                          infieldInfoList[j].DisplayName + " " + otherFieldInfoList[j].DisplayName);
-	    }
+     //       for ( int j = 0; j < infieldInfoList.Count; j++)
+     //       {
+     //            Console.WriteLine(infieldInfoList[j].Name + " " + otherFieldInfoList[j].Name + " " + 
+     //                     infieldInfoList[j].DisplayName + " " + otherFieldInfoList[j].DisplayName);
+	    //}
 
             // if ((infieldInfoList.All(item => otherFieldInfoList.Contains(item)) &&
             //  otherFieldInfoList.All(item => infieldInfoList.Contains(item))))
