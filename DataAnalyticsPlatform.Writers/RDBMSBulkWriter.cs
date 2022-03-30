@@ -69,12 +69,12 @@ namespace DataAnalyticsPlatform.Writers
             if (record is IEnumerable)
             {
                 var list = ((IEnumerable<BaseModel>)record);
-                Console.WriteLine("RDBMS bulk IEnumerable");
+               
                 _mylist.AddRange(list);
             }
             else
             {
-                Console.WriteLine("RDBMS bulk not IEnumerable" + record.GetType());
+               
                 _mylist.Add((BaseModel)record);
             }
             //_mylist.Add(record);

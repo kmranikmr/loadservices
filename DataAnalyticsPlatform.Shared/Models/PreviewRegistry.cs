@@ -225,9 +225,10 @@ namespace DataAnalyticsPlatform.Shared.Models
                 Console.WriteLine("EnumSchemaDiffType.DiffBaseModels");
                 //return EnumSchemaDiffType.DiffBaseModels;
             }
-            bool rv = Helper.ScrambledEquals(inTypeConfig.BaseClassFields.Select(x => x.Name).ToList(), otherConfig.BaseClassFields.Select(x => x.Name).ToList());
+            bool rv = Helper.ScrambledEquals(otherConfig.BaseClassFields.Select(x => x.Name).ToList(), inTypeConfig.BaseClassFields.Select(x => x.Name).ToList());
             var t1 = inTypeConfig.BaseClassFields.Except(otherConfig.BaseClassFields).ToList();
             var t2 = otherConfig.BaseClassFields.Except(inTypeConfig.BaseClassFields).ToList();
+
             if ((inTypeConfig.BaseClassFields.All(item => otherConfig.BaseClassFields.Contains(item)) &&
                 otherConfig.BaseClassFields.All(item => inTypeConfig.BaseClassFields.Contains(item)))  || rv )
             {
