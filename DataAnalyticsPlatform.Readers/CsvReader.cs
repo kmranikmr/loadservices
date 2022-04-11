@@ -100,7 +100,7 @@ namespace DataAnalyticsPlatform.Readers
                 {
                     _csvDataReader.Configuration.IgnoreQuotes = false;
                 }
-                else
+                else if (csvReaderConfiguration.quotes.Trim() == "-")
                 {
                     _csvDataReader.Configuration.IgnoreQuotes = true;
                 }
