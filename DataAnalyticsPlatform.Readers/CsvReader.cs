@@ -96,6 +96,7 @@ namespace DataAnalyticsPlatform.Readers
                 _csvDataReader.Configuration.PrepareHeaderForMatch = (header, index) => { var headervar = Regex.Replace(header, @"\s", string.Empty); return headervar; };
                 _csvDataReader.Configuration.HeaderValidated = null;
                 _csvDataReader.Configuration.MissingFieldFound = null;
+                _csvDataReader.Configuration.BadDataFound = null;
                 if (!string.IsNullOrEmpty(csvReaderConfiguration.quotes))
                 {
                     _csvDataReader.Configuration.IgnoreQuotes = false;
