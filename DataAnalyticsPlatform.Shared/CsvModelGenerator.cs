@@ -208,8 +208,16 @@ namespace DataAnalyticsPlatform.Shared
        {
             try
             {
+                string[] columnValues = null;
                 //SplitCSV(data[columnIndex]);/
-                string[] columnValues = data.Select(line => SplitCSVReg(line)[columnIndex].Trim()).ToArray();
+                if (data.Length > 300)
+                {
+                    columnValues = data;
+                }
+                else
+                {
+                    columnValues = data.Select(line => SplitCSVReg(line)[columnIndex].Trim()).ToArray();
+                }
                 // string[] columnValues = data.Select(line => line.Split(delimiter)[columnIndex].Trim()).ToArray();  //data.Select(line => line.Split(delimiter)[columnIndex].Trim()).ToArray();
                 string typeAsString;
 
