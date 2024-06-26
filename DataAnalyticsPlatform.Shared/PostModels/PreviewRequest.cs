@@ -16,7 +16,7 @@ namespace DataAnalyticsPlatform.Shared.PostModels
         public string SchemaName { get; set; }
         public string FileName { get; set; }
         public TypeConfig updatedConfig { get; set; }
-
+        public int[] FileId { get; set; }
         public PreviewUpdate(string fileName, TypeConfig config)
         {
             FileName = fileName;

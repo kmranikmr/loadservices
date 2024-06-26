@@ -250,7 +250,7 @@ namespace LoadServiceApi
         }
 
         [HttpPost("{ProjectId}/{SchemaId}/{ModelId}/getpreview")]
-        public async Task<ActionResult<List<Dictionary<string, object>>>> Post(int ProjectId, int SchemaId, int ModelId)//we will make it a different incoming class with more props
+        public async Task<ActionResult<List<Dictionary<string, object>>>> Post(int ProjectId, int SchemaId, int ModelId, [FromBody] int[] FileId)//we will make it a different incoming class with more props
         {
 
             int userId = Convert.ToInt32(this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -265,20 +265,22 @@ namespace LoadServiceApi
                 TypeConfig SchemaTypeConfig = JsonConvert.DeserializeObject<TypeConfig>(schemaModels.TypeConfig);
                 Console.WriteLine("update model schema found");
                 Dictionary<string, List<BaseModel>> PreviewData = null;
-                _cache.TryGetValue("Files", out FileIdList);
-                _cache.TryGetValue("FileIds", out FileIdsUsed);
+                // _cache.TryGetValue("Files", out FileIdList);
+                // _cache.TryGetValue("FileIds", out FileIdsUsed);
+               //var files = await _repository.GetProjectFiles(ProjectId, FileId);
                 var schemaModel = schemaModels.SchemaModels.Where(x => x.ModelId == ModelId).FirstOrDefault();
                 Console.WriteLine("update model schemamodel");
-                if (FileIdList == null)
-                {
-                    Console.WriteLine("NullFieleid");
-                    return null;
-                }
+                
                 int fileIndex = 0;
                 ProjectFile[] projFiles;
                 // if (FileIdsUsed.Count < fileIndex)
                 {
-                    projFiles = await _repository.GetProjectFiles(ProjectId, FileIdsUsed.ToArray());
+                    projFiles = await _repository.GetProjectFiles(ProjectId, FileId);
+                    if (projFiles == null)//FileIdList == null)
+                    {
+                        Console.WriteLine("NullFieleid");
+                        return null;
+                    }
                 }
                 string fullPath = "";
                 foreach (var file in projFiles)
@@ -421,9 +423,14 @@ namespace LoadServiceApi
                     mod.UserId = userId;
                 }
                 ProjectSchema MatchedSchema = null;
+                int[] FileId = previewUpdate.FileId;
                 if (existingProject != null)
                 {
-                    _cache.TryGetValue("FileIds", out FileIdsUsed);
+                   // _cache.TryGetValue("FileIds", out FileIdsUsed);
+                     foreach(var fid in FileId)
+                    {
+                        FileIdsUsed.Add(fid);
+                    }
                     System.Console.WriteLine("exiting project");
                     var projectSchema = await _repository.GetSchemasAsync(userId, ProjectId, true);
                     PreviewRegistry.EnumSchemaDiffType diffType = PreviewRegistry.EnumSchemaDiffType.None;
