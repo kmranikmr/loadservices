@@ -1,15 +1,13 @@
-﻿using CsvHelper.Configuration;
-using DataAnalyticsPlatform.Shared;
+﻿using DataAnalyticsPlatform.Shared;
 using DataAnalyticsPlatform.Shared.Interfaces;
 using DataAnalyticsPlatform.Shared.Models;
 using DataAnalyticsPlatform.Shared.Types;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace DataAnalyticsPlatform.Readers
 {
-    
+
     public class ReaderConfiguration : IConfiguration
     {
         public Type ModelType { get; set; }
@@ -31,7 +29,7 @@ namespace DataAnalyticsPlatform.Readers
         {
         }
 
-        public ReaderConfiguration(Type modelType, Type modelMap, string sourcePath, SourceType type,  int fileId = 1)
+        public ReaderConfiguration(Type modelType, Type modelMap, string sourcePath, SourceType type, int fileId = 1)
         {
             ModelType = modelType;
             ModelMap = modelMap;

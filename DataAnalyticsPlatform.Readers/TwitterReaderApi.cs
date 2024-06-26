@@ -6,7 +6,6 @@ using LinqToTwitter;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
 
 namespace DataAnalyticsPlatform.Readers
 {
@@ -24,10 +23,10 @@ namespace DataAnalyticsPlatform.Readers
             twitConf = (TwitterConfiguration)conf.ConfigurationDetails;
             twitCollection = new List<object>();
             sinceID = 1;
-           
+
             List body = new List();
 
-           // body.Add(new DataParameter("consumerKey", "lGKPJML9GIVeEgzv4RbuOhjsh"));
+            // body.Add(new DataParameter("consumerKey", "lGKPJML9GIVeEgzv4RbuOhjsh"));
             //body.Add(new DataParameter("consumerSecret", "LIKdQnpsRbBID9Jof9HgNME7Kmuynwah8vWSWhjGbI3wDNDYRQ"));
             //  var config = new MapperConfiguration(x => { x.CreateMap <GetConfiguration().ModelType>(); })
             var auth = new SingleUserAuthorizer
@@ -42,8 +41,8 @@ namespace DataAnalyticsPlatform.Readers
             };
             twitterContext = new TwitterContext(auth);
 
-         
-            
+
+
         }
 
         public override bool GetRecords(out IRecord record)
@@ -64,6 +63,6 @@ namespace DataAnalyticsPlatform.Readers
         }
         private void Dispose()
         {
-        }   
+        }
     }
 }

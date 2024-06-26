@@ -1,5 +1,4 @@
-﻿using DataAnalyticsPlatform.Common;
-using DataAnalyticsPlatform.Shared.DataAccess;
+﻿using DataAnalyticsPlatform.Shared.DataAccess;
 using DataAnalyticsPlatform.Shared.ExceptionUtils;
 using DataAnalyticsPlatform.Shared.Interfaces;
 using DataAnalyticsPlatform.Shared.Types;

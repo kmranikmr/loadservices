@@ -1,27 +1,17 @@
-﻿using System;
+﻿using DataAnalyticsPlatform.Application.Net;
+using DataAnalyticsPlatform.Shared;
+using DataAnalyticsPlatform.Shared.Models;
+using DataAnalyticsPlatform.Shared.PostModels;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Net;
 using System.IO;
-using DataAnalyticsPlatform.Shared.Models;
-using DataAnalyticsPlatform.Shared;
-using Newtonsoft.Json;
-using DataAnalyticsPlatform.Readers;
-using DataAnalyticsPlatform.Writers;
-using DataAnalyticsPlatform.Shared.Types;
-using DataAnalyticsPlatform.Actors.Master;
-using DataAnalyticsPlatform.Actors.System;
-using DataAnalyticsPlatform.Application.Net;
-using Newtonsoft.Json.Schema;
-using DataAnalyticsPlatform.Common;
-using DataAnalyticsPlatform.Shared.PostModels;
-using Newtonsoft.Json.Linq;
+using System.Net;
+using System.Windows.Forms;
 
 namespace ApplicationNet
 {
@@ -51,25 +41,25 @@ namespace ApplicationNet
             this.lstMainObject.MouseDown += LstMainObject_MouseDown;
             this.lstMainObject.DragOver += LstMainObject_DragOver;
 
-            
+
             this.treeViewMainClass.ItemDrag += TreeViewMainClass_ItemDrag;
             this.treeViewMainClass.NodeMouseDoubleClick += TreeViewMainClass_NodeMouseDoubleClick;
 
             this.treeViewModels.NodeMouseClick += TreeViewModels_NodeMouseClick;
             this.treeViewModels.NodeMouseDoubleClick += TreeViewModels_NodeMouseDoubleClick1;
             this.treeViewModels.DragEnter += TreeViewModels_DragEnter;
-            this.treeViewModels.DragDrop += TreeViewModels_DragDrop;            
+            this.treeViewModels.DragDrop += TreeViewModels_DragDrop;
             this.treeViewModels.LabelEdit = true;
             this.treeViewModels.AfterLabelEdit += TreeViewModels_AfterLabelEdit;
             this.treeViewModels.BeforeLabelEdit += TreeViewModels_BeforeLabelEdit;
-            
-            
+
+
             lstMainObject.SelectionMode = SelectionMode.One;
 
             FillContextMenu();
-           
+
         }
-      
+
         private void TreeViewModels_NodeMouseDoubleClick1(object sender, TreeNodeMouseClickEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -116,7 +106,7 @@ namespace ApplicationNet
             {
                 _rightClickedNode = e.Node;
                 //nodeMnu.Show(treeViewModels, e.Location);
-            }          
+            }
         }
 
         private void FillContextMenu()
@@ -167,7 +157,7 @@ namespace ApplicationNet
             this.treeViewMainClass.DoDragDrop(e.Item, DragDropEffects.Move);
         }
 
-       
+
 
         private void TreeViewModels_BeforeLabelEdit(object sender, NodeLabelEditEventArgs e)
         {
@@ -179,7 +169,7 @@ namespace ApplicationNet
             {
                 e.CancelEdit = true;
                 e.Node.EndEdit(true);
-            }            
+            }
         }
 
         private void TreeViewModels_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
@@ -213,7 +203,7 @@ namespace ApplicationNet
                 e.Node.EndEdit(false);
             }
 
-           
+
 
             //throw new NotImplementedException();
         }
@@ -222,14 +212,14 @@ namespace ApplicationNet
         {
             TreeNode nodeToDropIn = this.treeViewModels.GetNodeAt(this.treeViewModels.PointToClient(new Point(e.X, e.Y)));
             if (nodeToDropIn == null) { return; }
-          
-            var obj  = e.Data.GetData(typeof(TreeNode));
+
+            var obj = e.Data.GetData(typeof(TreeNode));
 
             if (obj is TreeNode dn)
             {
                 if (dn.Nodes.Count > 1)
                 {
-                    if(MessageBox.Show("Drag with child nodes ?", "DAP", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                    if (MessageBox.Show("Drag with child nodes ?", "DAP", MessageBoxButtons.YesNo) == DialogResult.Yes)
                     {
                         AddNewNode(nodeToDropIn, dn, true);
                     }
@@ -237,7 +227,7 @@ namespace ApplicationNet
                 else
                 {
                     AddNewNode(nodeToDropIn, dn, false);
-                }              
+                }
             }
             else
             {
@@ -250,7 +240,7 @@ namespace ApplicationNet
                 nodeToDropIn.Nodes.Add(treeNode);
                 nodeToDropIn.Expand();
             }
-            
+
         }
 
         private void AddNewNode(TreeNode nodeToDropIn, TreeNode dn, bool recurse)
@@ -295,24 +285,24 @@ namespace ApplicationNet
                         {
                             _dataList[index] = frm.SelectedData;
 
-                           
+
 
                             lstMainObject.SelectedIndex = index;
                         }
-                    }                   
+                    }
                 }
             }
             else
             {
                 this.lstMainObject.DoDragDrop(lstMainObject.SelectedItem, DragDropEffects.Move);
             }
-            
+
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
 
-            
+
 
             //LoadMainObject();
 
@@ -419,7 +409,7 @@ namespace ApplicationNet
                 else
                 {
                     parentNode.Nodes.Add(node);
-                }                
+                }
             }
         }
 
@@ -427,7 +417,7 @@ namespace ApplicationNet
         {
             using (OpenFileDialog dialog = new OpenFileDialog())
             {
-                if(dialog.ShowDialog()== DialogResult.OK)
+                if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     txtSourceFile.Text = dialog.FileName;
                 }
@@ -469,7 +459,7 @@ namespace ApplicationNet
                 {
                     var result = streamReader.ReadToEnd();
 
-                    return JToken.Parse(result);                    
+                    return JToken.Parse(result);
                 }
             }
             catch (Exception ex)
@@ -503,7 +493,7 @@ namespace ApplicationNet
                 {
                     var result = streamReader.ReadToEnd();
 
-                    return JToken.Parse(result);                    
+                    return JToken.Parse(result);
                 }
             }
             catch (Exception ex)
@@ -547,7 +537,7 @@ namespace ApplicationNet
             }
         }
 
-       
+
         private void btnNewModel_Click(object sender, EventArgs e)
         {
             int index = treeViewModels.Nodes.Count;
@@ -572,7 +562,7 @@ namespace ApplicationNet
         {
             TypeConfig tc = GetTypeConfigFromUI();
 
-            var json  = JsonConvert.SerializeObject(tc, Formatting.Indented);
+            var json = JsonConvert.SerializeObject(tc, Formatting.Indented);
 
             //txtXml.Text = json;
         }
@@ -618,7 +608,7 @@ namespace ApplicationNet
         }
 
         private FieldInfo GetFieldInfo(TreeNode node, FieldInfo fi)
-        {            
+        {
             FieldInfo nf = new FieldInfo();
             nf.Name = fi.Name;
             nf.Length = fi.Length;
@@ -645,7 +635,7 @@ namespace ApplicationNet
         {
             string url = @"http://localhost:50926/api/Preview/1/updatemodel";
 
-                   
+
             var tc = GetTypeConfigFromUI();
 
             var jToken = Post(url, new PreviewUpdate(txtSourceFile.Text, tc));
@@ -726,19 +716,19 @@ namespace ApplicationNet
 
             foreach (var item in _result)
             {
-                if(index == currentIndex)
+                if (index == currentIndex)
                 {
                     //grdResult.DataSource = item.Value;
                     currentIndex = index;
                     break;
                 }
 
-                index++;                              
-            }            
+                index++;
+            }
         }
 
         private void btnNext_Click(object sender, EventArgs e)
-        {          
+        {
             LoadResult();
 
             if (currentIndex == _result.Count - 1) currentIndex = -1;
@@ -759,7 +749,7 @@ namespace ApplicationNet
         }
     }
 
-     public class PreviewUpdateResponse
+    public class PreviewUpdateResponse
     {
         public string SchemaId { get; set; }
         public Dictionary<string, List<BaseModel>> ModelsPreview { get; set; }

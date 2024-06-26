@@ -1,9 +1,5 @@
-﻿using System;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer.Infrastructure.Internal;
-using Microsoft.Extensions.Configuration;
 
 namespace DataAccess.Models
 {
@@ -51,12 +47,12 @@ namespace DataAccess.Models
         public virtual DbSet<ProjectAutomation> ProjectAutomations { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-           
+
             //if (!optionsBuilder.IsConfigured)
             {
                 optionsBuilder.UseSqlServer(_connectionString);
-///#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-            //    optionsBuilder.UseSqlServer("Server = localhost\\SQLEXPRESS; Database = dap_master; Trusted_Connection = True;");// Server = dapdb.cqzm7ymwpoc8.us-east-1.rds.amazonaws.com; Database = dap_master; User Id = admin; Password = dapdata123");// "Server = localhost\\SQLEXPRESS; Database = dap_master; Trusted_Connection = True;");
+                ///#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                //    optionsBuilder.UseSqlServer("Server = localhost\\SQLEXPRESS; Database = dap_master; Trusted_Connection = True;");// Server = dapdb.cqzm7ymwpoc8.us-east-1.rds.amazonaws.com; Database = dap_master; User Id = admin; Password = dapdata123");// "Server = localhost\\SQLEXPRESS; Database = dap_master; Trusted_Connection = True;");
             }
             //Server = localhost\\SQLEXPRESS; Database = dap_master; Trusted_Connection = True;
             //Server = dapdb.cqzm7ymwpoc8.us-east-1.rds.amazonaws.com; Database = dap_master; User Id = admin; Password = dapdata123

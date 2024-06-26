@@ -1,10 +1,7 @@
 ﻿using DataAnalyticsPlatform.Shared.ExceptionUtils;
 using DataAnalyticsPlatform.Shared.Interfaces;
-using DataAnalyticsPlatform.Shared.Types;
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Text;
 
 namespace DataAnalyticsPlatform.Readers
 {
@@ -14,10 +11,10 @@ namespace DataAnalyticsPlatform.Readers
 
         public BaseReader(ReaderConfiguration conf)
         {
-            Configuration = conf;            
+            Configuration = conf;
         }
 
-        public abstract DataTable Preview( int size);
+        public abstract DataTable Preview(int size);
         public abstract bool GetRecords(out IRecord record);
         public abstract bool GetRecords(out IRecord record, Type type);
 

@@ -1,13 +1,10 @@
 ﻿
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Akka;
 using Akka.Actor;
 using Akka.Routing;
 using DataAnalyticsPlatform.Actors.Master;
 using DataAnalyticsPlatform.Actors.System;
 using DataAnalyticsPlatform.Shared.Models;
+using System;
 
 
 namespace DataAnalyticsPlatform.Actors.Cluster
@@ -19,7 +16,7 @@ namespace DataAnalyticsPlatform.Actors.Cluster
         private ICancelable cancelTimer;
         public Notifier _notifier;
         public PreviewRegistry _previewRegistry;
-        public TaskRouterManager(Notifier notifier, PreviewRegistry previewRegistry )
+        public TaskRouterManager(Notifier notifier, PreviewRegistry previewRegistry)
         {
             _notifier = notifier;
             _previewRegistry = previewRegistry;
@@ -40,7 +37,7 @@ namespace DataAnalyticsPlatform.Actors.Cluster
                 var members = ProcessRouter.Ask<Routees>(new GetRoutees()).Result.Members;
 
 
-                if (members.GetEnumerator().MoveNext() ==false)
+                if (members.GetEnumerator().MoveNext() == false)
                 {
                     Console.WriteLine("task router  has no routees. Waiting.");
 

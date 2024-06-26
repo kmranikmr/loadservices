@@ -1,32 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
-using DataAccess.Models;
+﻿using AutoMapper;
 using DataAccess.DTO;
+using DataAccess.Models;
+using DataAnalyticsPlatform.Actors;
+using DataAnalyticsPlatform.Actors.Preview;
+using DataAnalyticsPlatform.Shared;
+using DataAnalyticsPlatform.Shared.DataAccess;
+///using LoadServiceApi.Shared.Models;
+using DataAnalyticsPlatform.Shared.Models;
+using DataAnalyticsPlatform.Shared.PostModels;
 using LoadServiceApi.Shared;
+using Microsoft.AspNetCore.Authorization;
 //using DataAnalyticsPlatform.Shared.Models;
 //using LoadServiceApi.TestData;
 using Microsoft.AspNetCore.Mvc;
-///using LoadServiceApi.Shared.Models;
-using DataAnalyticsPlatform.Shared.Models;
-using DataAnalyticsPlatform.Shared.DataAccess;
-using Newtonsoft.Json;
-
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json.Linq;
-using DataAnalyticsPlatform.Actors.Preview;
-using DataAnalyticsPlatform.Actors;
-using DataAnalyticsPlatform.Shared;
-using TypeConfig = DataAnalyticsPlatform.Shared.TypeConfig;
-using DataAnalyticsPlatform.Shared.PostModels;
-using DataAnalyticsPlatform.Common;
-using System.IO;
 using Microsoft.Extensions.Caching.Memory;
-using System.Reflection;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using TypeConfig = DataAnalyticsPlatform.Shared.TypeConfig;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -103,7 +98,7 @@ namespace LoadServiceApi
         }
 
         [HttpPost("{ProjectId}/generatemodel")]
-        public async Task<List<DataAnalyticsPlatform.Shared.TypeConfig>> GenerateModelV2(int ProjectId, [FromBody]int[] FileId)//we will make it a different incoming class with more props
+        public async Task<List<DataAnalyticsPlatform.Shared.TypeConfig>> GenerateModelV2(int ProjectId, [FromBody] int[] FileId)//we will make it a different incoming class with more props
         {
             List<DataAnalyticsPlatform.Shared.TypeConfig> result = new List<DataAnalyticsPlatform.Shared.TypeConfig>();
             List<DataAnalyticsPlatform.Shared.TypeConfig> retConfig = new List<DataAnalyticsPlatform.Shared.TypeConfig>();
@@ -111,7 +106,7 @@ namespace LoadServiceApi
             int userId = Convert.ToInt32(this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
             Console.WriteLine("User Id : " + userId);
             var files = await _repository.GetProjectFiles(ProjectId, FileId);
-            if ( files == null)
+            if (files == null)
                 Console.WriteLine("null file");
             if (files == null) return null;
             // result = await Task.FromResult(testData.GenerateModel(userId, ProjectId, FileId));
@@ -281,7 +276,7 @@ namespace LoadServiceApi
                 }
                 int fileIndex = 0;
                 ProjectFile[] projFiles;
-               // if (FileIdsUsed.Count < fileIndex)
+                // if (FileIdsUsed.Count < fileIndex)
                 {
                     projFiles = await _repository.GetProjectFiles(ProjectId, FileIdsUsed.ToArray());
                 }
@@ -307,10 +302,10 @@ namespace LoadServiceApi
                     else
                     {
                         fullPath = "twitter";
-                       // if (file.ReaderId == null)
-                          //  file.ReaderId = 2;//lets call it json for now
+                        // if (file.ReaderId == null)
+                        //  file.ReaderId = 2;//lets call it json for now
                     }
-                   // var reader = await _repository.GetReaderAsync((int)file.ReaderId);
+                    // var reader = await _repository.GetReaderAsync((int)file.ReaderId);
 
                     string Configuration = "";
 
@@ -333,14 +328,14 @@ namespace LoadServiceApi
                     //    break;
                     //}
                     fileIndex++;
-                    var Preview = await this.UpdateModel.Execute(userId, SchemaTypeConfig, fullPath , Configuration);
+                    var Preview = await this.UpdateModel.Execute(userId, SchemaTypeConfig, fullPath, Configuration);
                     Console.WriteLine("Preview Done");
-                    if (Preview == null )
+                    if (Preview == null)
                     {
                         Console.WriteLine("Preview is Null");
                         return null;
                     }
-                    var modelSelected = Preview.Item2.Where(x => x.Value.Any(y => y.ModelName == schemaModel.ModelName)).ToDictionary(x=>x.Key, x=>x.Value);//Select(x => schemaModel.Where(y => y.ModelName == x.Key) );
+                    var modelSelected = Preview.Item2.Where(x => x.Value.Any(y => y.ModelName == schemaModel.ModelName)).ToDictionary(x => x.Key, x => x.Value);//Select(x => schemaModel.Where(y => y.ModelName == x.Key) );
                     if (modelSelected == null)
                     {
                         Console.WriteLine("modelSelected is Null");
@@ -397,7 +392,7 @@ namespace LoadServiceApi
         }
 
         [HttpPost("{ProjectId}/{SchemaId}/updatemodel")]
-        public async Task<List<SchemaModelMapping>> Post(int ProjectId, int SchemaId, [FromBody]PreviewUpdate previewUpdate)//we will make it a different incoming class with more props
+        public async Task<List<SchemaModelMapping>> Post(int ProjectId, int SchemaId, [FromBody] PreviewUpdate previewUpdate)//we will make it a different incoming class with more props
         {
             //return null;
             PreviewUpdateResponse result = null;
@@ -408,13 +403,13 @@ namespace LoadServiceApi
             {
                 var existingProject = await _repository.GetProjectAsync(userId, ProjectId);
                 System.Console.WriteLine("check exiting project");
-                if ( previewUpdate.updatedConfig.ModelInfoList == null || previewUpdate.updatedConfig.ModelInfoList.Count == 0 )//lets make a copy of basefields
+                if (previewUpdate.updatedConfig.ModelInfoList == null || previewUpdate.updatedConfig.ModelInfoList.Count == 0)//lets make a copy of basefields
                 {
                     previewUpdate.updatedConfig.ModelInfoList = new List<ModelInfo>();
                     previewUpdate.updatedConfig.ModelInfoList.Add(new ModelInfo());
                     previewUpdate.updatedConfig.ModelInfoList[0].ModelFields = new List<DataAnalyticsPlatform.Shared.FieldInfo>(previewUpdate.updatedConfig.BaseClassFields);
                     previewUpdate.updatedConfig.ModelInfoList[0].ModelName = "OriginalModel";
-               
+
                 }
                 SchemaDTO schemaDTO = TypeConfigToSchemaDTO.Tranform(previewUpdate.updatedConfig, ProjectId, SchemaId, userId);
                 schemaDTO.SchemaName = previewUpdate.SchemaName;
@@ -476,10 +471,10 @@ namespace LoadServiceApi
                         projectSchema = await _repository.GetSchemasAsync(userId, ProjectId, true);
                         if (projectSchema != null)
                         {
-    
+
                             var thisSchema = projectSchema.Where(x => x.SchemaName == previewUpdate.SchemaName).FirstOrDefault();
                             //add automtaion folder
-                            var folderName = Path.Combine("AutoIngestion", "UserData_" + userId , thisSchema.Project.ProjectName);//+"_"+ thisSchema.SchemaName);
+                            var folderName = Path.Combine("AutoIngestion", "UserData_" + userId, thisSchema.Project.ProjectName);//+"_"+ thisSchema.SchemaName);
 
                             var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
                             if (!Directory.Exists(pathToSave))
@@ -489,7 +484,7 @@ namespace LoadServiceApi
                                 {
                                     var readerId = _repository.GetReaderFromProjectFile(FileIdsUsed[0]);//get teh file to get reader
 
-                                    if (readerId != null && readerId.Result > 0 )
+                                    if (readerId != null && readerId.Result > 0)
                                     { //add automation folder
                                         var projAutomation = new ProjectAutomation
                                         {
@@ -599,7 +594,7 @@ namespace LoadServiceApi
         }
 
         [HttpDelete("{ProjectId}/{SchemaId}")]
-        public async Task<IActionResult> DeleteSchema([FromRoute] int projectId, [FromRoute]int SchemaId)
+        public async Task<IActionResult> DeleteSchema([FromRoute] int projectId, [FromRoute] int SchemaId)
         {
             if (!ModelState.IsValid)
             {
@@ -620,13 +615,13 @@ namespace LoadServiceApi
         }
         // POST api/<controller>
         [HttpPost]
-        public void Post([FromBody]string value)
+        public void Post([FromBody] string value)
         {
         }
 
         // PUT api/<controller>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        public void Put(int id, [FromBody] string value)
         {
         }
 

@@ -1,13 +1,9 @@
 ﻿using CsvHelper;
-using DataAnalyticsPlatform.Common;
 using DataAnalyticsPlatform.Shared.DataAccess;
 using DataAnalyticsPlatform.Shared.Interfaces;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
-using System.Text;
 
 namespace DataAnalyticsPlatform.Writers
 {
@@ -22,20 +18,12 @@ namespace DataAnalyticsPlatform.Writers
         public Csvwriter(WriterConfiguration conf) : base(conf.ConnectionString, conf.DestinationType)
         {
             _mylist = new List<object>();
-            // _streamWriter = new StreamWriter(conf.ConnectionString + "Model" +);
-
-            //_csvWriter = new CsvWriter(_streamWriter);
             _conf = conf;
-            //if (conf.ModelMap != null)
-            //{
-            //    _csvWriter.Configuration.RegisterClassMap(conf.ModelMap);
-            //    _csvWriter.Configuration.IncludePrivateMembers = true ;
-            //}
         }
         public override void Write(IRecord record)
         {
 
-           
+
         }
         public override Dictionary<string, long?> DataSize()
         {
@@ -56,7 +44,7 @@ namespace DataAnalyticsPlatform.Writers
                 return props;
 
             var type = obj.GetType();
-            
+
             foreach (var prop in type.GetProperties())
             {
                 var val = prop.GetValue(obj, new object[] { });
@@ -113,7 +101,7 @@ namespace DataAnalyticsPlatform.Writers
                 Dump();
                 _mylist.Clear();
             }
-            
+
             //Type t = record.GetType();
             //Type t1 = _csvWriter.GetTypeForRecord(record);
             //object mapperObject = Activator.CreateInstance(record.GetType());
@@ -129,12 +117,12 @@ namespace DataAnalyticsPlatform.Writers
             //}
             //_csvWriter.Flush();
             //_streamWriter.Close();
-            
-           
+
+
         }
         public override void Write(List<BaseModel> record)
         {
-            
+
         }
         public override void Dispose()
         {

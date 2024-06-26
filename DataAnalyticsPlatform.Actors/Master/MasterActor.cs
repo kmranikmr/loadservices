@@ -4,32 +4,29 @@ using DataAnalyticsPlatform.Actors.Automation;
 using DataAnalyticsPlatform.Actors.Processors;
 using DataAnalyticsPlatform.Actors.Worker;
 using DataAnalyticsPlatform.Readers;
-using DataAnalyticsPlatform.Shared;
 using DataAnalyticsPlatform.Shared.Models;
-using DataAnalyticsPlatform.Shared.Types;
 using DataAnalyticsPlatform.Writers;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace DataAnalyticsPlatform.Actors.Master
 {
     public class IngestionJob
     {
         public int JobId { get; private set; }
-       
+
         public int UserId { get; set; }
 
         public string ControlTableConnectionString { get; set; }
 
         public ReaderConfiguration ReaderConfiguration { get; private set; }
 
-        public WriterConfiguration []WriterConfiguration { get; private set; }
+        public WriterConfiguration[] WriterConfiguration { get; private set; }
 
         //Transform Configuration
         //public TransformConfiguration TransformConfiguration { get; private set; }
 
-        public IngestionJob(int jobId, ReaderConfiguration rConf, WriterConfiguration []wConf)
+        public IngestionJob(int jobId, ReaderConfiguration rConf, WriterConfiguration[] wConf)
         {
             JobId = jobId;
             ReaderConfiguration = rConf;
@@ -41,7 +38,7 @@ namespace DataAnalyticsPlatform.Actors.Master
     {
         public IngestionJob job;
         public PreviewRegistry previewPreg;
-        public JobRegistry( IngestionJob job, PreviewRegistry previewRegistry)
+        public JobRegistry(IngestionJob job, PreviewRegistry previewRegistry)
         {
             this.job = job;
             previewPreg = previewRegistry;
@@ -75,7 +72,7 @@ namespace DataAnalyticsPlatform.Actors.Master
         private IActorRef MasterRouterActor;
         private IActorRef _automationCoordinator;
         public PreviewRegistry _previewRegistry;
-        public string ConnectionString{get; set;}
+        public string ConnectionString { get; set; }
         public string PostgresConnection { get; set; }
         public string ElasticConnection { get; set; }
         public string MongoConnection { get; set; }
@@ -88,7 +85,7 @@ namespace DataAnalyticsPlatform.Actors.Master
             MongoConnection = mongoconnstring;
 
             ReceiveBlock();
-          //  MasterRouterActor = actorRef;
+            //  MasterRouterActor = actorRef;
         }
 
         public MasterActor()
@@ -137,9 +134,9 @@ namespace DataAnalyticsPlatform.Actors.Master
                 if (_numberOfRunningJob < MaxNummberOfParallerJob)
                 {
                     var job = _jobs.Dequeue();
-                    Console.WriteLine(" Model at dequeue " + job.ReaderConfiguration.TypeConfig.ModelInfoList[0].ModelId.ToString() + " " +job.ReaderConfiguration.TypeConfig.ModelInfoList[0].ModelName );  
+                    Console.WriteLine(" Model at dequeue " + job.ReaderConfiguration.TypeConfig.ModelInfoList[0].ModelId.ToString() + " " + job.ReaderConfiguration.TypeConfig.ModelInfoList[0].ModelName);
                     //_workerActors.Tell(job);
-                    if (MasterRouterActor != null )
+                    if (MasterRouterActor != null)
                     {
                         MasterRouterActor.Tell(job);
                     }
@@ -148,7 +145,7 @@ namespace DataAnalyticsPlatform.Actors.Master
                         _workerNodes.Tell(job);
                     }
                 }
-            }            
+            }
         }
 
         protected override void PreStart()
@@ -173,10 +170,10 @@ namespace DataAnalyticsPlatform.Actors.Master
                 _automationCoordinator = Context.ActorOf(
                       Props.Create(() => new AutomationCoordinator(Self, ConnectionString, PostgresConnection, ElasticConnection, MongoConnection)), AutomationCoordinator);
 
-                
+
             }
 
-           
+
 
             base.PreStart();
         }

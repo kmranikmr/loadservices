@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace DataAnalyticsPlatform.Shared.DataAccess
 {
@@ -23,7 +21,7 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
             List<string> columnNameWithdataTypes = new List<string>();
 
             foreach (var item in importerInfo.Columns)
-            {                
+            {
                 columnNameWithdataTypes.Add(string.Format(@"{0} {1}", item.Item1, item.Item2));
             }
 

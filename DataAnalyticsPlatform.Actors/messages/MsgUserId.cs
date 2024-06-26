@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DataAnalyticsPlatform.Actors.messages
+﻿namespace DataAnalyticsPlatform.Actors.messages
 {
     public abstract class MsgUserId
     {

@@ -1,6 +1,5 @@
 ﻿using Akka.Actor;
 using Akka.Event;
-using Akka.Routing;
 using AutoMapper;
 using DataAccess.DTO;
 using DataAccess.Models;
@@ -14,7 +13,6 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -45,7 +43,7 @@ namespace DataAnalyticsPlatform.Actors.Automation
         private string postgresConnection;
 
         private string elasticConnString;
-        
+
         private string mongoConnection;
 
         private readonly ILoggingAdapter _logger = Context.GetLogger();
@@ -55,7 +53,7 @@ namespace DataAnalyticsPlatform.Actors.Automation
         public event EventHandler<ProjectFile> AutoAdd;
 
         public MapperConfiguration mapperConf = null;
-               
+
         public IMapper iMapper { get; set; }
 
         public PreviewRegistry previewRegistry;
@@ -71,22 +69,23 @@ namespace DataAnalyticsPlatform.Actors.Automation
             postgresConnection = postgresString;
             mongoConnection = mongoconnstring;
             previewRegistry = new PreviewRegistry();
-            
+
             AutoAdd += AddtoProjectFile;
 
-           
+
 
             _folderMonitorActors = new Dictionary<int, IActorRef>();
 
-             mapperConf = new MapperConfiguration(cfg => {
-                cfg.CreateMap<ProjectSchema,SchemaDTO>();
-                 cfg.CreateMap<ProjectFile,ProjectFileDTO>();
+            mapperConf = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<ProjectSchema, SchemaDTO>();
+                cfg.CreateMap<ProjectFile, ProjectFileDTO>();
 
-             });
+            });
 
-             iMapper = mapperConf.CreateMapper();
+            iMapper = mapperConf.CreateMapper();
 
-            
+
             SetReceivers();
         }
 
@@ -95,20 +94,20 @@ namespace DataAnalyticsPlatform.Actors.Automation
         {
             Console.WriteLine("AddtoProjectFile AddtoProjectFile");
             string connectionString = _connectionString;// "Server = localhost\\SQLEXPRESS; Database = dap_master; Trusted_Connection = True; ";// @"Server = dapdb.cqzm7ymwpoc8.us-east-1.rds.amazonaws.com; Database = dap_master; User Id = admin; Password = dapdata123";//// @"Server = localhost\\SQLEXPRESS; Database = dap_master; Trusted_Connection = True; ";
-           
+
             var options = SqlServerDbContextOptionsExtensions.UseSqlServer(new DbContextOptionsBuilder<DAPDbContext>(), connectionString).Options;
             var dbContext = new DAPDbContext(options, connectionString);
-         
+
             _repository = new Repository(dbContext, null);
-     
+
             await _repository.AddProjectFiles(pf);// projectFile);
-            
+
         }
         private void SetReceivers()
-        {           
+        {
             Receive<DatabaseWatcherActor.AddAutomation>(x =>
             {
-                IActorRef folderWatcherActor = Context.ActorOf(Props.Create(() => new FolderWatcherActor(x.AutomationModel, Self)), FolderWatcherActor+"_"+x.AutomationModel.ProjectSchemaId);
+                IActorRef folderWatcherActor = Context.ActorOf(Props.Create(() => new FolderWatcherActor(x.AutomationModel, Self)), FolderWatcherActor + "_" + x.AutomationModel.ProjectSchemaId);
 
                 Context.WatchWith(folderWatcherActor, new FolderWatchDead(x.AutomationModel));
 
@@ -162,7 +161,7 @@ namespace DataAnalyticsPlatform.Actors.Automation
             AutoAdd?.Invoke(this, pf);
         }
 
-         public async Task<TypeConfig> CheckSchemaAndUpdate(int ProjectId, int reader_type_id, string file_name , int file_id, List<TypeConfig> TypeConfigList, string configuration)
+        public async Task<TypeConfig> CheckSchemaAndUpdate(int ProjectId, int reader_type_id, string file_name, int file_id, List<TypeConfig> TypeConfigList, string configuration)
         {
             string className = string.Empty;
             Console.WriteLine("CheckSchemaAndUpdate 1");
@@ -177,30 +176,30 @@ namespace DataAnalyticsPlatform.Actors.Automation
                 {
                     Console.WriteLine("CheckSchemaAndUpdate null config ");
                 }
-                if ( Csvconf != null )
+                if (Csvconf != null)
                 {
-                  Console.WriteLine("CheckSchemaAndUpdate " + file_name + " " + ((CsvReaderConfiguration)Csvconf).delimiter);
-               }
-                var fieldInfoList = new CsvModelGenerator().GetAllFields(file_name, ref className, 
+                    Console.WriteLine("CheckSchemaAndUpdate " + file_name + " " + ((CsvReaderConfiguration)Csvconf).delimiter);
+                }
+                var fieldInfoList = new CsvModelGenerator().GetAllFields(file_name, ref className,
                                 ((CsvReaderConfiguration)Csvconf).delimiter, "", "", (CsvReaderConfiguration)Csvconf);
-                if (fieldInfoList == null || fieldInfoList.Count == 0) 
-                 {
-                       Console.WriteLine("CheckSchemaAndUpdate Null");
-                       return null;
-                  }
-                 Console.WriteLine(" length " +  fieldInfoList.Count.ToString());
-                var matchedTypeConfig = TypeConfigList.Find(x => previewRegistry.CompareBaseFields(x.BaseClassFields, fieldInfoList) == PreviewRegistry.EnumSchemaDiffType.SameBase);
-                if ( matchedTypeConfig != null )
+                if (fieldInfoList == null || fieldInfoList.Count == 0)
                 {
-                     Console.WriteLine("matchedTypeConfig is good");
+                    Console.WriteLine("CheckSchemaAndUpdate Null");
+                    return null;
+                }
+                Console.WriteLine(" length " + fieldInfoList.Count.ToString());
+                var matchedTypeConfig = TypeConfigList.Find(x => previewRegistry.CompareBaseFields(x.BaseClassFields, fieldInfoList) == PreviewRegistry.EnumSchemaDiffType.SameBase);
+                if (matchedTypeConfig != null)
+                {
+                    Console.WriteLine("matchedTypeConfig is good");
                     await _repository.SetSchemaId(file_id, matchedTypeConfig.SchemaId);
                     return matchedTypeConfig;
                 }
-                else {Console.WriteLine("matchedTypeConfig no good");}
+                else { Console.WriteLine("matchedTypeConfig no good"); }
             }
-            else if ( reader_type_id == 2 && !file_name.Contains("twitter"))
+            else if (reader_type_id == 2 && !file_name.Contains("twitter"))
             {
-               
+
                 string ClassString = "";
                 var fieldInfoList = new JsonModelGenerator().GetAllFields(file_name, configuration, ref className, ref ClassString, "test");
                 if (fieldInfoList == null || fieldInfoList.Count == 0) return null;
@@ -226,40 +225,41 @@ namespace DataAnalyticsPlatform.Actors.Automation
                 List<TypeConfig> TypeConfigList = new List<TypeConfig>();
                 int readerTypeId = 0;
 
-                string fullPath = Path.Combine(pf.FilePath, pf.FileName);                
-                
+                string fullPath = Path.Combine(pf.FilePath, pf.FileName);
+
                 if (projectSchemas != null)
                 {
                     Console.WriteLine("ProjectSchemas Obtained ");
-                     var Conf = new MapperConfiguration(cfg => {
-                cfg.CreateMap<SchemaDTO, ProjectSchema>();
-                
+                    var Conf = new MapperConfiguration(cfg =>
+                    {
+                        cfg.CreateMap<SchemaDTO, ProjectSchema>();
 
-             });
-            
-             var thisMapper = Conf.CreateMapper();
+
+                    });
+
+                    var thisMapper = Conf.CreateMapper();
                     //var retMap = thisMapper.Map<ProjectSchema[], SchemaDTO[]>(projectSchemas);
                     //var retMap = iMapper.Map<ProjectSchema[], SchemaDTO[]>(projectSchemas.Result);
                     foreach (var projectSchema in projectSchemas)
                     {
                         var objTypeConfig = JsonConvert.DeserializeObject<TypeConfig>(projectSchema.TypeConfig);
                         var schemaModelArray = await _repository.GetModelsAsync(pf.UserId, projectSchema.SchemaId);
-                    foreach ( var configObj in objTypeConfig.ModelInfoList )
-                    {
-                        for(int j = 0; j < schemaModelArray.Length; j++)
+                        foreach (var configObj in objTypeConfig.ModelInfoList)
                         {
-                            if ( schemaModelArray[j] != null )
+                            for (int j = 0; j < schemaModelArray.Length; j++)
                             {
-                                if ( configObj.ModelName == schemaModelArray[j].ModelName)
+                                if (schemaModelArray[j] != null)
                                 {
-                                    Console.WriteLine(" Matched model " + configObj.ModelName + " " + schemaModelArray[j].ModelId ); 
-                                    configObj.ModelId = schemaModelArray[j].ModelId;
+                                    if (configObj.ModelName == schemaModelArray[j].ModelName)
+                                    {
+                                        Console.WriteLine(" Matched model " + configObj.ModelName + " " + schemaModelArray[j].ModelId);
+                                        configObj.ModelId = schemaModelArray[j].ModelId;
+                                    }
                                 }
                             }
                         }
-                    }
-                        
-		        objTypeConfig.SchemaName = projectSchema.SchemaName;
+
+                        objTypeConfig.SchemaName = projectSchema.SchemaName;
                         objTypeConfig.SchemaId = projectSchema.SchemaId;
                         if (objTypeConfig != null)
                         {
@@ -267,7 +267,7 @@ namespace DataAnalyticsPlatform.Actors.Automation
                             Console.WriteLine("TypeCOnfigList added");
                         }
                     }
-                   
+
                 }
                 if (!string.IsNullOrEmpty(fullPath))
                 {
@@ -279,22 +279,22 @@ namespace DataAnalyticsPlatform.Actors.Automation
                     else if (fullPath.Contains(".log"))
                         readerTypeId = 3;
                 }
-                Console.WriteLine("readerType "+readerTypeId + " file path "+pf.FilePath + "full Path "+ fullPath + " " +  pf.ProjectFileId);
-                await repo.AddJob(pf.UserId, pf.ProjectId, jobId, 0, new List<int> { pf.ProjectFileId});
+                Console.WriteLine("readerType " + readerTypeId + " file path " + pf.FilePath + "full Path " + fullPath + " " + pf.ProjectFileId);
+                await repo.AddJob(pf.UserId, pf.ProjectId, jobId, 0, new List<int> { pf.ProjectFileId });
                 var reader = await repo.GetReaderAsync((int)pf.ReaderId);
                 var Configuration = reader.ReaderConfiguration;
                 var writer = await repo.GetWritersInProject(pf.UserId, pf.ProjectId);
 
                 TypeConfig retSchema = null;
-                if ( Configuration == null )
+                if (Configuration == null)
                 {
                     Console.WriteLine("Configuration is NUll");
                 }
                 Console.WriteLine("Check the schema");
-              
+
                 if (readerTypeId == 1 || readerTypeId == 2)
                 {
-                    
+
                     Console.WriteLine("About to execute");
                     retSchema = await CheckSchemaAndUpdate(pf.ProjectId, readerTypeId, fullPath, pf.ProjectFileId, TypeConfigList, Configuration);
                     if (retSchema == null)
@@ -303,9 +303,9 @@ namespace DataAnalyticsPlatform.Actors.Automation
                     }
                     else
                     {
-                       
-                    
-                          await Execute(pf.UserId, fullPath, new List<TypeConfig> { retSchema }, pf.ProjectFileId, jobId, Configuration, pf.ProjectId, _connectionString, postgresConnection, writer, elasticConnString, mongoConnection); 
+
+
+                        await Execute(pf.UserId, fullPath, new List<TypeConfig> { retSchema }, pf.ProjectFileId, jobId, Configuration, pf.ProjectId, _connectionString, postgresConnection, writer, elasticConnString, mongoConnection);
                     }
                 }
             }
@@ -315,7 +315,7 @@ namespace DataAnalyticsPlatform.Actors.Automation
         {
             Func<int> Function = new Func<int>(() =>
             {
-               
+
 
                 if (FileName.EndsWith(".csv"))
                 {
@@ -326,10 +326,10 @@ namespace DataAnalyticsPlatform.Actors.Automation
                         (typeConfigList[0], FileName, DataAnalyticsPlatform.Shared.Types.SourceType.Csv, FileId);
                     if (projectId != -1)
                     {
-                        if ( conf == null )
-			{
-                             Console.WriteLine("conf is null");
-			}
+                        if (conf == null)
+                        {
+                            Console.WriteLine("conf is null");
+                        }
                         conf.ProjectId = projectId;
                     }
                     if (!string.IsNullOrEmpty(configuration))
@@ -338,9 +338,9 @@ namespace DataAnalyticsPlatform.Actors.Automation
                         conf.ConfigurationDetails = Csvconf;
                     }
                     List<WriterConfiguration> confWriter = new List<WriterConfiguration>();
-                    if ( writers == null )
+                    if (writers == null)
                     {
-                          Console.WriteLine("Writers are null");
+                        Console.WriteLine("Writers are null");
                     }
                     foreach (var writer in writers)
                     {
@@ -371,13 +371,13 @@ namespace DataAnalyticsPlatform.Actors.Automation
 
                     //@"Server =raja.db.elephantsql.com; User Id = aniwbjgk; Password = esypNF7dCv9kKReCSNvM48LsPoJX_IvG; Database = aniwbjgk; Port=5432;CommandTimeout=0
                     //var confWriter = new Writers.WriterConfiguration(Shared.Types.DestinationType.RDBMS, connectionString: postgresConnString, ModelMap: null);//Search Path=public;/Server =localhost; User Id = dev; Password = nwdidb19; Database = nwdi_ts; Port=5433;CommandTimeout=0
-                   // if (projectId != -1)
-                   // {
+                    // if (projectId != -1)
+                    // {
                     //    confWriter.ProjectId = projectId;
                     //}
 
                     //  var confWriter = new Writers.WriterConfiguration(Shared.Types.DestinationType.RDBMS, connectionString: @"Server =localhost; User Id = dev; Password = nwdidb19; Database = nwdi_ts; Port=5433;CommandTimeout=0", ModelMap: null);//Search Path=public;/Server =localhost; User Id = dev; Password = nwdidb19; Database = nwdi_ts; Port=5433;CommandTimeout=0
-                 
+
                     var ingestionJob = new IngestionJob(jobId, conf, confWriter.ToArray());
                     ingestionJob.ControlTableConnectionString = connectionString;
                     ingestionJob.UserId = userId;
@@ -386,7 +386,7 @@ namespace DataAnalyticsPlatform.Actors.Automation
                 }
                 else if (FileName.EndsWith(".json") || FileName.Contains("twitter"))
                 {
-             
+
                     if (typeConfigList == null || (typeConfigList != null && typeConfigList.Count == 0)) return -1;
                     var conf = new ReaderConfiguration(typeConfigList[0], FileName, DataAnalyticsPlatform.Shared.Types.SourceType.Json, FileId);
                     if (FileName.Contains("twitter") && !string.IsNullOrEmpty(configuration))

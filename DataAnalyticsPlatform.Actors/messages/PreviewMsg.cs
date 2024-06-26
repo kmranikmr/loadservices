@@ -1,11 +1,7 @@
-﻿using DataAnalyticsPlatform.Readers;
-using DataAnalyticsPlatform.Shared;
+﻿using DataAnalyticsPlatform.Shared;
 using DataAnalyticsPlatform.Shared.Models;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace DataAnalyticsPlatform.Actors.messages
 {
@@ -13,7 +9,7 @@ namespace DataAnalyticsPlatform.Actors.messages
     {
         public class GetModel : MsgUserId
         {
-           // public string file_name = "";
+            // public string file_name = "";
             public GetModel(int userId = 0) : base(userId) { }
         }
 
@@ -26,15 +22,15 @@ namespace DataAnalyticsPlatform.Actors.messages
             {
                 this.file_name = file_name;
                 jobId = jobid;
-                if (!string.IsNullOrEmpty(customConfiguration) )
+                if (!string.IsNullOrEmpty(customConfiguration))
                 {
                     if (file_name.Contains(".csv"))
                     {
                         readerConfiguration = JsonConvert.DeserializeObject<CsvReaderConfiguration>(customConfiguration);
                     }
-                    else if ( file_name.Contains("twitter"))
+                    else if (file_name.Contains("twitter"))
                     {
-                        readerConfiguration = JsonConvert.DeserializeObject <TwitterConfiguration>(customConfiguration);
+                        readerConfiguration = JsonConvert.DeserializeObject<TwitterConfiguration>(customConfiguration);
                     }
                     else
                     {
@@ -48,11 +44,11 @@ namespace DataAnalyticsPlatform.Actors.messages
 
         public class UpdateModel : MsgUserId
         {
-            public TypeConfig typeConfig ;
+            public TypeConfig typeConfig;
             public List<ModelInfo> splitSchemaList;
             public string FileName { get; set; }
             public CustomConfiguration readerConfiguration { get; set; }
-            public UpdateModel(int userId = 0, TypeConfig typeConfig =null, string FileName = "", string customConfiguration = "") : base(userId)
+            public UpdateModel(int userId = 0, TypeConfig typeConfig = null, string FileName = "", string customConfiguration = "") : base(userId)
             {
                 //this.userId = userId;
                 this.splitSchemaList = typeConfig.ModelInfoList;

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace DataAccess.Models
@@ -41,12 +39,12 @@ namespace DataAccess.Models
         Task<bool> AddJob(int userId, int projectId, int jobId, int schemaId, List<int> FileId);
         Task<bool> UpdateJob(int userId, int projectId, int schemaId, List<int> FileId);
         Task<Job> UpdateJobStatus(int jobId, int statusId, int projectFileId);
-        Task<bool> UpdateJobStart(int jobId , int projectFileId);
+        Task<bool> UpdateJobStart(int jobId, int projectFileId);
         Task<bool> UpdateJobEnd(int jobId, int projectFileId);
         Job UpdateJobStatusSync(int jobId, int statusId, int projectFileId);
-       
-            //Readers
-            Task<Writer[]> GetWritersInProject(int userId, int projectId);
+
+        //Readers
+        Task<Writer[]> GetWritersInProject(int userId, int projectId);
         Task<Writer[]> GetWriters();
         Task<Writer> GetWriterAsync(int writerId);
         Task<ProjectWriter> GetProjectWriterAsync(int projectId, int writerId);

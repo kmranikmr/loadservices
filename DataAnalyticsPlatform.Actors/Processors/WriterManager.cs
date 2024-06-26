@@ -1,15 +1,12 @@
 ﻿using Akka.Actor;
 using Akka.Routing;
 using DataAnalyticsPlatform.Actors.Master;
-using DataAnalyticsPlatform.Common;
+using DataAnalyticsPlatform.Shared.DataAccess;
+using DataAnalyticsPlatform.Shared.Interfaces;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 using static DataAnalyticsPlatform.Actors.Processors.WriterActor;
-using DataAnalyticsPlatform.Shared.Interfaces;
-using DataAnalyticsPlatform.Shared.DataAccess;
 
 namespace DataAnalyticsPlatform.Actors.Processors
 {
@@ -20,7 +17,7 @@ namespace DataAnalyticsPlatform.Actors.Processors
 
     public class CreateSchemaPostgres
     {
-        public CreateSchemaPostgres( string schema, string connectionString)
+        public CreateSchemaPostgres(string schema, string connectionString)
         {
             SchemaName = schema;
             ConnectionString = connectionString;
@@ -35,7 +32,7 @@ namespace DataAnalyticsPlatform.Actors.Processors
 
         }
 
-       
+
 
         private string WriterActor = "WriterActor";
 
@@ -51,9 +48,9 @@ namespace DataAnalyticsPlatform.Actors.Processors
             _ingestionJob = j;
             _coordinatorActor = cordinatorActor;
             _schemaName = j.ReaderConfiguration.TypeConfig.SchemaName.Replace(" ", string.Empty);
-            _schemaName = j.ReaderConfiguration.ProjectId != -1 ? _schemaName + "_" + j.ReaderConfiguration.ProjectId +"_"+ j.UserId: _schemaName;
+            _schemaName = j.ReaderConfiguration.ProjectId != -1 ? _schemaName + "_" + j.ReaderConfiguration.ProjectId + "_" + j.UserId : _schemaName;
             Console.WriteLine("WriterManager _schemaName" + _schemaName);
-            if (_ingestionJob.WriterConfiguration == null )
+            if (_ingestionJob.WriterConfiguration == null)
             {
                 Console.WriteLine("WriterManager Null WriterConfiguration");
             }
@@ -78,43 +75,43 @@ namespace DataAnalyticsPlatform.Actors.Processors
             Receive<WriteRecord>(x =>
             {
                 _recordCount++;
-              //  Console.WriteLine("WriterManager  WriteRecord");
+                //  Console.WriteLine("WriterManager  WriteRecord");
                 if (x.Model != null)
-               {
+                {
                     Console.WriteLine("model List received");
                     //  var ModelMsg = new ModelMsg(((BaseModel)x.Model).ModelName, (BaseModel)x.Model);
                     string key = ((BaseModel)x.Model[0]).ModelName;
-                    key = key.Remove(0,5);
+                    key = key.Remove(0, 5);
                     int key_int = Convert.ToInt32(key);
-                    var hashMsg = new ConsistentHashableEnvelope(x, key_int*1000);
+                    var hashMsg = new ConsistentHashableEnvelope(x, key_int * 1000);
                     _writerPool.Tell(hashMsg);
-               }
-               else if (x.Objects != null)
+                }
+                else if (x.Objects != null)
                 {
                     //Console.WriteLine("WriterManager  Objects");
                     //var Lists = (IEnumerable<object>)x.Objects;
                     var Lists = (IEnumerable<BaseModel>)x.Objects;
 
                     var Grouped = Lists.GroupBy(y => ((BaseModel)y).ModelName);
-                    if (Grouped != null )
-                   // Console.WriteLine("WriterManager  Objects Grouped Count" + Grouped.Count());
-                    // foreach (IEnumerable<object> list in Grouped)
-                    foreach (IEnumerable<BaseModel> list in Grouped)
-                    {
-                       
-                        string key = ((BaseModel)list.ElementAt(0)).ModelName;
-                        if (!TablesCreated.TryGetValue(key, out bool truth))
+                    if (Grouped != null)
+                        // Console.WriteLine("WriterManager  Objects Grouped Count" + Grouped.Count());
+                        // foreach (IEnumerable<object> list in Grouped)
+                        foreach (IEnumerable<BaseModel> list in Grouped)
                         {
-  
-                           // _writer.CreateTables(list.ToList(), "", _writer.SchemaName , key);
-                            TablesCreated.Add(key, true);
+
+                            string key = ((BaseModel)list.ElementAt(0)).ModelName;
+                            if (!TablesCreated.TryGetValue(key, out bool truth))
+                            {
+
+                                // _writer.CreateTables(list.ToList(), "", _writer.SchemaName , key);
+                                TablesCreated.Add(key, true);
+                            }
+
+                            _writerPool.Tell(new WriteRecord(list));// hashMsg);
                         }
 
-                        _writerPool.Tell(new WriteRecord(list));// hashMsg);
-                    }
-                    
                 }
-                else if(x.Record != null)
+                else if (x.Record != null)
                 {
                     Console.WriteLine("WriterManager  Record");
                     string key = _ingestionJob.ReaderConfiguration.TypeConfig.SchemaName;
@@ -124,10 +121,10 @@ namespace DataAnalyticsPlatform.Actors.Processors
                         var obj = new List<object>();
                         obj.Add(x.Record.Instance);
                         // _ingestionJob.ReaderConfiguration.TypeConfig.SchemaName
-                       // _writer.CreateTables(obj, "", _writer.SchemaName, key);
+                        // _writer.CreateTables(obj, "", _writer.SchemaName, key);
                         TablesCreated.Add(key, true);
                     }
-                        //var hashMsg = new ConsistentHashableEnvelope((object)x, 1000);
+                    //var hashMsg = new ConsistentHashableEnvelope((object)x, 1000);
                     _writerPool.Tell(x);
                 }
 
@@ -141,11 +138,11 @@ namespace DataAnalyticsPlatform.Actors.Processors
                 _writerPool.Tell(x);
             });
             //WriterManagerDead
-            Receive<WriterManagerDead>( x=>
-            {
-                Console.WriteLine("WriterManagerDead");
-                Self.Tell(PoisonPill.Instance);
-            });
+            Receive<WriterManagerDead>(x =>
+           {
+               Console.WriteLine("WriterManagerDead");
+               Self.Tell(PoisonPill.Instance);
+           });
             Receive<List<ModelSizeData>>(x => { _coordinatorActor.Tell(x); });
         }
 
@@ -175,7 +172,7 @@ namespace DataAnalyticsPlatform.Actors.Processors
             {
                 // _writerPool =Context.ActorOf(Props.Create(() => new WriterActor(_ingestionJob)).WithRouter(new ConsistentHashingPool(10)), "writerpool");
 
-                _writerPool=  Context.ActorOf(Props.Create(() => new WriterActor(_ingestionJob))
+                _writerPool = Context.ActorOf(Props.Create(() => new WriterActor(_ingestionJob))
                     /*.
                     WithSupervisorStrategy(new OneForOneStrategy(0, 0, ex =>
                     {
@@ -186,8 +183,8 @@ namespace DataAnalyticsPlatform.Actors.Processors
                         } 
                         return Directive.Resume;
                     })) */
-                    
-                    ,"writerpool") ;
+
+                    , "writerpool");
                 Context.WatchWith(_writerPool, new WriterManagerDead());
             }
         }
@@ -203,7 +200,7 @@ namespace DataAnalyticsPlatform.Actors.Processors
         {
             this.ModelName = p1;
             this.Model = p2;
-          
+
         }
         public object ConsistentHashKey
         {

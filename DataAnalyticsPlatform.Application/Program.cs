@@ -1,19 +1,18 @@
-﻿using DataAnalyticsPlatform.Readers;
-using DataAnalyticsPlatform.Writers;
-using DataAnalyticsPlatform.Shared.Interfaces;
-using DataAnalyticsPlatform.Shared.Types;
+﻿using DataAnalyticsPlatform.Actors.Master;
 using DataAnalyticsPlatform.Actors.System;
-using DataAnalyticsPlatform.Actors.Master;
+using DataAnalyticsPlatform.Readers;
+using DataAnalyticsPlatform.Shared.Types;
+using DataAnalyticsPlatform.Writers;
 using Newtonsoft.Json;
 using System;
-using System.Net;
 using System.IO;
+using System.Net;
 
 namespace DataAnalyticsPlatform.Application
 {
     class Program
     {
-       
+
         static void Main(string[] args)
         {
 

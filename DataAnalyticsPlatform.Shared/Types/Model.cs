@@ -1,7 +1,4 @@
 ﻿using CsvHelper.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace DataAnalyticsPlatform.Shared.Types
 {
@@ -39,7 +36,7 @@ namespace DataAnalyticsPlatform.Shared.Types
             Map(m => m.fl_site_limit).Name("fl_site_limit");
             Map(m => m.fr_site_limit).Name("fr_site_limit");
             Map(m => m.tiv_2011).Name("tiv_2011");
-            Map(m => m.tiv_2012).Name("tiv_2012");                          
+            Map(m => m.tiv_2012).Name("tiv_2012");
             Map(m => m.eq_site_deductible).Name("eq_site_deductible");
             Map(m => m.hu_site_deductible).Name("hu_site_deductible");
             Map(m => m.fl_site_deductible).Name("fl_site_deductible");

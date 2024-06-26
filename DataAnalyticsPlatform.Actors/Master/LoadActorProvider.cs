@@ -1,12 +1,10 @@
 ﻿using Akka.Actor;
+using DataAnalyticsPlatform.Actors.Cluster;
 using DataAnalyticsPlatform.Actors.System;
 using DataAnalyticsPlatform.Shared.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.AspNetCore.SignalR;
+using System;
 using System.Threading.Tasks;
-using DataAnalyticsPlatform.Actors.Cluster;
 
 namespace DataAnalyticsPlatform.Actors.Master
 {
@@ -20,7 +18,7 @@ namespace DataAnalyticsPlatform.Actors.Master
     public class LoadActorProvider
     {
         private IActorRef LoadInstance { get; set; }
-        public PreviewRegistry previewRegistry { get; set; } 
+        public PreviewRegistry previewRegistry { get; set; }
         Notifier _notifier;
         private readonly IHubContext<JobProgressHub> _hubContext;
         public LoadActorProvider(ActorSystem actorSystem, PreviewRegistry previewRegistry, IHubContext<JobProgressHub> hubContext)

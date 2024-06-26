@@ -14,7 +14,7 @@
 
 	cluster {
 		#will inject this node as a self-seed node at run-time
-		seed-nodes = ["akka.tcp://dap-actor-system@192.168.1.13:3551"] # address  of seed node
+		seed-nodes = ["akka.tcp://dap-actor-system@localhost:3551"] # address  of seed node
 		roles = ["worker"]
 	}
 }

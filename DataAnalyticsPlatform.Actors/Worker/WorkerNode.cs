@@ -8,9 +8,6 @@ using Newtonsoft.Json;
 using RestSharp;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace DataAnalyticsPlatform.Actors.Worker
@@ -56,15 +53,15 @@ namespace DataAnalyticsPlatform.Actors.Worker
         {
             Console.WriteLine("Worker Node UpdateJobProcess");
             //ingestionJob = job;
-             ingestionJob.Add(job);
-            Console.WriteLine(" job at update process " + job.ReaderConfiguration.TypeConfig.ModelInfoList[0].ModelId.ToString() + " " + job.ReaderConfiguration.TypeConfig.ModelInfoList[0].ModelName );
+            ingestionJob.Add(job);
+            Console.WriteLine(" job at update process " + job.ReaderConfiguration.TypeConfig.ModelInfoList[0].ModelId.ToString() + " " + job.ReaderConfiguration.TypeConfig.ModelInfoList[0].ModelName);
             string connectionString = job.ControlTableConnectionString;//"Server = localhost\\SQLEXPRESS; Database = dap_master; Trusted_Connection = True; ";// @"Server = dapdb.cqzm7ymwpoc8.us-east-1.rds.amazonaws.com; Database = dap_master; User Id = admin; Password = dapdata123";//// @"Server = localhost\\SQLEXPRESS; Database = dap_master; Trusted_Connection = True; ";
             _connectionString = connectionString;
             var options = SqlServerDbContextOptionsExtensions.UseSqlServer(new DbContextOptionsBuilder<DAPDbContext>(), connectionString).Options;
             var dbContext = new DAPDbContext(options, connectionString);
             _repo = new Repository(dbContext, null);
             var x = _repo.UpdateJobStatusSync(job.JobId, 2, job.ReaderConfiguration.SourcePathId);
-            var y = _repo.UpdateJobStart(job.JobId, job.ReaderConfiguration.SourcePathId);        
+            var y = _repo.UpdateJobStart(job.JobId, job.ReaderConfiguration.SourcePathId);
         }
 
         public async void UpdateJobComplete(object sender, JobDone job)
@@ -74,10 +71,10 @@ namespace DataAnalyticsPlatform.Actors.Worker
             var options = SqlServerDbContextOptionsExtensions.UseSqlServer(new DbContextOptionsBuilder<DAPDbContext>(), connectionString).Options;
             var dbContext = new DAPDbContext(options);
             _repo = new Repository(dbContext, null);
-             
+
             var x = _repo.UpdateJobStatusSync(job.JobId, 3, job.FileId);
             var y = _repo.UpdateJobEnd(job.JobId, job.FileId);
-            
+
         }
         public WorkerNode(int maxNumberofConcurretWorker)
         {
@@ -101,13 +98,13 @@ namespace DataAnalyticsPlatform.Actors.Worker
             {
                 if (updateStatus == 2)
                 {
-                   var x = _repo.UpdateJobStatus(jobId, 2,3);
-                   var y = _repo.UpdateJobStart(jobId, 3);
+                    var x = _repo.UpdateJobStatus(jobId, 2, 3);
+                    var y = _repo.UpdateJobStart(jobId, 3);
                 }
                 else// if (updateStatus == 3)
                 {
-                    var c =  _repo.UpdateJobStatus(jobId, 2, 3);
-                    var d=_repo.UpdateJobStart(jobId, 3);
+                    var c = _repo.UpdateJobStatus(jobId, 2, 3);
+                    var d = _repo.UpdateJobStart(jobId, 3);
                 }
                 return true;
             });
@@ -115,15 +112,15 @@ namespace DataAnalyticsPlatform.Actors.Worker
         }
         public void ReceiveBlock()
         {
-           
+
             Receive<IngestionJob>(x =>
             {
                 _masterActor = Sender;
-               // BackgroundWorker bg = new BackgroundWorker();
-               // bg.DoWork += (obj, e) => backgroundWorker1_DoWork(x.JobId, 3);
-               // bg.RunWorkerAsync();
+                // BackgroundWorker bg = new BackgroundWorker();
+                // bg.DoWork += (obj, e) => backgroundWorker1_DoWork(x.JobId, 3);
+                // bg.RunWorkerAsync();
                 JobProcess?.Invoke(this, x);
-               // JobProcess  -= UpdateJobProcess;
+                // JobProcess  -= UpdateJobProcess;
                 // var h = UpdateJob(2, x.JobId);
                 // _repo.UpdateJobStatusSync(x.JobId, 2, 3);
                 _workerActors.Tell(x);
@@ -139,17 +136,17 @@ namespace DataAnalyticsPlatform.Actors.Worker
                 }
                 JobComplete?.Invoke(this, x);
                 Console.WriteLine(" Worker Node before Master ");
-                 // var ret = UpdateJob(st).ConfigureAwait(true);
-                 _masterActor.Tell(x);
+                // var ret = UpdateJob(st).ConfigureAwait(true);
+                _masterActor.Tell(x);
 
                 if (ingestionJob != null)//lets take th eingetsio njob and send the info to datsaervice for projecttrigger
                 {
                     //SendAttempt(x);
-                    
-                
+
+
                     Console.WriteLine("IngestionJob Check");
                     IngestionJob tbd = null;
-                    foreach ( var j in ingestionJob)
+                    foreach (var j in ingestionJob)
                     {
                         Console.WriteLine("checking jobs");
                         if (j.ReaderConfiguration != null)
@@ -162,11 +159,11 @@ namespace DataAnalyticsPlatform.Actors.Worker
                             }
                         }
                     }
-                    if(tbd != null)
+                    if (tbd != null)
                     {
                         ingestionJob.Remove(tbd);
                     }
-                
+
                 }
                 Console.WriteLine(" Worker Node before Master Done");
             });
@@ -184,7 +181,7 @@ namespace DataAnalyticsPlatform.Actors.Worker
                 foreach (var s in x)
                 {
                     foreach (var j in ingestionJob)
-                    { 
+                    {
                         if (j.ReaderConfiguration.TypeConfig != null)
                         {
                             if (j.ReaderConfiguration.TypeConfig.ModelInfoList != null)
@@ -210,12 +207,12 @@ namespace DataAnalyticsPlatform.Actors.Worker
                                 }
                             }
                         }
-                     }
+                    }
                 }
             });
         }
 
-        public async void SendAttempt(JobDone  x,  IngestionJob ij)
+        public async void SendAttempt(JobDone x, IngestionJob ij)
         {
             if (ij.JobId == x.JobId)
             {

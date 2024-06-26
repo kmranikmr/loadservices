@@ -1,5 +1,4 @@
-﻿using DataAccess.DTO;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -24,13 +23,13 @@ namespace DataAccess.Models
 
         public void Add<T>(T entity) where T : class
         {
-           // _logger.LogInformation($"Adding an object of type {entity.GetType()} to the context.");
+            // _logger.LogInformation($"Adding an object of type {entity.GetType()} to the context.");
             _context.Add(entity);
         }
 
         public void Delete<T>(T entity) where T : class
         {
-           // _logger.LogInformation($"Removing an object of type {entity.GetType()} to the context.");
+            // _logger.LogInformation($"Removing an object of type {entity.GetType()} to the context.");
             _context.Remove(entity);
         }
 
@@ -153,7 +152,7 @@ namespace DataAccess.Models
 
             return await query.ToArrayAsync();
         }
-        public async Task<bool>  AddSchemaAsync(ProjectSchema projectSchema)
+        public async Task<bool> AddSchemaAsync(ProjectSchema projectSchema)
         {
 
             //projectSchema.SchemaModels = new List<SchemaModel>() { };
@@ -166,33 +165,34 @@ namespace DataAccess.Models
 
             _context.ProjectSchemas.Add(projectSchema);
             _context.Entry(projectSchema).State = EntityState.Added;
-            return await _context.SaveChangesAsync() > 0 ;
+            return await _context.SaveChangesAsync() > 0;
 
-            
+
         }
         public async Task<ProjectSchema> SetSchemaAsync(int schemaId, ProjectSchema projectSchema)
         {
-            try {
+            try
+            {
 
                 if (schemaId != 0)
                 {
                     var pschema = await _context.ProjectSchemas.FindAsync(schemaId);
-                   // _context.Entry(projectSchema).State = EntityState.Modified;
+                    // _context.Entry(projectSchema).State = EntityState.Modified;
                     _context.Entry(pschema).CurrentValues.SetValues(projectSchema);
-                   
+
                     foreach (var model in projectSchema.SchemaModels)
                     {
-                        
+
                         model.UserId = projectSchema.UserId;
                         model.SchemaId = projectSchema.SchemaId;
                         model.IsActive = projectSchema.IsActive;
                         var existingChild = pschema.SchemaModels
-                            .Where(c => ( (c.ModelId == model.ModelId ) ||(model.ModelId == 0 && model.ModelConfig == null)))
+                            .Where(c => ((c.ModelId == model.ModelId) || (model.ModelId == 0 && model.ModelConfig == null)))
                             .SingleOrDefault();
 
                         if (existingChild != null)
                         {
-                            if ( model.ModelId == 0 && model.ModelConfig == null)
+                            if (model.ModelId == 0 && model.ModelConfig == null)
                             {
                                 model.ModelId = existingChild.ModelId;
                                 model.ProjectId = existingChild.ProjectId;
@@ -202,7 +202,7 @@ namespace DataAccess.Models
                         }
                         else
                         {
-                       
+
 
                             {
                                 var newModel = new SchemaModel { ModelConfig = model.ModelConfig, ModelName = model.ModelName, UserId = model.UserId, ProjectId = projectSchema.ProjectId, ModelMetadatas = model.ModelMetadatas };
@@ -212,35 +212,35 @@ namespace DataAccess.Models
 
                     }
 
-                   // if (projectSchema.SchemaModels.Count == 0 )
+                    // if (projectSchema.SchemaModels.Count == 0 )
                     {
                         //if (projectSchema.ModelMetadatas != null)
                         {
-                           
-                            //_context.Entry(pschema.ModelMetadatas).CurrentValues.SetValues(projectSchema.ModelMetadatas);
-                           // foreach (var meta in projectSchema.ModelMetadatas)
-                          //  {
-                             //   _context.ModelMetadatas.Add(meta);
-                                //    var metaCopy = new ModelMetadata
-                                //    {
-                                //        ProjectId = meta.ProjectId,
-                                //        ColumnName = meta.ColumnName,
-                                //        DataType = meta.DataType,
 
-                           // };
+                            //_context.Entry(pschema.ModelMetadatas).CurrentValues.SetValues(projectSchema.ModelMetadatas);
+                            // foreach (var meta in projectSchema.ModelMetadatas)
+                            //  {
+                            //   _context.ModelMetadatas.Add(meta);
+                            //    var metaCopy = new ModelMetadata
+                            //    {
+                            //        ProjectId = meta.ProjectId,
+                            //        ColumnName = meta.ColumnName,
+                            //        DataType = meta.DataType,
+
+                            // };
                             //    pschema.ModelMetadatas.Add(metaCopy);
-                           // }
+                            // }
 
                         }
-                      //  _context.Entry(pschema.ModelMetadatas).CurrentValues.SetValues(projectSchema.ModelMetadatas);
+                        //  _context.Entry(pschema.ModelMetadatas).CurrentValues.SetValues(projectSchema.ModelMetadatas);
                     }
 
                     //    pschema.SchemaName = projectSchema.SchemaName;
                     //pschema.SchemaModels = projectSchema.SchemaModels;
                     //pschema.TypeConfig = projectSchema.TypeConfig;
-                  
+
                     // pschema = projectSchema;
-                   
+
                     await _context.SaveChangesAsync();
                     return pschema;
                 }
@@ -278,7 +278,7 @@ namespace DataAccess.Models
                 query = query.Include(ps => ps.SchemaModels)
                     .ThenInclude(m => m.ModelMetadatas);
             }
-           
+
             query = query.Where(x => x.SchemaId == schemaId && x.IsDeleted == false && x.IsActive == true);
 
             return await query.FirstOrDefaultAsync();
@@ -318,7 +318,7 @@ namespace DataAccess.Models
 
             query = query.Include(j => j.JobStatus);
 
-            query = query.Include(j => j.Project).Include(j => j.ProjectFile).ThenInclude(pf=>pf.Reader).ThenInclude(r=>r.ReaderType);
+            query = query.Include(j => j.Project).Include(j => j.ProjectFile).ThenInclude(pf => pf.Reader).ThenInclude(r => r.ReaderType);
 
             query = query.Include(j => j.ProjectFile).ThenInclude(pf => pf.SourceType);
 
@@ -352,7 +352,8 @@ namespace DataAccess.Models
                     return job;
                 }
                 return null;
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 int j = 0;
                 return null;
@@ -401,7 +402,7 @@ namespace DataAccess.Models
             //    }
             //}
 
-            var projFiles =  _context.ProjectFiles.Where(x=> FileId.Any(y => y == x.ProjectFileId)).ToList();
+            var projFiles = _context.ProjectFiles.Where(x => FileId.Any(y => y == x.ProjectFileId)).ToList();
 
             foreach (ProjectFile projFile in projFiles)
             {
@@ -415,28 +416,28 @@ namespace DataAccess.Models
                 //    {
                 //        foundJob.SchemaId = (int)projFile.SchemaId;
                 //        _context.Entry(foundJob).Property(x => x.SchemaId).IsModified = true;
-                       
+
                 //    }
                 //}
                 //else
                 //{
-                    Job job1 = new Job()
-                    {
-                        JobId = jobId,
-                        ProjectFileId = projFile.ProjectFileId,
-                        SchemaId = projFile.SchemaId,
-                        ProjectId = projectId,
-                        UserId = userId,
-                        JobStatusId = 1,
-                        IsActive = true,
-                        IsDeleted = false,
-                        CreatedOn = DateTime.Now,
-                        JobDescription = schema.TypeConfig
+                Job job1 = new Job()
+                {
+                    JobId = jobId,
+                    ProjectFileId = projFile.ProjectFileId,
+                    SchemaId = projFile.SchemaId,
+                    ProjectId = projectId,
+                    UserId = userId,
+                    JobStatusId = 1,
+                    IsActive = true,
+                    IsDeleted = false,
+                    CreatedOn = DateTime.Now,
+                    JobDescription = schema.TypeConfig
 
-                    };
-                    _context.Jobs.Add(job1);
-                    //_context.Entry(job1).State = EntityState.Added;
-                   
+                };
+                _context.Jobs.Add(job1);
+                //_context.Entry(job1).State = EntityState.Added;
+
                 //}
             }
             await _context.SaveChangesAsync();
@@ -485,7 +486,7 @@ namespace DataAccess.Models
 
             query = query.Where(x => x.ProjectId == projectId && x.Project.CreatedBy == userId && x.Writer.IsDeleted == false && x.Writer.IsActive == true);
 
-            return await query.Select(x => x.Writer).Include(x=>x.WriterType).ToArrayAsync();
+            return await query.Select(x => x.Writer).Include(x => x.WriterType).ToArrayAsync();
         }
 
         public async Task<Writer[]> GetWritersViaUser(int userId)
@@ -613,7 +614,7 @@ namespace DataAccess.Models
 
         #region ProjectFiles
 
-        public async Task<int>AddProjectFiles(ProjectFile projectfile)
+        public async Task<int> AddProjectFiles(ProjectFile projectfile)
         {
 
             //projectSchema.SchemaModels = new List<SchemaModel>() { };
@@ -623,7 +624,7 @@ namespace DataAccess.Models
             // {
             //     _context.Entry(mdata).State = EntityState.Unchanged;
             // }
-          
+
             _context.ProjectFiles.Add(projectfile);
             _context.Entry(projectfile).State = EntityState.Added;
             await _context.SaveChangesAsync();
@@ -653,11 +654,11 @@ namespace DataAccess.Models
         {
             IQueryable<ProjectFile> query = _context.ProjectFiles;
 
-            query = query.Where(x => x.ProjectId == projectId && x.IsDeleted == false && x.IsActive == true && fileId.Contains(x.ProjectFileId) );
+            query = query.Where(x => x.ProjectId == projectId && x.IsDeleted == false && x.IsActive == true && fileId.Contains(x.ProjectFileId));
 
             return await query.ToArrayAsync();
         }
-        public  async Task<bool> SetReaderId(Dictionary<int,int> projectFileIdReaderIdDict)
+        public async Task<bool> SetReaderId(Dictionary<int, int> projectFileIdReaderIdDict)
         {
             IQueryable<ProjectFile> query = _context.ProjectFiles.Where(pf => projectFileIdReaderIdDict.ContainsKey(pf.ProjectFileId));
 
@@ -674,7 +675,7 @@ namespace DataAccess.Models
                 return await _context.SaveChangesAsync() > 0;
             }
 
-            return false;            
+            return false;
         }
 
         public async Task<bool> SetSchemaId(int projectFIleId, int schemaId)

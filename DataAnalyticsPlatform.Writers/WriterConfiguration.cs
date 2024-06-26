@@ -1,8 +1,6 @@
 ﻿using DataAnalyticsPlatform.Shared.Interfaces;
 using DataAnalyticsPlatform.Shared.Types;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace DataAnalyticsPlatform.Writers
 {

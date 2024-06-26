@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DataAnalyticsPlatform.Shared.Models
+﻿namespace DataAnalyticsPlatform.Shared.Models
 {
     //public interface IModelMap
     //{

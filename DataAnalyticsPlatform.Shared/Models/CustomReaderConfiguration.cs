@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DataAnalyticsPlatform.Shared.Models
+﻿namespace DataAnalyticsPlatform.Shared.Models
 {
     public class CustomConfiguration
     {
@@ -28,7 +24,7 @@ namespace DataAnalyticsPlatform.Shared.Models
         public string QueryJson { get; set; }
     }
 
-   public class TwitterConfiguration : CustomConfiguration
+    public class TwitterConfiguration : CustomConfiguration
     {
         public TwitterAccess twitterAccess { get; set; }
         public TwitterQuery twitterQuerry { get; set; }
@@ -36,5 +32,5 @@ namespace DataAnalyticsPlatform.Shared.Models
         public int MaxTotalResults { get; set; }
         public int SinceId { get; set; }
     }
-  
+
 }

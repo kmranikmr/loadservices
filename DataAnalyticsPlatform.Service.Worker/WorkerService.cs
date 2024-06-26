@@ -2,9 +2,6 @@
 using Akka.Bootstrap.Docker;
 using DataAnalyticsPlatform.Actors.Utils;
 using DataAnalyticsPlatform.Actors.Worker;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DataAnalyticsPlatform.Service.Worker

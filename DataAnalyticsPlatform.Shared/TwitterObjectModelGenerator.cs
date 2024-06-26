@@ -1,14 +1,11 @@
-﻿using AutoMapper;
-using Bogus;
-using DataAnalyticsPlatform.Shared.Models;
-using System.Linq;
+﻿using Bogus;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace DataAnalyticsPlatform.Shared
 {
@@ -29,7 +26,7 @@ namespace DataAnalyticsPlatform.Shared
             return listOfFieldInfo;
         }
 
-        public List<FieldInfo> GetAllFields(string filePath, object org )
+        public List<FieldInfo> GetAllFields(string filePath, object org)
         {
             List<FieldInfo> listOfFieldInfo = new List<FieldInfo>();
             //  string code = File.ReadAllText("TwitterOriginal.cs");
@@ -132,11 +129,11 @@ namespace DataAnalyticsPlatform.Shared
             {
                 return DataType.DateTime;
             }
-            else if ( type == typeof (System.String[]))
+            else if (type == typeof(System.String[]))
             {
                 return DataType.StringArray;
             }
-            else if ( type == typeof(IDictionary))
+            else if (type == typeof(IDictionary))
             {
                 return DataType.Dict;
             }
@@ -150,7 +147,7 @@ namespace DataAnalyticsPlatform.Shared
                 if (isArray)
                     return DataType.ObjectArray;
                 else
-                return DataType.Object;
+                    return DataType.Object;
             }
         }
 
@@ -235,7 +232,7 @@ namespace DataAnalyticsPlatform.Shared
         //    }
         //}
 
-        public void GetFieldsFromType( FieldInfo fieldInfo , object propValue)
+        public void GetFieldsFromType(FieldInfo fieldInfo, object propValue)
         {
             if (propValue == null)
                 return;
@@ -266,7 +263,7 @@ namespace DataAnalyticsPlatform.Shared
                     else
                     {
                         var ty = proparray.GetType();
-                       
+
                         _fieldInfo = new FieldInfo(name, GetDataTypeFromProp(proparray.GetType()));
                         //fieldInfos.Add(_fieldInfo);
                         fieldInfo.AddField(_fieldInfo);
@@ -275,7 +272,7 @@ namespace DataAnalyticsPlatform.Shared
                 }
                 else
                 {
-                   
+
                     value = prop.GetValue(propValue);
                 }
                 if (value == null || name == "Length") continue;
@@ -289,10 +286,10 @@ namespace DataAnalyticsPlatform.Shared
                     {
                         fieldInfo.AddField(_fieldInfo);
                     }
-                    
+
                     foreach (var item in elems)
                     {
-                        GetFieldsFromType( _fieldInfo, item);
+                        GetFieldsFromType(_fieldInfo, item);
                     }
                 }
                 else

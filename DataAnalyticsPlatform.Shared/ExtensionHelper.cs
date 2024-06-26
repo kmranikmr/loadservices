@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DataAnalyticsPlatform.Shared
+﻿namespace DataAnalyticsPlatform.Shared
 {
     public class ColumnName : System.Attribute
     {

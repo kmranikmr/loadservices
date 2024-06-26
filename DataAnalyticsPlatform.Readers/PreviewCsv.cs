@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DataAnalyticsPlatform.Readers
+﻿namespace DataAnalyticsPlatform.Readers
 {
     public class PreviewCsv
     {

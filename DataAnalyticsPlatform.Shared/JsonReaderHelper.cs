@@ -1,10 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace DataAnalyticsPlatform.Shared
 {
@@ -41,11 +39,11 @@ namespace DataAnalyticsPlatform.Shared
                 {
                     mainClass = member;
                 }
-                                
+
             }
 
             return GetProps(mainClass, classDict, FieldInfo.GetEmptyFieldInfo());
-            
+
         }
 
         public static List<FieldInfo> GetProps(ClassDeclarationSyntax syn, Dictionary<string, ClassDeclarationSyntax> classDict, FieldInfo parentFi)
@@ -81,7 +79,7 @@ namespace DataAnalyticsPlatform.Shared
                         fi.SetMap(parentFi);
                     }
 
-                   
+
                 }
                 else if (item.Type is GenericNameSyntax gns && gns.Identifier.ValueText == "Dictionary")
                 {
@@ -93,9 +91,9 @@ namespace DataAnalyticsPlatform.Shared
                     fi = new FieldInfo(item.Identifier.ValueText, GetDataTypeFromString(b.Keyword.ValueText));
                     fi.SetMap(parentFi);
                 }
-               
 
-               
+
+
                 res.Add(fi);
             }
             return res;
@@ -128,6 +126,6 @@ namespace DataAnalyticsPlatform.Shared
             return DataType.Object;
         }
 
-        public static HashSet<string> NativeDataTypes { get; set; }  = new HashSet<string>() { "string", "int", "char", "short" };
+        public static HashSet<string> NativeDataTypes { get; set; } = new HashSet<string>() { "string", "int", "char", "short" };
     }
 }

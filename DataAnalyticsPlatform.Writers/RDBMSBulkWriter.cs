@@ -1,13 +1,8 @@
-﻿using System;
+﻿using DataAnalyticsPlatform.Shared.DataAccess;
+using DataAnalyticsPlatform.Shared.Interfaces;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DataAnalyticsPlatform.Common;
-using DataAnalyticsPlatform.Shared;
-using DataAnalyticsPlatform.Shared.DataAccess;
-using DataAnalyticsPlatform.Shared.Interfaces;
-using DataAnalyticsPlatform.Shared.Models;
 using BaseModel = DataAnalyticsPlatform.Shared.DataAccess.BaseModel;
 
 namespace DataAnalyticsPlatform.Writers
@@ -23,7 +18,7 @@ namespace DataAnalyticsPlatform.Writers
             Schema = schema;
             Console.WriteLine("schema " + schema);
             repository = new BulkPostgresRepository<BaseModel>(connectionString, Schema);
-            
+
             _mylist = new List<BaseModel>();
         }
 
@@ -69,12 +64,12 @@ namespace DataAnalyticsPlatform.Writers
             if (record is IEnumerable)
             {
                 var list = ((IEnumerable<BaseModel>)record);
-               
+
                 _mylist.AddRange(list);
             }
             else
             {
-               
+
                 _mylist.Add((BaseModel)record);
             }
             //_mylist.Add(record);
@@ -113,7 +108,7 @@ namespace DataAnalyticsPlatform.Writers
         {
             Console.WriteLine("RDBMS Bulkl writer List<BaseModel> ");
 
-          repository.Write(record);
+            repository.Write(record);
 
             //throw new NotImplementedException();
         }

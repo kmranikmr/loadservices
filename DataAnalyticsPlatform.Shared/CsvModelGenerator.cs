@@ -5,13 +5,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace DataAnalyticsPlatform.Shared
 {
-   
+
     public class CsvModelGenerator
     {
         private CodeDomProvider provider;
@@ -26,7 +24,7 @@ namespace DataAnalyticsPlatform.Shared
         //});
         public bool CheckDateTime(string dateString)
         {
-            string [] formats = { "M/dd/yy", "MM/dd/yy", "MM/dd/yyyy" , "MM/d/yy", "M/d/yy" };
+            string[] formats = { "M/dd/yy", "MM/dd/yy", "MM/dd/yyyy", "MM/d/yy", "M/d/yy" };
             DateTime parsedDateTime;
 
             return DateTime.TryParseExact(dateString, formats, null,
@@ -40,15 +38,15 @@ namespace DataAnalyticsPlatform.Shared
             }
             return name;
         }
-        public string ClassGenerator( string filePath, ref string className , string delimiter = ",", string classAttribute = "", string propertyAttribute = "", CsvReaderConfiguration csvReaderConfiguration = null)
+        public string ClassGenerator(string filePath, ref string className, string delimiter = ",", string classAttribute = "", string propertyAttribute = "", CsvReaderConfiguration csvReaderConfiguration = null)
         {
-           
+
             if (string.IsNullOrWhiteSpace(propertyAttribute) == false)
                 propertyAttribute += "\n\t";
             if (string.IsNullOrWhiteSpace(propertyAttribute) == false)
                 classAttribute += "\n";
 
-            char _delimiter  = ',';
+            char _delimiter = ',';
             if (delimiter.Contains("\\"))
             {
                 _delimiter = '\t';//hack fo rtab
@@ -57,7 +55,7 @@ namespace DataAnalyticsPlatform.Shared
             {
                 _delimiter = delimiter.ToCharArray()[0];
             }
-            List<string>lines = (List<string>)File.ReadLines(filePath).Skip((int)csvReaderConfiguration?.skipLines).Take(10).ToList();
+            List<string> lines = (List<string>)File.ReadLines(filePath).Skip((int)csvReaderConfiguration?.skipLines).Take(10).ToList();
             string[] columnNames = lines.First().Split(_delimiter).Select(str => str.Trim()).ToArray();
             string[] data = lines.Skip(1).ToArray();
 
@@ -80,16 +78,16 @@ namespace DataAnalyticsPlatform.Shared
                 }
                 else
                 {
-                    columnName = "day"+col.Replace("/", "_");
+                    columnName = "day" + col.Replace("/", "_");
                 }
                 columnName = CheckandGetName(columnName);
                 if (string.IsNullOrEmpty(columnName))
                     columnName = "Column" + (columnIndex + 1);
-                if ( Char.IsDigit(columnName[0]))
+                if (Char.IsDigit(columnName[0]))
                 {
                     columnName = "col_" + columnName;
                 }
-                code += "\t" + GetVariableDeclaration(_delimiter,data, columnIndex, columnName, propertyAttribute) + "\n\n";
+                code += "\t" + GetVariableDeclaration(_delimiter, data, columnIndex, columnName, propertyAttribute) + "\n\n";
             }
 
             code += "}\n";
@@ -97,85 +95,86 @@ namespace DataAnalyticsPlatform.Shared
         }
 
         public List<string> skip10Lines(string path)
-        { 
-           int count=0;
-           List<string> lines=new List<string>();
-           foreach(var line in File.ReadLines(path))
-           {
-              if(count==10)
-                 break;
-              lines.Add(line);
-             count++;
-           }
-           return lines;
+        {
+            int count = 0;
+            List<string> lines = new List<string>();
+            foreach (var line in File.ReadLines(path))
+            {
+                if (count == 10)
+                    break;
+                lines.Add(line);
+                count++;
+            }
+            return lines;
         }
-        public List<FieldInfo> GetAllFields(string filePath, ref string className, string delimiter = ",", string classAttribute = "", string propertyAttribute = "", CsvReaderConfiguration csvReaderConfiguration= null)
+        public List<FieldInfo> GetAllFields(string filePath, ref string className, string delimiter = ",", string classAttribute = "", string propertyAttribute = "", CsvReaderConfiguration csvReaderConfiguration = null)
         {
             try
             {
-            List<FieldInfo> listOfFieldInfo = new List<FieldInfo>();
+                List<FieldInfo> listOfFieldInfo = new List<FieldInfo>();
 
-            char _delimiter = ',';
-            if (delimiter.Contains("\\"))
-            {
-                _delimiter = '\t';//hack fo rtab
-            }
-            else
-            {
-                _delimiter = delimiter.ToCharArray()[0];
-            }
-            // char _delimiter = delimiter.ToCharArray()[0];
-            if ( File.Exists(filePath) )
-            {
-                 long length = new System.IO.FileInfo(filePath).Length;
-                 Console.WriteLine(filePath + "exists " + " "  + length + " " +(int)csvReaderConfiguration?.skipLines);
-            }
-            
-            List<string> lines = skip10Lines(filePath);//(List<string>)File.ReadLines(filePath).Skip((int)csvReaderConfiguration?.skipLines).Take(10).ToList();
-            if ( lines == null ) { Console.WriteLine("null lines");}
-            Console.WriteLine(lines.Count);
-            string[] columnNames = lines.First().Split(_delimiter).Select(str => str.Trim()).ToArray();
-            string[] data = lines.Skip(1).ToArray();
-            Console.WriteLine("COlumnNames Length " + columnNames.Length);
-            for (int columnIndex = 0; columnIndex < columnNames.Length; columnIndex++)
-            {
-                var col = columnNames[columnIndex];
-                bool dateBool = CheckDateTime(col);
-                string columnName = "";
-                if (dateBool)
+                char _delimiter = ',';
+                if (delimiter.Contains("\\"))
                 {
-                    columnName = "day"+col.Replace("/", "_");
+                    _delimiter = '\t';//hack fo rtab
                 }
                 else
                 {
-                    columnName = Regex.Replace(columnNames[columnIndex], @"[\s\.\-]", string.Empty, RegexOptions.IgnoreCase);
-                    columnName = new string(columnName.Where(c => Char.IsLetter(c) || Char.IsDigit(c) || c == '_').ToArray());
-
+                    _delimiter = delimiter.ToCharArray()[0];
                 }
-
-                columnName = CheckandGetName(columnName);
-                var displayName = Regex.Replace(columnNames[columnIndex], @"[\s]", string.Empty, RegexOptions.IgnoreCase);
-                
-                if (string.IsNullOrEmpty(columnName))
-                    columnName = "Column" + (columnIndex + 1);
-                if (Char.IsDigit(columnName[0]))
+                // char _delimiter = delimiter.ToCharArray()[0];
+                if (File.Exists(filePath))
                 {
-                    columnName = "col_" + columnName;
+                    long length = new System.IO.FileInfo(filePath).Length;
+                    Console.WriteLine(filePath + "exists " + " " + length + " " + (int)csvReaderConfiguration?.skipLines);
                 }
-                //var dataType = GetVariableDeclaration(data, columnIndex, columnName, propertyAttribute);
 
-                FieldInfo fi = new FieldInfo(columnName, GetDatatype(_delimiter, data, columnIndex, columnName, propertyAttribute));
-                fi.DisplayName = displayName;
-                listOfFieldInfo.Add(fi);
-                Console.WriteLine("DisplayName "+fi.DisplayName);
+                List<string> lines = skip10Lines(filePath);//(List<string>)File.ReadLines(filePath).Skip((int)csvReaderConfiguration?.skipLines).Take(10).ToList();
+                if (lines == null) { Console.WriteLine("null lines"); }
+                Console.WriteLine(lines.Count);
+                string[] columnNames = lines.First().Split(_delimiter).Select(str => str.Trim()).ToArray();
+                string[] data = lines.Skip(1).ToArray();
+                Console.WriteLine("COlumnNames Length " + columnNames.Length);
+                for (int columnIndex = 0; columnIndex < columnNames.Length; columnIndex++)
+                {
+                    var col = columnNames[columnIndex];
+                    bool dateBool = CheckDateTime(col);
+                    string columnName = "";
+                    if (dateBool)
+                    {
+                        columnName = "day" + col.Replace("/", "_");
+                    }
+                    else
+                    {
+                        columnName = Regex.Replace(columnNames[columnIndex], @"[\s\.\-]", string.Empty, RegexOptions.IgnoreCase);
+                        columnName = new string(columnName.Where(c => Char.IsLetter(c) || Char.IsDigit(c) || c == '_').ToArray());
+
+                    }
+
+                    columnName = CheckandGetName(columnName);
+                    var displayName = Regex.Replace(columnNames[columnIndex], @"[\s]", string.Empty, RegexOptions.IgnoreCase);
+
+                    if (string.IsNullOrEmpty(columnName))
+                        columnName = "Column" + (columnIndex + 1);
+                    if (Char.IsDigit(columnName[0]))
+                    {
+                        columnName = "col_" + columnName;
+                    }
+                    //var dataType = GetVariableDeclaration(data, columnIndex, columnName, propertyAttribute);
+
+                    FieldInfo fi = new FieldInfo(columnName, GetDatatype(_delimiter, data, columnIndex, columnName, propertyAttribute));
+                    fi.DisplayName = displayName;
+                    listOfFieldInfo.Add(fi);
+                    Console.WriteLine("DisplayName " + fi.DisplayName);
+                }
+
+                return listOfFieldInfo;
             }
-
-            return listOfFieldInfo;
-           }catch(Exception ex)
-          {
-             Console.WriteLine(ex.Message);
-              return null;
-           }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
         }
 
         public static string[] SplitCSVReg(string input)
@@ -204,8 +203,8 @@ namespace DataAnalyticsPlatform.Shared
             return list.ToArray();
         }
 
-        public string GetVariableDeclaration(char delimiter , string[] data, int columnIndex, string columnName, string attribute = null)
-       {
+        public string GetVariableDeclaration(char delimiter, string[] data, int columnIndex, string columnName, string attribute = null)
+        {
             try
             {
                 //SplitCSV(data[columnIndex]);/
@@ -234,13 +233,14 @@ namespace DataAnalyticsPlatform.Shared
 
                 string declaration = String.Format("{0}public {1} {2} {{ get; set; }}", attribute, typeAsString, columnName);
                 return declaration;
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 return "";
             }
-       }
+        }
 
-        public DataType GetDatatype(char delimiter , string[] data, int columnIndex, string columnName, string attribute = null)
+        public DataType GetDatatype(char delimiter, string[] data, int columnIndex, string columnName, string attribute = null)
         {
             string[] columnValues = data.Select(line => line.Split(delimiter)[columnIndex].Trim()).ToArray();
             string typeAsString;
@@ -253,7 +253,7 @@ namespace DataAnalyticsPlatform.Shared
             {
                 return DataType.Int;
             }
-            
+
             else if (AllDateTimeValues(columnValues))
             {
                 return DataType.DateTime;
@@ -261,7 +261,7 @@ namespace DataAnalyticsPlatform.Shared
             else
             {
                 return DataType.String;
-            }            
+            }
         }
 
         public bool AllDoubleValues(string[] values)
@@ -282,7 +282,7 @@ namespace DataAnalyticsPlatform.Shared
             return values.All(val => DateTime.TryParse(val, out d));
         }
 
-            // add other types if you need...
-       
+        // add other types if you need...
+
     }
 }

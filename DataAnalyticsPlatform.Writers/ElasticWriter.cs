@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using DataAnalyticsPlatform.Common;
-using DataAnalyticsPlatform.Shared;
-using DataAnalyticsPlatform.Shared.DataAccess;
+﻿using DataAnalyticsPlatform.Shared.DataAccess;
 using DataAnalyticsPlatform.Shared.Interfaces;
 using Elasticsearch.Net;
 using Nest;
 using Nest.JsonNetSerializer;
 using Newtonsoft.Json;
+using System;
+using System.Collections;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace DataAnalyticsPlatform.Writers
 {
@@ -35,12 +31,12 @@ namespace DataAnalyticsPlatform.Writers
             builtin, setting, () => new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore,
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             }
-          )).DisableDirectStreaming().DefaultMappingFor<BaseModel> (m => m
-        .Ignore(p => p.Props).Ignore(p=>p.Values)
+          )).DisableDirectStreaming().DefaultMappingFor<BaseModel>(m => m
+       .Ignore(p => p.Props).Ignore(p => p.Values)
     );
-;
+            ;
             return new ElasticClient(connectionSettings);
         }
         public override bool CreateTables(List<object> model, string db, string schema, string table)
@@ -53,7 +49,7 @@ namespace DataAnalyticsPlatform.Writers
         }
         public override void Write(List<BaseModel> record)
         {
-           
+
         }
         public override Dictionary<string, long?> DataSize()
         {
@@ -79,17 +75,17 @@ namespace DataAnalyticsPlatform.Writers
             if (record is IEnumerable)
             {
                 var list = ((IEnumerable<BaseModel>)record);
-                
+
                 _mylist.AddRange(list);
             }
             else
             {
                 _mylist.Add((BaseModel)record);
             }
-            
+
             if (_mylist.Count >= 100)
             {
-               // _mylist.ForEach(x => { ((BaseModel)x).Props = null; ((BaseModel)x).Values = null; });
+                // _mylist.ForEach(x => { ((BaseModel)x).Props = null; ((BaseModel)x).Values = null; });
                 Dump();
                 _mylist.Clear();
             }
@@ -97,8 +93,8 @@ namespace DataAnalyticsPlatform.Writers
         }
         public void Dump()
         {
-            string indexx = SchemaName +"." +((BaseModel)_mylist[0]).ModelName;
-           
+            string indexx = SchemaName + "." + ((BaseModel)_mylist[0]).ModelName;
+
             var waitHandle = new CountdownEvent(1);
             var bulkall = Client.BulkAll(_mylist, b => b
             .Index(indexx.ToLower())

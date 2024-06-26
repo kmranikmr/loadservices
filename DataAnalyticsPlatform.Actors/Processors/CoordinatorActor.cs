@@ -2,13 +2,9 @@
 using Akka.Event;
 using DataAccess.Models;
 using DataAnalyticsPlatform.Actors.Master;
-using DataAnalyticsPlatform.Shared.DataAccess;
-using DataAnalyticsPlatform.Shared.DataModels;
 using DataAnalyticsPlatform.Shared.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace DataAnalyticsPlatform.Actors.Processors
 {
@@ -35,11 +31,11 @@ namespace DataAnalyticsPlatform.Actors.Processors
 
         }
 
-        
+
         #endregion
 
 
-        public const string  ReaderActor = "ReaderActor";
+        public const string ReaderActor = "ReaderActor";
 
         public const string WriterManager = "WriterManager";
 
@@ -63,7 +59,7 @@ namespace DataAnalyticsPlatform.Actors.Processors
             _ingestionJob = j;
 
             _masterActor = masterActor;
-           
+
             SetReceiveBlocks();
         }
 
@@ -71,12 +67,12 @@ namespace DataAnalyticsPlatform.Actors.Processors
 
         private int _transformedRecordCount = 0;
 
-       
+
         private void SetReceiveBlocks()
         {
             Receive<DoJob>(x =>
             {
-               
+
                 _reader.Tell(new ReaderActor.StartReading());
             });
             Receive<CreateSchemaPostgres>(x =>
@@ -117,15 +113,15 @@ namespace DataAnalyticsPlatform.Actors.Processors
 
                 if (x.Record != null)
                 {
-                   // Console.WriteLine("Start WriteRecord");
+                    // Console.WriteLine("Start WriteRecord");
                     _writer.Tell(new WriterActor.WriteRecord(x.Record));
                 }
                 else
                 {
-                 //   Console.WriteLine("Start WriteRecord");
+                    //   Console.WriteLine("Start WriteRecord");
                     //foreach (object bm in x.Models)
                     _writer.Tell(new WriterActor.WriteRecord(x.Objects));
-                   
+
                 }
                 _reader.Tell(new ReaderActor.GetRecord());
 
@@ -173,17 +169,17 @@ namespace DataAnalyticsPlatform.Actors.Processors
                 //    //placeholders to flag the job error based on exception
                 //    case SomeException re:
                 //        {
-                           
+
                 //            return Directive.Stop;
                 //        }
                 //    case SomeException de:
                 //        {
-                           
+
                 //            return Directive.Stop;
                 //        }
                 //    case SomeException are:
                 //        {
-                           
+
 
                 //            return Directive.Stop;
                 //        }

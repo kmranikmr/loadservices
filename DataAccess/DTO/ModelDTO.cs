@@ -5,7 +5,7 @@ namespace DataAccess.DTO
 {
     [AutoMap(typeof(SchemaModel))]
     public class SchemaModelDTO
-    {       
+    {
         public int ModelId { get; set; }
 
         public int ProjectId { get; set; }

@@ -1,7 +1,4 @@
-﻿using DataAnalyticsPlatform.Shared.DataModels;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace DataAnalyticsPlatform.Shared.DataAccess
 {
@@ -11,7 +8,7 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
         void Update(TEntity entity);
         void Delete(TEntity entity);
         void Insert(TEntity e, string name = "");
-        bool CreateTables(List<TEntity> models , string schema, bool dropTable = false);
+        bool CreateTables(List<TEntity> models, string schema, bool dropTable = false);
 
         bool CreateSchema(string schemaName);
 
@@ -23,5 +20,5 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
         void Dispose();
 
     }
-    
+
 }

@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DataAnalyticsPlatform.Common;
-using DataAnalyticsPlatform.Shared;
+﻿using DataAnalyticsPlatform.Shared;
 using DataAnalyticsPlatform.Shared.DataAccess;
 using DataAnalyticsPlatform.Shared.Interfaces;
 using DataAnalyticsPlatform.Shared.Models;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using BaseModel = DataAnalyticsPlatform.Shared.DataAccess.BaseModel;
 
 namespace DataAnalyticsPlatform.Writers
@@ -32,13 +30,13 @@ namespace DataAnalyticsPlatform.Writers
             if (_mylist.Count > 0)
                 Dump();
             _mylist.Clear();
-           
+
             if (Helper.FileNametoId.Count > 0)
             {
-               
-                foreach (var kvp in Helper. FileNametoId)
+
+                foreach (var kvp in Helper.FileNametoId)
                 {
-                    _mylist.Add( new FileNames(kvp.Value, kvp.Key, DateTime.Now.ToString()));
+                    _mylist.Add(new FileNames(kvp.Value, kvp.Key, DateTime.Now.ToString()));
                 }
                 repository.CreateTables(_mylist, Schema);
                 Dump();
@@ -54,7 +52,7 @@ namespace DataAnalyticsPlatform.Writers
         {
             return false;
         }
-        public override  bool CreateTables(List<object> model, string db, string schema, string table)
+        public override bool CreateTables(List<object> model, string db, string schema, string table)
         {
             Schema = schema;
             var ret = repository.CreateSchema(schema);
@@ -76,7 +74,7 @@ namespace DataAnalyticsPlatform.Writers
             }
             //_mylist.Add(record);
 
-           // repository.CreateTables(_mylist, "public", true);
+            // repository.CreateTables(_mylist, "public", true);
 
             if (_mylist.Count >= 500)
             {
@@ -107,14 +105,15 @@ namespace DataAnalyticsPlatform.Writers
                         repository.Insert(obj);
                     }
                 }
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw ex;
             }
         }
         public override void Write(object record)
         {
-           // Console.WriteLine("Start RDBMSWriter 2");
+            // Console.WriteLine("Start RDBMSWriter 2");
             if (record is IEnumerable)
             {
                 var list = ((IEnumerable<object>)record);
@@ -126,9 +125,9 @@ namespace DataAnalyticsPlatform.Writers
                 _mylist.Add(record);
             }
             //_mylist.Add(record);
-            
-           // repository.CreateTables(_mylist, "public", true);
-            
+
+            // repository.CreateTables(_mylist, "public", true);
+
             if (_mylist.Count >= 500)
             {
                 Dump();
@@ -139,7 +138,7 @@ namespace DataAnalyticsPlatform.Writers
         }
         public override void Write(List<BaseModel> record)
         {
-          
+
         }
         public override void Write(List<object> record)
         {

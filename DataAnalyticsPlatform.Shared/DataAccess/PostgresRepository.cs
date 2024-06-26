@@ -7,7 +7,6 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace DataAnalyticsPlatform.Shared.DataAccess
 {
@@ -27,7 +26,7 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
 
         private string _connectionString;
 
-        
+
 
         public string schema { get; set; }
         Dictionary<string, NpgsqlCommand> Dictcommand = null;
@@ -50,7 +49,7 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
                     schema = "public";
                 Dictcommand = new Dictionary<string, NpgsqlCommand>();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 int g = 0;
             }
@@ -83,7 +82,7 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
                 int i = 0;
                 if (schema != "")
                     this.schema = schema;
-                
+
                 //for (int i = 0; i < models.Count; i++)
                 {
                     var props = models[i].GetType().GetProperties();
@@ -94,7 +93,7 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
 
                     var columnNameWithdataTypes = new List<string>();
 
-                     var createTableCommand = _connection.CreateCommand();
+                    var createTableCommand = _connection.CreateCommand();
 
                     var tableNameAttr = models[i].GetType();
 
@@ -111,7 +110,7 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
                     for (int j = props.Count() - 1; j >= 0; j--) //var propertyInfo in props)
                     {
 
-                       var columnNameAttr = props[j].Name;
+                        var columnNameAttr = props[j].Name;
                         var columnName = columnNameAttr;
 
                         object value = props[j].GetValue(models[i]);
@@ -129,7 +128,7 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
                         columnNameWithdataTypes.Add(string.Format(@"{0} {1}", columnName, propWithDataType));
                     }
 
-                   // if (dropTable)
+                    // if (dropTable)
                     {
                         //createTableCommand.CommandText = string.Format("drop table if exists " + this.schema + ".{0};", tableName);
                         //createTableCommand.ExecuteNonQuery();
@@ -137,10 +136,10 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
                         createTableCommand.CommandText = string.Format("create schema if not exists " + this.schema);
                         createTableCommand.ExecuteNonQuery();
 
-                        createTableCommand.CommandText = string.Format("Create table if not exists " + this.schema+".{0}({1});", tableName,
+                        createTableCommand.CommandText = string.Format("Create table if not exists " + this.schema + ".{0}({1});", tableName,
                               string.Join(",", columnNameWithdataTypes));
 
-                          createTableCommand.ExecuteNonQuery();
+                        createTableCommand.ExecuteNonQuery();
                         Console.WriteLine("create tables done" + createTableCommand.CommandText);
                     }
                     //haveCreated = true;
@@ -174,7 +173,7 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
                 propType = t;
                 parameter.IsNullable = true;
             }
-            
+
             dataType = parameter.NpgsqlDbType.ToString();
 
             if (propType == typeof(SByte))
@@ -286,7 +285,7 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
                     parameter.Value = string.Join(",", (string[])value);
                 }
             }
-            else if (propType == typeof(Single[]) )
+            else if (propType == typeof(Single[]))
             {
                 parameter.NpgsqlDbType = NpgsqlDbType.Text;
                 dataType = parameter.NpgsqlDbType.ToString();
@@ -300,7 +299,7 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
             }
             else
             {
-                if (propType.GetTypeInfo().GetType() != typeof(int) )
+                if (propType.GetTypeInfo().GetType() != typeof(int))
                 {
                     parameter.NpgsqlDbType = NpgsqlDbType.Text;
                     dataType = parameter.NpgsqlDbType.ToString();
@@ -471,7 +470,7 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
                 command = null;
                 return;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return;
             }
@@ -542,7 +541,7 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
 
                 var columnName = columnNameAttr;// columnNameAttr != null ? columnNameAttr.Name : "";
 
-               // var jsonTypeAttribute = propertyInfo.GetCustomAttribute<JsonType>(false);
+                // var jsonTypeAttribute = propertyInfo.GetCustomAttribute<JsonType>(false);
 
                 //if (jsonTypeAttribute != null)
                 //{
@@ -568,7 +567,7 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
                 command.Parameters.Add(parameter);
             }
 
-            command.CommandText = String.Format("INSERT INTO "+this.schema+".{0} ({1}) VALUES({2})", tableName,
+            command.CommandText = String.Format("INSERT INTO " + this.schema + ".{0} ({1}) VALUES({2})", tableName,
                 String.Join(",", columnNames.ToArray()), String.Join(",", paramNames.ToArray()));
             Console.WriteLine(command.CommandText);
             //   if (DropandCreateTable == true)
@@ -589,7 +588,7 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
         }
         public object ExecuteScalar(string commandText)
         {
-           object result = null;
+            object result = null;
 
             try
             {
@@ -603,7 +602,7 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
                         result = command.ExecuteScalar();
                     }
                 }
-               
+
             }
             catch (Exception ex)
             {
@@ -611,7 +610,7 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
             }
             finally
             {
-             
+
             }
 
             return result;
@@ -623,7 +622,7 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
         public bool ExecuteSqlQuery(string commandText)
         {
             bool result = false;
-          
+
             try
             {
                 using (var connection = new NpgsqlConnection(_connectionString))
@@ -641,11 +640,11 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
             }
             catch (Exception ex)
             {
-                
+
             }
             finally
             {
-              
+
             }
 
             return result;

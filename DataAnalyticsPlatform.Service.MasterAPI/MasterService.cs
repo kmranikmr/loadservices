@@ -1,15 +1,10 @@
 ﻿using Akka.Actor;
 using Akka.Bootstrap.Docker;
-using Akka.Routing;
-using DataAnalyticsPlatform.Actors.Cluster;
 using DataAnalyticsPlatform.Actors.Master;
 using DataAnalyticsPlatform.Actors.Utils;
-using DataAnalyticsPlatform.Actors.Worker;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DataAnalyticsPlatform.Service.MasterAPI
@@ -20,7 +15,7 @@ namespace DataAnalyticsPlatform.Service.MasterAPI
 
         protected ActorSystem DAPClusterSystem;
         protected IActorRef MasterRouter;
-        public string ConnectionString{get; set;}
+        public string ConnectionString { get; set; }
         public string PostgresString { get; set; }
 
         public string ElasticString { get; set; }
@@ -69,7 +64,7 @@ namespace DataAnalyticsPlatform.Service.MasterAPI
         {
             //  this.MasterRouter = DAPClusterSystem.ActorOf(Props.Create(() => new MasterTaskRouter()), "masterTaskRouter");//acto
             string el = ElasticString;// "http://idapt.duckdns.org:9200";
-            MasterActor = DAPClusterSystem.ActorOf(Props.Create(() => new MasterActor(null,ConnectionString, PostgresString,el, MongoString )), "masterNode");
+            MasterActor = DAPClusterSystem.ActorOf(Props.Create(() => new MasterActor(null, ConnectionString, PostgresString, el, MongoString)), "masterNode");
 
 
             return true;

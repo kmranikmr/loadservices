@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Text;
 
 namespace DataAnalyticsPlatform.Readers
 {
@@ -18,7 +17,7 @@ namespace DataAnalyticsPlatform.Readers
         private int ListElement = 0;
         private dynamic dynJson;
         private int FileId { get; set; }
-        public JsonReader(ReaderConfiguration conf): base(conf)
+        public JsonReader(ReaderConfiguration conf) : base(conf)
         {
             _streamReader = new StreamReader(conf.SourcePath);
             FileId = Helper.GetFileId(conf.SourcePath);
@@ -53,7 +52,7 @@ namespace DataAnalyticsPlatform.Readers
                     var obj = JsonConvert.DeserializeObject(json, GetConfiguration().ModelType, settings);
                     JsonData.Add(obj);
                 }
-                
+
             }
             if (ListElement < JsonData.Count)
             {
@@ -64,7 +63,7 @@ namespace DataAnalyticsPlatform.Readers
             }
             else
             {
-               
+
                 record = null;
                 Dispose();
             }
@@ -81,7 +80,7 @@ namespace DataAnalyticsPlatform.Readers
         }
         private void Dispose()
         {
-           
+
             _streamReader.Dispose();
         }
     }

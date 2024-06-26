@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-using DataAccess;
-using DataAccess.DTO;
-using Newtonsoft.Json;
+﻿using DataAccess.DTO;
 using DataAnalyticsPlatform.Shared;
-using TypeConfig = DataAnalyticsPlatform.Shared.TypeConfig;
-using DataType = DataAnalyticsPlatform.Shared.DataType;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 namespace LoadServiceApi.Shared
 {
 
-   
+
     public class TypeConfigToSchemaDTO
     {
         public static string GetDataType(DataAnalyticsPlatform.Shared.DataType type)
@@ -48,7 +42,7 @@ namespace LoadServiceApi.Shared
             try
             {
                 SchemaDTO s = new SchemaDTO();
-              //  s.SchemaName = typeConfig;
+                //  s.SchemaName = typeConfig;
                 s.TypeConfig = JsonConvert.SerializeObject(typeConfig);
                 s.ProjectId = projectId;
                 s.SchemaName = typeConfig.SchemaName;
@@ -58,7 +52,7 @@ namespace LoadServiceApi.Shared
                     haveModels = true;
                     int index = 0;
                     s.SchemaModels = new SchemaModelDTO[typeConfig.ModelInfoList.Count];
-                    
+
                     foreach (var modelConfig in typeConfig.ModelInfoList)
                     {
                         s.SchemaModels[index] = new SchemaModelDTO();
@@ -77,17 +71,17 @@ namespace LoadServiceApi.Shared
                                 modelIndex++;
                             }
                         }
-                       
+
                         s.SchemaModels[index].ModelConfig = "";
                         s.SchemaModels[index].ModelConfig = JsonConvert.SerializeObject(modelConfig.ModelFields);
                         s.SchemaModels[index].ModelName = modelConfig.ModelName;
                         s.SchemaModels[index].ProjectId = projectId;
-                       
-                        if ( schemaId != 0)
-                        s.SchemaModels[index].ModelId = modelConfig.ModelId;
+
+                        if (schemaId != 0)
+                            s.SchemaModels[index].ModelId = modelConfig.ModelId;
                         index++;
                     }
-                   
+
                 }
                 else if (typeConfig.BaseClassFields.Count > 0)
                 {
@@ -100,22 +94,22 @@ namespace LoadServiceApi.Shared
                     int modelIndex = 0;
                     s.SchemaModels = new SchemaModelDTO[1];
                     s.SchemaModels[0] = new SchemaModelDTO();
-                    
+
                     s.SchemaModels[0].ModelMetadatas = new ModelMetadataDTO[typeConfig.BaseClassFields.Count];
                     foreach (var fieldinfo in typeConfig.BaseClassFields)
                     {
-                        
+
                         var Fieldinfo = fieldinfo;
                         ModelMetadataDTO mDto = new ModelMetadataDTO();
-                       
+
                         s.SchemaModels[0].ModelMetadatas[modelIndex] = new ModelMetadataDTO();
-                        s.SchemaModels[0].ModelMetadatas[modelIndex].ColumnName = fieldinfo.DisplayName == null? fieldinfo.Name : fieldinfo.DisplayName;
+                        s.SchemaModels[0].ModelMetadatas[modelIndex].ColumnName = fieldinfo.DisplayName == null ? fieldinfo.Name : fieldinfo.DisplayName;
                         s.SchemaModels[0].ModelMetadatas[modelIndex].DataType = GetDataType(fieldinfo.DataType);
                         s.SchemaModels[0].ModelMetadatas[modelIndex].ProjectId = projectId;
-                         
-                    
+
+
                         modelIndex++;
-                                                
+
 
                     }
                 }

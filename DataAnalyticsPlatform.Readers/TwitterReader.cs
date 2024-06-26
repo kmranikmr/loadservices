@@ -1,17 +1,14 @@
-﻿using DataAnalyticsPlatform.Shared.Interfaces;
+﻿using AutoMapper;
+using DataAnalyticsPlatform.Common.Twitter;
+using DataAnalyticsPlatform.Shared.Interfaces;
 using DataAnalyticsPlatform.Shared.Models;
 using LinqToTwitter;
-using DataAnalyticsPlatform.Common.Twitter;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using System.Linq;
 using System.Data;
-using AutoMapper;
-using System.Reflection;
-using Mapster;
-using Newtonsoft.Json.Linq;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DataAnalyticsPlatform.Readers
 {
@@ -44,16 +41,16 @@ namespace DataAnalyticsPlatform.Readers
         public List<object> twitCollection { get; set; }
         public ulong maxID { get; set; }
         public int ListElement = 0;
-        public  IMapper mapper;
+        public IMapper mapper;
         public IMapper mapper_runtime;
         public List<Type> Types { get; set; }
-        public TwitterReader (ReaderConfiguration conf, List<Type> types = null): base (conf)
+        public TwitterReader(ReaderConfiguration conf, List<Type> types = null) : base(conf)
         {
             Types = types;
             twitConf = (TwitterConfiguration)conf.ConfigurationDetails;
             twitCollection = new List<object>();
             sinceID = 1;
-          //  var config = new MapperConfiguration(x => { x.CreateMap <GetConfiguration().ModelType>(); })
+            //  var config = new MapperConfiguration(x => { x.CreateMap <GetConfiguration().ModelType>(); })
             var auth = new SingleUserAuthorizer
             {
                 CredentialStore = new SingleUserInMemoryCredentialStore
@@ -79,12 +76,12 @@ namespace DataAnalyticsPlatform.Readers
                 var configuration = new MapperConfiguration(cfg =>
                 {
                     cfg.CreateMap(typeof(LinqToTwitter.Status), OrginalType);
-                    if (MetaDataType != null )
-                    cfg.CreateMap(typeof(LinqToTwitter.StatusMetaData), MetaDataType);
+                    if (MetaDataType != null)
+                        cfg.CreateMap(typeof(LinqToTwitter.StatusMetaData), MetaDataType);
                     if (CordinateType != null)
-                    cfg.CreateMap(typeof(LinqToTwitter.Coordinate), CordinateType);
+                        cfg.CreateMap(typeof(LinqToTwitter.Coordinate), CordinateType);
                     if (UserType != null)
-                    cfg.CreateMap(typeof(LinqToTwitter.User), UserType);
+                        cfg.CreateMap(typeof(LinqToTwitter.User), UserType);
                 });
                 mapper_runtime = configuration.CreateMapper();
             }
@@ -135,7 +132,7 @@ namespace DataAnalyticsPlatform.Readers
 
                 return searchResponse;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return null;
             }
@@ -144,7 +141,7 @@ namespace DataAnalyticsPlatform.Readers
         public override bool GetRecords(out IRecord record)
         {
             bool result = false;
-            
+
             try
             {
                 var combinedSearchResults = new List<LinqToTwitter.Status>();
@@ -153,10 +150,10 @@ namespace DataAnalyticsPlatform.Readers
                     twitCollection.Clear();
                     ListElement = 0;
                     var task = Task.Run(async () => await GetTweets());
-                   
+
                     if (task.Result.Any() && ((task.Result.Count < twitConf.MaxTotalResults) || (twitConf.MaxTotalResults == -1)))
                     {
-                       
+
                         foreach (LinqToTwitter.Status status in task.Result)
                         {
                             if (GetConfiguration().ModelType == null)
@@ -180,24 +177,24 @@ namespace DataAnalyticsPlatform.Readers
                                 //var t = GetConfiguration().ModelType;
                                 //var configuration = new MapperConfiguration(cfg => {
                                 //    cfg.CreateMap(typeof(LinqToTwitter.Status),t );
-                                    
+
                                 //    cfg.CreateMap(typeof(LinqToTwitter.StatusMetaData), MetaDataType);
                                 //    cfg.CreateMap(typeof(LinqToTwitter.Coordinate), CordinateType );
                                 //    cfg.CreateMap(typeof(LinqToTwitter.User), UserType);
                                 //});
-                                
-                               // dynamic obj = Activator.CreateInstance(GetConfiguration().ModelType);
-                              //  PropertyCopier<LinqToTwitter.Status, t>(status, obj);
+
+                                // dynamic obj = Activator.CreateInstance(GetConfiguration().ModelType);
+                                //  PropertyCopier<LinqToTwitter.Status, t>(status, obj);
                                 var result2 = mapper_runtime.Map(status, status.GetType(), GetConfiguration().ModelType);
                                 twitCollection.Add(result2);
                             }
                         }
                     }
                 }
-                if ( ListElement < twitCollection.Count)
+                if (ListElement < twitCollection.Count)
                 {
-                   // var obj = Activator.CreateInstance(GetConfiguration().ModelType);
-                //    twitCollection[ListElement].Adapt<(obj);
+                    // var obj = Activator.CreateInstance(GetConfiguration().ModelType);
+                    //    twitCollection[ListElement].Adapt<(obj);
                     record = new SingleRecord(twitCollection[ListElement]);
                     result = true;
                     ListElement++;
@@ -208,7 +205,7 @@ namespace DataAnalyticsPlatform.Readers
                     record = null;
                     Dispose();
                 }
-                
+
             }
             catch (Exception ex)
             {

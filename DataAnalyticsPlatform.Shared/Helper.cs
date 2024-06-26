@@ -1,13 +1,11 @@
-﻿using DataAnalyticsPlatform.Shared.Interfaces;
-using System;
-using Newtonsoft.Json.Schema;
+﻿using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Schema.Generation;
-using System.Xml.Serialization;
-using System.IO;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace DataAnalyticsPlatform.Shared
 {
@@ -18,7 +16,7 @@ namespace DataAnalyticsPlatform.Shared
         public static int _runningFileNumber;
         public static int GetFileId(string fileName)
         {
-            if ( FileNametoId.ContainsKey(fileName))
+            if (FileNametoId.ContainsKey(fileName))
             {
                 return FileNametoId[fileName];
             }
@@ -99,7 +97,7 @@ namespace DataAnalyticsPlatform.Shared
                         else
                             return false;
                     }
-                    
+
                 });
             }
             catch (Exception)
@@ -119,7 +117,7 @@ namespace DataAnalyticsPlatform.Shared
 
         public static string CreateCsfromJson(string json)
         {
-            string inputPath = @"temp"+Guid.NewGuid().ToString()+".json";
+            string inputPath = @"temp" + Guid.NewGuid().ToString() + ".json";
             string outputPath = @"petstore.cs"; // path of the output csharp file
 
             try
@@ -141,11 +139,11 @@ namespace DataAnalyticsPlatform.Shared
                 File.Delete(inputPath);
                 return output;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return "";
             }
-           
+
         }
 
     }

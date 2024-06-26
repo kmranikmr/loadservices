@@ -1,13 +1,9 @@
 ﻿using Akka.Actor;
-using DataAnalyticsPlatform.Common;
 using DataAnalyticsPlatform.Readers;
 using DataAnalyticsPlatform.Shared.DataAccess;
 using DataAnalyticsPlatform.Shared.Interfaces;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 
 namespace DataAnalyticsPlatform.Actors.Processors
 {
@@ -69,7 +65,7 @@ namespace DataAnalyticsPlatform.Actors.Processors
                 {
                     _methodMap.Invoke(x.Record.Instance, null);
                     //transform here, may return list of models, for now send as is
-                    var ret = _methodGetModels.Invoke(x.Record.Instance,new object[] { (int)x.Record.FileId });
+                    var ret = _methodGetModels.Invoke(x.Record.Instance, new object[] { (int)x.Record.FileId });
                     //(List<BaseModel>)
 
                     if (ret == null || (ret != null && ((List<BaseModel>)ret).Count == 0))

@@ -1,8 +1,6 @@
 ﻿using DataAnalyticsPlatform.Shared.ExceptionUtils;
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Text;
 
 namespace DataAnalyticsPlatform.Shared.Interfaces
 {

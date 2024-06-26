@@ -1,12 +1,10 @@
-﻿using DataAnalyticsPlatform.Shared.Models;
-using DataAnalyticsPlatform.Shared;
+﻿using DataAnalyticsPlatform.Shared.DataAccess;
 using DataAnalyticsPlatform.Shared.Interfaces;
 //using DataAnalyticsPlatform.Shared.Models;
 using MongoDB.Driver;
 using System;
-using System.Collections.Generic;
-using DataAnalyticsPlatform.Shared.DataAccess;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace DataAnalyticsPlatform.Writers
@@ -60,17 +58,17 @@ namespace DataAnalyticsPlatform.Writers
             if (record is IEnumerable)
             {
                 var list = ((IEnumerable<BaseModel>)record);
-              
-               
+
+
                 //_list.GetEnumerator().MoveNext();
-                string tableName = SchemaName +"."+ ((BaseModel)list.ElementAt(0)).ModelName;
-                if  (!_mylistDict.ContainsKey(tableName))
+                string tableName = SchemaName + "." + ((BaseModel)list.ElementAt(0)).ModelName;
+                if (!_mylistDict.ContainsKey(tableName))
                 {
-               
+
                     _mylistDict.Add(tableName, new List<object>());
                 }
                 _mylistDict[tableName].AddRange(list);
-                
+
                 if (_mylistDict[tableName].Count > 100)
                 {
                     Dump(tableName);
@@ -79,7 +77,7 @@ namespace DataAnalyticsPlatform.Writers
             }
             else
             {
-                string tableName = SchemaName +"."+ ((BaseModel)record).ModelName;
+                string tableName = SchemaName + "." + ((BaseModel)record).ModelName;
                 if (!_mylistDict.ContainsKey(tableName))
                 {
                     _mylistDict.Add(tableName, new List<object>());
@@ -102,7 +100,7 @@ namespace DataAnalyticsPlatform.Writers
         }
         public override void Write(List<BaseModel> record)
         {
-           
+
         }
         public override void Write(List<object> record)
         {
@@ -126,21 +124,22 @@ namespace DataAnalyticsPlatform.Writers
             try
             {
                 var col = _database.GetCollection<object>(tableName);
-                if ( col != null )
+                if (col != null)
                 {
-                    Console.WriteLine("collection not empty " );
+                    Console.WriteLine("collection not empty ");
                 }
                 col.InsertMany(_mylistDict[tableName]);
                 Console.WriteLine("DumpDone");
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
-                Console.WriteLine("DumpError" +ex.Message);
+                Console.WriteLine("DumpError" + ex.Message);
             }
             //_collection.InsertManyAsync(_mylist);
         }
         public override void Dispose()
         {
-            
+
             foreach (var kvp in _mylistDict)
             {
                 Console.WriteLine("Dispose" + kvp.Key);

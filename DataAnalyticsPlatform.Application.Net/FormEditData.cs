@@ -1,12 +1,5 @@
 ﻿using DataAnalyticsPlatform.Shared;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace DataAnalyticsPlatform.Application.Net
@@ -50,7 +43,7 @@ namespace DataAnalyticsPlatform.Application.Net
         {
             SelectedData.Name = txtColumnName.Text;
             SelectedData.Length = (int)txtLength.Value;
-            SelectedData.DataType = (DataType) cmbDataType.SelectedValue;
+            SelectedData.DataType = (DataType)cmbDataType.SelectedValue;
             SelectedData.Map = txtMap.Text;
             this.DialogResult = DialogResult.OK;
         }

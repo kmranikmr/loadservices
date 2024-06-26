@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DataAnalyticsPlatform.Shared.Models
+﻿namespace DataAnalyticsPlatform.Shared.Models
 {
     public class FileNames
     {
@@ -10,7 +6,7 @@ namespace DataAnalyticsPlatform.Shared.Models
         public string filename { get; set; }
         public string processedtime { get; set; }
 
-        public FileNames( int file_id, string filename, string time)
+        public FileNames(int file_id, string filename, string time)
         {
             fileid = file_id;
             this.filename = filename;

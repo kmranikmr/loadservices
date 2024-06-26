@@ -1,11 +1,9 @@
 ﻿// JSON C# Class Generator
 // http://www.xamasoft.com/json-class-generator
 
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Newtonsoft.Json.Linq;
 
 namespace JsonCSharpClassGenerator
 {
@@ -166,10 +164,10 @@ namespace JsonCSharpClassGenerator
         {
             var value = GetJToken<JObject>(token);
             if (value == null) return null;
-  
-                var dict = new Dictionary<string, T>();
 
-                return dict;
+            var dict = new Dictionary<string, T>();
+
+            return dict;
         }
 
         public static Array ReadArray<K>(JArray jArray, ValueReader<K> reader, Type type)

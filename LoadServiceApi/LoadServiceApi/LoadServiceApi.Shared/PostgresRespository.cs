@@ -1,18 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Data;
-using System.Linq;
+﻿using Dapper;
 using Npgsql;
-using NpgsqlTypes;
-using System.Reflection;
-
-using Dapper;
-
-using System.Data.Common;
-
-using System.Diagnostics;
-using System.Data.SqlClient;
+using System;
+using System.Collections.Generic;
+using System.Data;
 
 namespace LoadServiceApi.Shared
 {
@@ -213,5 +203,5 @@ namespace LoadServiceApi.Shared
 
 }
 
-   
+
 

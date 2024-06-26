@@ -6,8 +6,6 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using Xamasoft.JsonClassGenerator;
 namespace DataAnalyticsPlatform.Shared
 {
@@ -23,11 +21,11 @@ namespace DataAnalyticsPlatform.Shared
 
         public string CheckandGetName(string name)
         {
-            if ( !provider.IsValidIdentifier(name))
+            if (!provider.IsValidIdentifier(name))
             {
                 return name + "0";
             }
-            if ( FieldNameExists.ContainsKey(name))
+            if (FieldNameExists.ContainsKey(name))
             {
                 FieldNameExists[name] = FieldNameExists[name] + 1;
                 return name + FieldNameExists[name];
@@ -63,7 +61,7 @@ namespace DataAnalyticsPlatform.Shared
                 return DataType.Boolean;
             if (type.Type == JsonTypeEnum.Integer || type.Type == JsonTypeEnum.NullableInteger)
                 return DataType.Int;
-            if (type.Type == JsonTypeEnum.Object )
+            if (type.Type == JsonTypeEnum.Object)
                 return DataType.Object;
             if (type.Type == JsonTypeEnum.Float || type.Type == JsonTypeEnum.NullableFloat)
                 return DataType.Double;
@@ -79,7 +77,7 @@ namespace DataAnalyticsPlatform.Shared
             string f = "";
             if (dataType.Type == JsonTypeEnum.Boolean)
                 f = $"public bool {Name}" + "{get;set;}\n";
-          
+
             else if (dataType.Type == JsonTypeEnum.Date)
                 f = $"public System.DateTime {Name}" + "{get;set;}\n";
             else if (dataType.Type == JsonTypeEnum.Float)
@@ -165,13 +163,13 @@ namespace DataAnalyticsPlatform.Shared
             classes.Add(f);
             return "";
         }
-        public string ClassGenerator(List<FieldInfo> fieldInfoList, ref string className, string schemaName, int jobId = 0 )
+        public string ClassGenerator(List<FieldInfo> fieldInfoList, ref string className, string schemaName, int jobId = 0)
         {
             string Pf = "using System;\n";
             Pf += "namespace " + schemaName + " {\n";
-            Pf += "public partial class OriginalRecord"+ jobId+"{\n";
+            Pf += "public partial class OriginalRecord" + jobId + "{\n";
             //gen base
-            Pf += "public OriginalRecord"+jobId+"(){ Init();}\n";
+            Pf += "public OriginalRecord" + jobId + "(){ Init();}\n";
             Pf += "partial void Init();\n";
             List<string> classes = new List<string>();
             GenerateClassfromFieldInfo(fieldInfoList, classes, Pf, "}}\n");
@@ -182,14 +180,14 @@ namespace DataAnalyticsPlatform.Shared
             //f += "}\n";
             string f = classes.Aggregate((i, j) => i + "\n" + j);
 
-            className = "OriginalRecord"+jobId;
+            className = "OriginalRecord" + jobId;
             return f;
         }
 
         public void GetFieldsFromType(List<FieldInfo> fieldInfo, List<string> classes, JsonType RootType, string prefix, string suffix)
         {
-            
-            
+
+
             if (RootType != null)
             {
                 if (RootType.Fields != null)
@@ -198,11 +196,11 @@ namespace DataAnalyticsPlatform.Shared
                     foreach (var field in RootType.Fields)
                     {
                         FieldInfo _fieldInfo = null;// = new FieldInfo(field.MemberName, GetTypeData(field.Type));
-                         //f+= getDataTypeString(_fieldInfo.DataType, _fieldInfo.Name);
-                        // f += $"public {field.Type.GetTypeName()} "+  field.MemberName + " {get ; set;}\n";
+                                                    //f+= getDataTypeString(_fieldInfo.DataType, _fieldInfo.Name);
+                                                    // f += $"public {field.Type.GetTypeName()} "+  field.MemberName + " {get ; set;}\n";
                         if (field.Type.Type == JsonTypeEnum.Array)
                         {
-                            if (field.Type.InternalType.Fields == null )//field.Type.Fields == null)
+                            if (field.Type.InternalType.Fields == null)//field.Type.Fields == null)
                             {
                                 var type = GetTypeData((JsonType)(field.Type.InternalType));
                                 if (type == DataType.String)
@@ -232,14 +230,14 @@ namespace DataAnalyticsPlatform.Shared
                         }
                         else
                         {
-                               _fieldInfo = new FieldInfo(this.CheckandGetName(field.MemberName), GetTypeData(field.Type));
+                            _fieldInfo = new FieldInfo(this.CheckandGetName(field.MemberName), GetTypeData(field.Type));
                             f += getDataTypeString(_fieldInfo.DataType, _fieldInfo.Name, true);
                         }
                         fieldInfo.Add(_fieldInfo);
                         //this.CheckandGetName
                         if (field.Type.Type == JsonTypeEnum.Array && field.Type.InternalType.Fields != null)
                         {
-                            GetFieldsFromType(_fieldInfo.InnerFields, classes, field.Type.InternalType, "public partial class " + (_fieldInfo.Name )+ "{\n", "}\n");
+                            GetFieldsFromType(_fieldInfo.InnerFields, classes, field.Type.InternalType, "public partial class " + (_fieldInfo.Name) + "{\n", "}\n");
                         }//this.CheckandGetName
                         else if (field.Type.Type == JsonTypeEnum.Object)
                         {
@@ -250,9 +248,9 @@ namespace DataAnalyticsPlatform.Shared
                     f += suffix;
                     classes.Add(f);
                 }
-             
+
             }
-          
+
 
         }
 
@@ -345,8 +343,8 @@ namespace DataAnalyticsPlatform.Shared
                             csCode = Helper.CreateCsfromJson(obj.ToString());
                             fieldInfoList = JsonReaderHelper.GetFieldInfos(csCode);
                             Classstring = csCode;
-                         
-                           break;
+
+                            break;
                         }
                     }
                 }
@@ -356,17 +354,17 @@ namespace DataAnalyticsPlatform.Shared
             }
             return null;
         }
-        public List<FieldInfo> GetAllFields(string filePath, string readerConfiguration , ref string className, ref string Classstring, string schema , int jobId = 0)
+        public List<FieldInfo> GetAllFields(string filePath, string readerConfiguration, ref string className, ref string Classstring, string schema, int jobId = 0)
         {
 
             List<FieldInfo> listOfFieldInfo = new List<FieldInfo>();
 
-            if (readerConfiguration != null &&  (readerConfiguration.ToLower().Contains("cord19") || readerConfiguration.ToLower().Contains("json1")))
+            if (readerConfiguration != null && (readerConfiguration.ToLower().Contains("cord19") || readerConfiguration.ToLower().Contains("json1")))
             {
                 TwitterObjectModelGenerator gen = new TwitterObjectModelGenerator();
                 Cord19.OriginalRecord cordObj = new Cord19.OriginalRecord();
                 listOfFieldInfo = gen.GetAllFieldsWithDeserilization(filePath, cordObj);//
-               // string code = File.ReadAllText("Cord19Test.cs");
+                                                                                        // string code = File.ReadAllText("Cord19Test.cs");
                 Classstring = "";
                 className = "OriginalRecord" + jobId;
                 return listOfFieldInfo;
@@ -375,28 +373,28 @@ namespace DataAnalyticsPlatform.Shared
             {
                 String JSONtxt = File.ReadAllText(filePath);
                 dynamic dynJson = JsonConvert.DeserializeObject(JSONtxt);
-                foreach( var item in dynJson)
+                foreach (var item in dynJson)
                 {
                     var jgen = new JsonClassGenerator();
                     jgen.Example = Convert.ToString(dynJson);
-                    jgen.MainClass = "OriginalRecord"+jobId;
+                    jgen.MainClass = "OriginalRecord" + jobId;
 
                     jgen.TargetFolder = null;
                     jgen.SingleFile = true;
                     jgen.GetTypeGenerated = true;
                     jgen.Namespace = schema;
                     jgen.UseNestedClasses = true;
-                 //   jgen.AlwaysUseNullableValues = true;
-                    
+                    //   jgen.AlwaysUseNullableValues = true;
+
                     var types = jgen.GenerateTypes();
-                   
+
                     List<string> classes = new List<string>();
                     //List<FieldInfo> fieldInfo = new FieldInfo();
                     var orderedTypes = types.OrderByDescending(x => x.IsRoot).ToList();
                     string Pf = "namespace " + schema + "{\n";
-                    Pf += "public partial class OriginalRecord"+jobId+" {\n";
+                    Pf += "public partial class OriginalRecord" + jobId + " {\n";
                     //gen base
-                    Pf += "public OriginalRecord"+jobId+"(){ Init();}\n";
+                    Pf += "public OriginalRecord" + jobId + "(){ Init();}\n";
                     Pf += "partial void Init();\n";
                     // GetFieldsFromType(listOfFieldInfo, classes, orderedTypes[0], Pf, "}}\n");
                     FieldInfo fieldInfo = new FieldInfo("", DataType.Object);
@@ -404,7 +402,7 @@ namespace DataAnalyticsPlatform.Shared
                     string f = classes.Aggregate((i, j) => i + "\n" + j);
                     listOfFieldInfo = fieldInfo.InnerFields;
                     Classstring = f;
-                  
+
                     break;//only one for now
                 }
                 //using (var reader = new JsonTextReader(new StringReader(filePath)))
@@ -428,14 +426,14 @@ namespace DataAnalyticsPlatform.Shared
                 //   MatchCollection matches = regex.Matches(JSONtxt);
                 //foreach (Match match in matches)
                 {
-                   // string objStr = JSONtxt.ToString();
+                    // string objStr = JSONtxt.ToString();
                     //json lets get schema
-                   
-                   // break;
+
+                    // break;
                 }
-               
+
             }
-            className = "OriginalRecord"+jobId;
+            className = "OriginalRecord" + jobId;
             return listOfFieldInfo;
         }
     }

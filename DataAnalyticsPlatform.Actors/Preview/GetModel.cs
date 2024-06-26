@@ -1,10 +1,7 @@
 ﻿using Akka.Actor;
 using DataAnalyticsPlatform.Shared.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
- 
+
 namespace DataAnalyticsPlatform.Actors.Preview
 {
     public class GetModels
@@ -23,4 +20,4 @@ namespace DataAnalyticsPlatform.Actors.Preview
             return await this.PreviewsActor.Ask<SchemaModels>(new messages.PreviewActor.GetModel(userId));
         }
     }
-} 
+}

@@ -1,11 +1,8 @@
 ﻿using Akka.Actor;
 using Akka.Event;
 using DataAnalyticsPlatform.Actors.Master;
-using DataAnalyticsPlatform.Readers;
 using DataAnalyticsPlatform.Shared.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
 
 namespace DataAnalyticsPlatform.Actors.Processors
@@ -107,7 +104,7 @@ namespace DataAnalyticsPlatform.Actors.Processors
                 else
                 {
                     Sender.Tell(new NoMoreRecord());
-                }                
+                }
             });
         }
 

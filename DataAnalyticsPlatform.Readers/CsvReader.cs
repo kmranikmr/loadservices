@@ -6,12 +6,10 @@ using DataAnalyticsPlatform.Shared;
 using DataAnalyticsPlatform.Shared.Interfaces;
 using DataAnalyticsPlatform.Shared.Models;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace DataAnalyticsPlatform.Readers
@@ -31,7 +29,7 @@ namespace DataAnalyticsPlatform.Readers
         }
     }
 
-   
+
     public class HyphenToZeroConverterDouble : DoubleConverter
     {
 
@@ -39,15 +37,15 @@ namespace DataAnalyticsPlatform.Readers
         {
             //Console.WriteLine(memberMapData.Index + " " + text);
             string trimmed = text.Trim();
-            if (trimmed == "-" ||(trimmed.Any(x => Char.IsLetter(x))) ||(trimmed.Length <= 1 && trimmed.Contains("-") ) || string.IsNullOrEmpty(text) || string.IsNullOrEmpty(trimmed))
+            if (trimmed == "-" || (trimmed.Any(x => Char.IsLetter(x))) || (trimmed.Length <= 1 && trimmed.Contains("-")) || string.IsNullOrEmpty(text) || string.IsNullOrEmpty(trimmed))
             {
                 return 0.0;
             }
 
             int pos = trimmed.IndexOf("-");
-            if ( pos != -1 && pos > 1)
+            if (pos != -1 && pos > 1)
             {
-                double.TryParse(trimmed.Substring(0, pos - 1), NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign | 
+                double.TryParse(trimmed.Substring(0, pos - 1), NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign |
                     NumberStyles.Number | NumberStyles.Integer | NumberStyles.Float, CultureInfo.CurrentCulture, out double val);
                 return val;
             }
@@ -65,9 +63,9 @@ namespace DataAnalyticsPlatform.Readers
 
         private CsvReaderConfiguration csvReaderConfiguration;
 
-        private int FileId { get; set;}
+        private int FileId { get; set; }
 
-        public CsvReader(ReaderConfiguration conf) : base (conf)
+        public CsvReader(ReaderConfiguration conf) : base(conf)
         {
             Console.WriteLine("CsvReader Conf" + conf.SourcePath);
             _streamReader = new StreamReader(conf.SourcePath);
@@ -76,10 +74,10 @@ namespace DataAnalyticsPlatform.Readers
 
             _csvDataReader = new CsvHelper.CsvReader(_streamReader);
 
-            if ( conf.ConfigurationDetails != null )
+            if (conf.ConfigurationDetails != null)
             {
                 Console.WriteLine("CsvReader ConfigurationDetails" + conf.ConfigurationDetails.readerName);
-                csvReaderConfiguration  = (CsvReaderConfiguration)conf.ConfigurationDetails;
+                csvReaderConfiguration = (CsvReaderConfiguration)conf.ConfigurationDetails;
             }
             int skipLines = csvReaderConfiguration != null ? csvReaderConfiguration.skipLines : 0;
             for (var i = 0; skipLines > 0 && i < skipLines; i++)
@@ -119,8 +117,8 @@ namespace DataAnalyticsPlatform.Readers
                 _csvDataReader.Configuration.TypeConverterCache.AddConverter(typeof(double), new HyphenToZeroConverterDouble());
                 //DataReader.Configuration.TypeConverterCache.AddConverter(typeof(double), 
 
-              _csvDataReader.Configuration.RegisterClassMap(conf.ModelMap);
-                
+                _csvDataReader.Configuration.RegisterClassMap(conf.ModelMap);
+
             }
 
         }
@@ -135,7 +133,7 @@ namespace DataAnalyticsPlatform.Readers
 
                 if (_csvDataReader.Read())
                 {
-                   
+
                     // var t1 = GetConfiguration().ModelType.GetType().UnderlyingSystemType;
                     var rec = _csvDataReader.GetRecord(GetConfiguration().ModelType);//OriginalRecord>();//(
 
@@ -152,7 +150,7 @@ namespace DataAnalyticsPlatform.Readers
                     Dispose();
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine("Error CsvReader GetRecords " + ex.Message);
                 record = null;
@@ -162,7 +160,7 @@ namespace DataAnalyticsPlatform.Readers
             }
             return result;
         }
-        public override bool GetRecords(out IRecord record, Type t) 
+        public override bool GetRecords(out IRecord record, Type t)
         {
             bool result = false;
 
@@ -182,14 +180,14 @@ namespace DataAnalyticsPlatform.Readers
             }
 
             return result;
-            
+
         }
 
         public override DataTable Preview(int size)
         {
             DataTable dt = new DataTable();
 
-            
+
 
 
             return dt;

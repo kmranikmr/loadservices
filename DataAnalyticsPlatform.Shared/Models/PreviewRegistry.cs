@@ -1,10 +1,8 @@
 ﻿
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-using Newtonsoft.Json;
-using System.Collections;
 
 namespace DataAnalyticsPlatform.Shared.Models
 {
@@ -27,7 +25,7 @@ namespace DataAnalyticsPlatform.Shared.Models
         public string ClassoDefinitionXML { get; set; }
         public object ModelObject { get; set; }
         [JsonIgnore]
-        public List<Type> AllTypes { get; set;}
+        public List<Type> AllTypes { get; set; }
         public TypeConfig TypeConfiguration { get; set; }
         public List<FieldInfo> ListOfFieldInfo { get; set; }
 
@@ -67,7 +65,7 @@ namespace DataAnalyticsPlatform.Shared.Models
             Models = new Dictionary<int, SchemaModels>();
             TransformedModels = new Dictionary<int, TransformedModel>();
             SchemaModels models = new SchemaModels();
-           // models.SModels.Add(new SchemaModel() { ClassoDefinitionXML = "test" });
+            // models.SModels.Add(new SchemaModel() { ClassoDefinitionXML = "test" });
             //Models.Add(1, models);
         }
 
@@ -81,7 +79,7 @@ namespace DataAnalyticsPlatform.Shared.Models
         }
         public void AddToRegistry(SchemaModel model, int userId, bool allowOne = false)
         {
-            if ( Models.ContainsKey(userId))
+            if (Models.ContainsKey(userId))
             {
                 if (allowOne)
                 {
@@ -112,7 +110,7 @@ namespace DataAnalyticsPlatform.Shared.Models
             bool rv = Helper.ScrambledEquals(inTypeConfig.BaseClassFields, otherConfig.BaseClassFields);
             var t1 = inTypeConfig.BaseClassFields.Except(otherConfig.BaseClassFields).ToList();
             var t2 = otherConfig.BaseClassFields.Except(inTypeConfig.BaseClassFields).ToList();
-            if ( (inTypeConfig.BaseClassFields.All(item => otherConfig.BaseClassFields.Contains(item)) &&
+            if ((inTypeConfig.BaseClassFields.All(item => otherConfig.BaseClassFields.Contains(item)) &&
                 otherConfig.BaseClassFields.All(item => inTypeConfig.BaseClassFields.Contains(item))))
             {
                 same_base = true;
@@ -123,7 +121,7 @@ namespace DataAnalyticsPlatform.Shared.Models
             {
                 same_models = true;
             }
-            if ( same_base && same_models)
+            if (same_base && same_models)
             {
                 return true;
             }
@@ -185,25 +183,25 @@ namespace DataAnalyticsPlatform.Shared.Models
         {
             Console.WriteLine("CompareBaseFields ");
             if (infieldInfoList == null || otherFieldInfoList == null) return EnumSchemaDiffType.None;
-            if ( infieldInfoList.Count != otherFieldInfoList.Count )
+            if (infieldInfoList.Count != otherFieldInfoList.Count)
             {
                 Console.WriteLine("EnumSchemaDiffType.DiffBaseModels");
-               // return EnumSchemaDiffType.DiffBaseModels;
+                // return EnumSchemaDiffType.DiffBaseModels;
             }
-             Console.WriteLine("checking detailed");
-            bool rv = Helper.ScrambledEquals(infieldInfoList.Select(x=>x.Name).ToList(), otherFieldInfoList.Select(x=>x.Name).ToList());
-            Console.WriteLine("checking detailed " + rv); 
-     //       for ( int j = 0; j < infieldInfoList.Count; j++)
-     //       {
-     //            Console.WriteLine(infieldInfoList[j].Name + " " + otherFieldInfoList[j].Name + " " + 
-     //                     infieldInfoList[j].DisplayName + " " + otherFieldInfoList[j].DisplayName);
-	    //}
+            Console.WriteLine("checking detailed");
+            bool rv = Helper.ScrambledEquals(infieldInfoList.Select(x => x.Name).ToList(), otherFieldInfoList.Select(x => x.Name).ToList());
+            Console.WriteLine("checking detailed " + rv);
+            //       for ( int j = 0; j < infieldInfoList.Count; j++)
+            //       {
+            //            Console.WriteLine(infieldInfoList[j].Name + " " + otherFieldInfoList[j].Name + " " + 
+            //                     infieldInfoList[j].DisplayName + " " + otherFieldInfoList[j].DisplayName);
+            //}
 
             // if ((infieldInfoList.All(item => otherFieldInfoList.Contains(item)) &&
             //  otherFieldInfoList.All(item => infieldInfoList.Contains(item))))
             //var intersected = otherFieldInfoList.Intersect(infieldInfoList, new FieldInfoComparer());
             //intersected.Count() == otherFieldInfoList.Count ||
-            if ( rv)//otherFieldInfoList.All(item => infieldInfoList.Contains(item)) || rv)
+            if (rv)//otherFieldInfoList.All(item => infieldInfoList.Contains(item)) || rv)
             {
                 Console.WriteLine("Same Base");
                 return EnumSchemaDiffType.SameBase;
@@ -221,7 +219,7 @@ namespace DataAnalyticsPlatform.Shared.Models
             bool same_base = false;
             bool same_models = false;
             if ((inTypeConfig.BaseClassFields.Count != otherConfig.BaseClassFields.Count)
-                || (inTypeConfig.ModelInfoList.Count > 0 && otherConfig.ModelInfoList.Count > 0  && inTypeConfig.ModelInfoList.Count != otherConfig.ModelInfoList.Count))
+                || (inTypeConfig.ModelInfoList.Count > 0 && otherConfig.ModelInfoList.Count > 0 && inTypeConfig.ModelInfoList.Count != otherConfig.ModelInfoList.Count))
             {
                 Console.WriteLine("EnumSchemaDiffType.DiffBaseModels");
                 //return EnumSchemaDiffType.DiffBaseModels;
@@ -231,7 +229,7 @@ namespace DataAnalyticsPlatform.Shared.Models
             var t2 = otherConfig.BaseClassFields.Except(inTypeConfig.BaseClassFields).ToList();
 
             if ((inTypeConfig.BaseClassFields.All(item => otherConfig.BaseClassFields.Contains(item)) &&
-                otherConfig.BaseClassFields.All(item => inTypeConfig.BaseClassFields.Contains(item)))  || rv )
+                otherConfig.BaseClassFields.All(item => inTypeConfig.BaseClassFields.Contains(item))) || rv)
             {
                 same_base = true;
                 //same base

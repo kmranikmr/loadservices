@@ -1,29 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Akka.Actor;
+using Akka.Bootstrap.Docker;
 using AutoMapper;
+using Coravel;
 using DataAccess.DTO;
 using DataAccess.Models;
+using DataAnalyticsPlatform.Actors.Utils;
+using DataAnalyticsPlatform.Shared.DataModels;
+using LoadServiceApi.Load;
+using LoadServiceApi.Previews;
 using LoadServiceApi.Shared;
-using LoadServiceApi;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Coravel;
-using Akka.Actor;
-using LoadServiceApi.Previews;
-using DataAnalyticsPlatform.Actors.Utils;
-using LoadServiceApi.Load;
-using DataAnalyticsPlatform.Shared.DataModels;
-using DataAnalyticsPlatform.Shared.DataAccess;
-using Akka.Bootstrap.Docker;
+using System;
 
 namespace WebApplication1
 {
@@ -42,7 +33,7 @@ namespace WebApplication1
 
             services.ConfigureAuth(Configuration);
             services.AddSingleton<ActorSystem>(_ => ActorSystem.Create("PreviewService"));
-            
+
             services.AddPreviewServices();
             services.AddControllers().AddNewtonsoftJson();
             var config = HoconLoader.ParseConfig("webapi.hocon");
@@ -74,9 +65,9 @@ namespace WebApplication1
             services.AddMvc(option => option.EnableEndpointRouting = false);
             var connectionString = Configuration.GetConnectionString("localDb");
             var postgresConnectionString = Configuration.GetConnectionString("postgresdb");
-             var elasticSearchString = Configuration.GetConnectionString("elasticSearch");
+            var elasticSearchString = Configuration.GetConnectionString("elasticSearch");
             var mongoDB = Configuration.GetConnectionString("mongoDB");
-            services.Configure<ConnectionStringsConfig>(option => option.DefaultConnection = connectionString );
+            services.Configure<ConnectionStringsConfig>(option => option.DefaultConnection = connectionString);
             services.Configure<ConnectionStringsConfig>(option => option.PostgresConnection = postgresConnectionString);
             services.Configure<ConnectionStringsConfig>(option => option.ElasticSearchString = elasticSearchString);
             services.Configure<ConnectionStringsConfig>(option => option.MongoDBString = mongoDB);

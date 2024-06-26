@@ -1,16 +1,11 @@
 ﻿using Akka.Actor;
 using DataAnalyticsPlatform.Actors.Preview;
-using DataAnalyticsPlatform.Common;
 //using DataAnalyticsPlatform.Common;
 using DataAnalyticsPlatform.Shared;
 using DataAnalyticsPlatform.Shared.DataAccess;
-using DataAnalyticsPlatform.Shared.Models;
-using DataAnalyticsPlatform.SharedUtils;
 //using DataAnalyticsPlatform.SharedUtils;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DataAnalyticsPlatform.Actors
@@ -28,7 +23,7 @@ namespace DataAnalyticsPlatform.Actors
         public async Task<Tuple<string, Dictionary<string, List<BaseModel>>>> Execute(int userId, TypeConfig typeConfig, string FileName, string customConfiguration = "")
         {
 
-            return await this.PreviewsActor.Ask<Tuple<string, Dictionary<string,List<BaseModel>>>>(new messages.PreviewActor.UpdateModel(userId, typeConfig, FileName, customConfiguration));
+            return await this.PreviewsActor.Ask<Tuple<string, Dictionary<string, List<BaseModel>>>>(new messages.PreviewActor.UpdateModel(userId, typeConfig, FileName, customConfiguration));
         }
     }
 }

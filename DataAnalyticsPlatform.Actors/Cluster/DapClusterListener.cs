@@ -2,8 +2,6 @@
 using Akka.Cluster;
 using Akka.Event;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace DataAnalyticsPlatform.Actors.Cluster
 {

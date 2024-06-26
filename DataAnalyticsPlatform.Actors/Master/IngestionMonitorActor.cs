@@ -1,10 +1,6 @@
 ﻿using Akka.Actor;
 using DataAnalyticsPlatform.Actors.Processors;
-using DataAnalyticsPlatform.Shared.DataAccess;
 using Npgsql;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace DataAnalyticsPlatform.Actors.Master
 {

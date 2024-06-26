@@ -1,9 +1,4 @@
-﻿using DataAnalyticsPlatform.Shared.DataModels;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DataAnalyticsPlatform.Shared.Interfaces
+﻿namespace DataAnalyticsPlatform.Shared.Interfaces
 {
     public interface IRecord
     {
@@ -12,6 +7,6 @@ namespace DataAnalyticsPlatform.Shared.Interfaces
         long FileId { get; set; }
         //Entity Instance { get; set; }
 
-        string FileName{get;set;}
+        string FileName { get; set; }
     }
 }

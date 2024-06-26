@@ -1,10 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Text;
-using System.Diagnostics;
-using System.Collections.Generic;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace DataAnalyticsPlatform.Readers
 {
@@ -61,7 +60,7 @@ namespace DataAnalyticsPlatform.Readers
                 string.Format("https://api.twitter.com/1.1/search/tweets.json");
 
             var requestParameters = new SortedDictionary<string, string>();
-           
+
             requestParameters.Add("q", query);
             requestParameters.Add("lang", "en");
             requestParameters.Add("include_entities", "false");

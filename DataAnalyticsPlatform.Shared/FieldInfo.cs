@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 namespace DataAnalyticsPlatform.Shared
 {
@@ -26,7 +25,7 @@ namespace DataAnalyticsPlatform.Shared
 
         public List<FieldInfo> InnerFields { get; set; }
         public string Uuid { get; set; }
-       // public List<string> primaryMap { get; set; }
+        // public List<string> primaryMap { get; set; }
         public override string ToString()
         {
             return $@"{Name} - {DataType} ({Length})";
@@ -44,7 +43,7 @@ namespace DataAnalyticsPlatform.Shared
 
         public FieldInfo(string name, string type)
         {
-           
+
 
             Name = name;
 
@@ -71,7 +70,7 @@ namespace DataAnalyticsPlatform.Shared
             //        Path = name;
             //}
 
-       
+
         }
 
         public FieldInfo(string name, DataType t) : this()
@@ -82,13 +81,13 @@ namespace DataAnalyticsPlatform.Shared
 
             Map = name;
 
-          //  Path = name;
+            //  Path = name;
             //if (DataType == DataType.Object || DataType == DataType.ObjectArray)
             //{
             //    if (Path != null && Path != "")
             //    {
             //        Path = Path + "[]." + name;
-                   
+
             //    }
             //    else
             //    {
@@ -108,7 +107,7 @@ namespace DataAnalyticsPlatform.Shared
                 InnerFields = new List<FieldInfo>();
             }
         }
-       
+
         public void AddField(FieldInfo f)
         {
             if (DataType == DataType.Object || DataType == DataType.ObjectArray)
@@ -116,10 +115,10 @@ namespace DataAnalyticsPlatform.Shared
                 if (InnerFields == null) InnerFields = new List<FieldInfo>();
 
 
-                f.Map = Map !="" ?  Map + "." + f.Name : f.Name;
+                f.Map = Map != "" ? Map + "." + f.Name : f.Name;
                 //  f.Path = Path + "." + f.Name;
 
-                if ( DataType == DataType.ObjectArray)
+                if (DataType == DataType.ObjectArray)
                 {
                     if (Path != null && Path != "")
                     {
@@ -179,7 +178,7 @@ namespace DataAnalyticsPlatform.Shared
                     else
                         Path = Name;
                 }
-                
+
             }
             else
             {
@@ -240,15 +239,15 @@ namespace DataAnalyticsPlatform.Shared
             return x.Equals(y);
         }
         public static bool operator !=(FieldInfo x, FieldInfo y)
-        {           
+        {
             return !(x == y);
         }
-      
+
         internal static DataType GetFieldType(string dataType)
         {
             switch (dataType)
             {
-              
+
                 case "DateTime":
                     return DataType.DateTime;
                 case "int":
@@ -304,7 +303,7 @@ namespace DataAnalyticsPlatform.Shared
 
             var other = obj as ModelInfo;
 
-            if ((ModelName != other.ModelName) || (!ModelFields.All(item => other.ModelFields.Contains(item)) )) 
+            if ((ModelName != other.ModelName) || (!ModelFields.All(item => other.ModelFields.Contains(item))))
                 return false;
 
             return true;

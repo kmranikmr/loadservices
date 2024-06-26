@@ -2,13 +2,9 @@
 using Akka.Event;
 using Akka.Routing;
 using DataAnalyticsPlatform.Actors.Master;
-using DataAnalyticsPlatform.Common;
 using DataAnalyticsPlatform.Shared.Interfaces;
-using DataAnalyticsPlatform.Writers;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using static DataAnalyticsPlatform.Actors.Processors.WriterManager;
 
 namespace DataAnalyticsPlatform.Actors.Processors
 {
@@ -52,9 +48,9 @@ namespace DataAnalyticsPlatform.Actors.Processors
 
             }
         }
-            #endregion
+        #endregion
 
-            private readonly ILoggingAdapter _log = Logging.GetLogger(Context);
+        private readonly ILoggingAdapter _log = Logging.GetLogger(Context);
 
         private IWriter _writer = null;
         private IWriter _elasticWriter = null;
@@ -63,13 +59,13 @@ namespace DataAnalyticsPlatform.Actors.Processors
         public string _schemaName { get; set; }
 
         // public Dictionary<string, List<BaseModel>> _modelList;
-       // public List<object> _modelList;
+        // public List<object> _modelList;
         public WriterActor(IngestionJob j)
         {
             _ingestionJob = j;
-            _schemaName = j.ReaderConfiguration.TypeConfig.SchemaName.Replace(" ",string.Empty);
-             
-            _schemaName = j.ReaderConfiguration.ProjectId != -1 ? _schemaName + "_" + j.ReaderConfiguration.ProjectId+"_"+j.UserId : _schemaName;
+            _schemaName = j.ReaderConfiguration.TypeConfig.SchemaName.Replace(" ", string.Empty);
+
+            _schemaName = j.ReaderConfiguration.ProjectId != -1 ? _schemaName + "_" + j.ReaderConfiguration.ProjectId + "_" + j.UserId : _schemaName;
             Console.WriteLine("WriterActor  _schemaName" + _schemaName);
             if (_ingestionJob.WriterConfiguration == null)
             {
@@ -83,7 +79,7 @@ namespace DataAnalyticsPlatform.Actors.Processors
                     _writer = Writers.Factory.GetWriter(writerConf);
 
                     _writer.SchemaName = _schemaName != string.Empty ? _schemaName : "public";
-                    Console.WriteLine("WriterActor  WriterConfiguration _writer.SchemaName"  + _writer.SchemaName);
+                    Console.WriteLine("WriterActor  WriterConfiguration _writer.SchemaName" + _writer.SchemaName);
 
                 }
                 if (writerConf.DestinationType == Shared.Types.DestinationType.ElasticSearch)
@@ -103,7 +99,7 @@ namespace DataAnalyticsPlatform.Actors.Processors
                 }
             }
 
-         //   _modelList = new List<object>(); //new Dictionary<string, List<BaseModel>>();
+            //   _modelList = new List<object>(); //new Dictionary<string, List<BaseModel>>();
 
             _writer.OnError += _writer_OnError;
 
@@ -155,7 +151,8 @@ namespace DataAnalyticsPlatform.Actors.Processors
                     {
                         Console.WriteLine("WriterActor diff type" + x.GetType());
                     }
-                } catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
                     throw new WriterException("Writer Error", ex, 0, Sender);
                 }
@@ -196,7 +193,7 @@ namespace DataAnalyticsPlatform.Actors.Processors
         public override void AroundPostStop()
         {
 
-          
+
             _writer.Dispose();
             var sizeMap = _writer.DataSize();
             Console.WriteLine(" AroundPostStop ");
@@ -218,7 +215,7 @@ namespace DataAnalyticsPlatform.Actors.Processors
             _writerManager.Tell(sizeData);
 
             if (_elasticWriter != null)
-            _elasticWriter.Dispose();
+                _elasticWriter.Dispose();
         }
         private void _writer_OnInfo(object sender, Shared.ExceptionUtils.InfoArgument e)
         {

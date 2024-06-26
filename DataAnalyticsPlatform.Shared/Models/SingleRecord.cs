@@ -1,8 +1,4 @@
-﻿using DataAnalyticsPlatform.Shared.DataModels;
-using DataAnalyticsPlatform.Shared.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using DataAnalyticsPlatform.Shared.Interfaces;
 
 namespace DataAnalyticsPlatform.Shared.Models
 {

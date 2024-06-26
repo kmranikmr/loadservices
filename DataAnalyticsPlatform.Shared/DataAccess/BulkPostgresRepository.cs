@@ -2,9 +2,8 @@
 using NpgsqlTypes;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Reflection;
 using System.IO;
+using System.Reflection;
 
 namespace DataAnalyticsPlatform.Shared.DataAccess
 {
@@ -77,7 +76,7 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
                         command.CommandText = $"SELECT pg_total_relation_size('{_schemaName}.{it1.Key}')";
                         Console.WriteLine("BulkPostgresRepo : DataSize command execute" + command.CommandText);
                         var num = command.ExecuteScalar();
-                        num= (num == DBNull.Value) ? null : num;
+                        num = (num == DBNull.Value) ? null : num;
                         if (num != null)
                         {
                             long? result = Convert.ToInt64(num);
@@ -137,7 +136,7 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
                             string propName = item.Props[i];
                             if (colsDbType.TryGetValue(propName, out dbType) == false)
                             {
-                                var col  = importerInfo.Columns.Find(x => x.Item1 == propName);
+                                var col = importerInfo.Columns.Find(x => x.Item1 == propName);
 
                                 dbType = col.Item3;
 
@@ -185,7 +184,7 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
                     command.ExecuteNonQuery();
                 }
             }
-            
+
         }
 
         private List<(string, string, NpgsqlDbType)> GetColumns(TEntity entity)
@@ -328,7 +327,7 @@ namespace DataAnalyticsPlatform.Shared.DataAccess
         public string TableName { get; set; }
 
         //tablename, pg data type, .net data type
-        public List<ValueTuple<string, string,NpgsqlDbType>> Columns { get; set; }
+        public List<ValueTuple<string, string, NpgsqlDbType>> Columns { get; set; }
 
         public ImporterInfo()
         {

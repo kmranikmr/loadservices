@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DataAnalyticsPlatform.Shared.Types
+﻿namespace DataAnalyticsPlatform.Shared.Types
 {
     public enum DestinationType
     {

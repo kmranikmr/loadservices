@@ -2,8 +2,6 @@
 using DataAnalyticsPlatform.Shared.Models;
 using DataAnalyticsPlatform.Shared.Types;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace DataAnalyticsPlatform.Readers
 {
@@ -16,11 +14,11 @@ namespace DataAnalyticsPlatform.Readers
                 case SourceType.Csv:
                     return new CsvReader(conf);
                 case SourceType.Json:
-                    if ( conf.ConfigurationDetails != null && conf.ConfigurationDetails is TwitterConfiguration)
+                    if (conf.ConfigurationDetails != null && conf.ConfigurationDetails is TwitterConfiguration)
                         return new TwitterReader(conf, conf.Types);
                     else
                         return new JsonReader(conf);
-               
+
                 default:
                     throw new NotImplementedException();
             }

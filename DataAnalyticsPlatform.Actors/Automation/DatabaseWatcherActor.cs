@@ -4,8 +4,6 @@ using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -32,7 +30,8 @@ namespace DataAnalyticsPlatform.Actors.Automation
             }
         }
 
-        public class RemoveAutomation {
+        public class RemoveAutomation
+        {
             public ProjectAutomation AutomationModel { get; private set; }
 
             public RemoveAutomation(ProjectAutomation model)
@@ -71,9 +70,9 @@ namespace DataAnalyticsPlatform.Actors.Automation
             _connectionString = connectionString;
 
             _automationCoordinator = coordinator;
-            
+
             SetReceiveHandlers();
-            
+
         }
 
         private void SetReceiveHandlers()
@@ -107,13 +106,13 @@ namespace DataAnalyticsPlatform.Actors.Automation
                         _automationCoordinator.Tell(new AddAutomation(a));
                     }
                 }
-                
+
                 _cancelable = Context.System.Scheduler.ScheduleTellOnceCancelable(TimeSpan.FromSeconds(60), Self, new GetAutomationModels(), Self);
 
             });
 
             Receive<GetAutomationModels>(f =>
-            {               
+            {
                 GetAutomationSchema();
             });
         }
@@ -134,7 +133,7 @@ namespace DataAnalyticsPlatform.Actors.Automation
 
         protected override void PreStart()
         {
-            _automationModels = new Dictionary<int, ProjectAutomation>();           
+            _automationModels = new Dictionary<int, ProjectAutomation>();
             _cancelToken = new CancellationTokenSource();
             _folderMonitorActors = new Dictionary<int, IActorRef>();
         }
@@ -149,7 +148,7 @@ namespace DataAnalyticsPlatform.Actors.Automation
                 try
                 {
                     //locations = _efRepository.GetAutomationModels().ToList();
-                     modelsFromDb = GetModels(_connectionString);
+                    modelsFromDb = GetModels(_connectionString);
                 }
                 catch (Exception ex)
                 {
@@ -164,7 +163,7 @@ namespace DataAnalyticsPlatform.Actors.Automation
                 {
                     case TaskStatus.RanToCompletion:
                         Console.WriteLine("Successfully checked for models.");
-                       // _logger.Info("Successfully checked for models.");
+                        // _logger.Info("Successfully checked for models.");
                         break;
                     case TaskStatus.Canceled:
                         Console.WriteLine("Task was canceled.");
@@ -197,7 +196,7 @@ namespace DataAnalyticsPlatform.Actors.Automation
                     models.Add(item);
                 }
             }
-          //  models.Add(new ProjectAutomation { ProjectAutomationId = 1, FolderPath = @"d:\watch", ProjectId = 1114, ProjectSchemaId = 101, CreatedBy = 2, ReaderId =  2});
+            //  models.Add(new ProjectAutomation { ProjectAutomationId = 1, FolderPath = @"d:\watch", ProjectId = 1114, ProjectSchemaId = 101, CreatedBy = 2, ReaderId =  2});
 
             return models;
         }

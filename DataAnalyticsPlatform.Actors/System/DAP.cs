@@ -1,6 +1,6 @@
 ﻿using Akka.Actor;
-using System;
 using DataAnalyticsPlatform.Actors.Master;
+using System;
 
 namespace DataAnalyticsPlatform.Actors.System
 {
@@ -37,6 +37,6 @@ namespace DataAnalyticsPlatform.Actors.System
         {
             _system.Stop(_masterActor);
             _system.Dispose();
-        }       
+        }
     }
 }

@@ -5,14 +5,10 @@ using DataAnalyticsPlatform.Shared.Models;
 using DataAnalyticsPlatform.Shared.Types;
 using DataAnalyticsPlatform.Writers;
 using Newtonsoft.Json;
+using Npgsql;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using static DataAnalyticsPlatform.Actors.Master.MasterActor;
-using Npgsql;
 
 
 namespace DataAnalyticsPlatform.Actors.Master
@@ -31,10 +27,10 @@ namespace DataAnalyticsPlatform.Actors.Master
         }
         public bool CreateSchema(string connectionString, string schemaName)
         {
-             using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+            {
+                try
                 {
-                   try
-                    {
                     connection.Open();
 
                     using (NpgsqlCommand command = connection.CreateCommand())
@@ -44,12 +40,13 @@ namespace DataAnalyticsPlatform.Actors.Master
                         command.ExecuteNonQuery();
 
                     }
-                   }catch(Exception ex)
-                   {
-                     return false;
-                   }
-                  return true;
                 }
+                catch (Exception ex)
+                {
+                    return false;
+                }
+                return true;
+            }
             return false;
 
         }
@@ -60,7 +57,7 @@ namespace DataAnalyticsPlatform.Actors.Master
             Func<int> Function = new Func<int>(() =>
             {
                 SchemaModels smodels = previewRegsitry.GetFromRegistry(userId);
-                
+
                 if (FileName.EndsWith(".csv"))
                 {
 
@@ -106,7 +103,7 @@ namespace DataAnalyticsPlatform.Actors.Master
                             writerTest.ProjectId = projectId;
                         }
                         confWriter.Add(writerTest);
-                       
+
                     }
 
                     //  var confWriter = new Writers.WriterConfiguration(Shared.Types.DestinationType.RDBMS, connectionString: @"Server =localhost; User Id = dev; Password = nwdidb19; Database = nwdi_ts; Port=5433;CommandTimeout=0", ModelMap: null);//Search Path=public;/Server =localhost; User Id = dev; Password = nwdidb19; Database = nwdi_ts; Port=5433;CommandTimeout=0
@@ -119,9 +116,9 @@ namespace DataAnalyticsPlatform.Actors.Master
                 else if (FileName.EndsWith(".json") || FileName.Contains("twitter"))
                 {
                     //-----commenedt below
-                  //  List<Type> types = smodels.SModels[0].AllTypes;
-                  ////  Type originalType = types.Where(x => x.FullName.Contains("OriginalRecord" + _ingestionJob.JobId)).FirstOrDefault();
-                 //   object originalObject = Activator.CreateInstance(originalType);
+                    //  List<Type> types = smodels.SModels[0].AllTypes;
+                    ////  Type originalType = types.Where(x => x.FullName.Contains("OriginalRecord" + _ingestionJob.JobId)).FirstOrDefault();
+                    //   object originalObject = Activator.CreateInstance(originalType);
 
                     ///---------------------------------------------------------
 
@@ -141,36 +138,36 @@ namespace DataAnalyticsPlatform.Actors.Master
                         conf.ProjectId = projectId;
                     }
                     //var confWriter = new Writers.WriterConfiguration(Shared.Types.DestinationType.csv, connectionString: @"e:\temp\", ModelMap: null);
-                   // var confWriter = new Writers.WriterConfiguration(Shared.Types.DestinationType.RDBMS, connectionString: postgresConnString, ModelMap: null);//Search Path=public;
-                                                                                                                                                                                                                                                                                                 /// var confWriter = new Writers.WriterConfiguration(Shared.Types.DestinationType.Mongo, connectionString: @"mongodb://localhost:27017/?connectTimeoutMS=30000&maxIdleTimeMS=600000", ModelMap: null);//Search Path=public;
-                  //  if (projectId != -1)
-                   // {
-                        //    confWriter.ProjectId = projectId;
-                        // }
-                        List<WriterConfiguration> confWriter = new List<WriterConfiguration>();
-                        //@"Server =raja.db.elephantsql.com; User Id = aniwbjgk; Password = esypNF7dCv9kKReCSNvM48LsPoJX_IvG; Database = aniwbjgk; Port=5432;CommandTimeout=0
-                        foreach (var writer in writers)
+                    // var confWriter = new Writers.WriterConfiguration(Shared.Types.DestinationType.RDBMS, connectionString: postgresConnString, ModelMap: null);//Search Path=public;
+                    /// var confWriter = new Writers.WriterConfiguration(Shared.Types.DestinationType.Mongo, connectionString: @"mongodb://localhost:27017/?connectTimeoutMS=30000&maxIdleTimeMS=600000", ModelMap: null);//Search Path=public;
+                    //  if (projectId != -1)
+                    // {
+                    //    confWriter.ProjectId = projectId;
+                    // }
+                    List<WriterConfiguration> confWriter = new List<WriterConfiguration>();
+                    //@"Server =raja.db.elephantsql.com; User Id = aniwbjgk; Password = esypNF7dCv9kKReCSNvM48LsPoJX_IvG; Database = aniwbjgk; Port=5432;CommandTimeout=0
+                    foreach (var writer in writers)
+                    {
+                        WriterConfiguration writerTest = null;
+                        if (writer.WriterTypeId == 4)
                         {
-                            WriterConfiguration writerTest = null;
-                            if (writer.WriterTypeId == 4)
-                            {
-                                writerTest = new Writers.WriterConfiguration(Shared.Types.DestinationType.ElasticSearch, connectionString: elasticSearchString, ModelMap: null);//Search Path=public;/Server =localhost; User Id = dev; Password = nwdidb19; Database = nwdi_ts; Port=5433;CommandTimeout=0
-                            }
-                            else
-                            {
-                                writerTest = new Writers.WriterConfiguration(Shared.Types.DestinationType.RDBMS, connectionString: postgresConnString, ModelMap: null);
-
-                                //Search Path=public;/Server =localhost; User Id = dev; Password = nwdidb19; Database = nwdi_ts; Port=5433;CommandTimeout=0
-                            }
-                            if (projectId != -1)
-                            {
-
-                                writerTest.ProjectId = projectId;
-                            }
-                            confWriter.Add(writerTest);
-
+                            writerTest = new Writers.WriterConfiguration(Shared.Types.DestinationType.ElasticSearch, connectionString: elasticSearchString, ModelMap: null);//Search Path=public;/Server =localhost; User Id = dev; Password = nwdidb19; Database = nwdi_ts; Port=5433;CommandTimeout=0
                         }
-                        _ingestionJob = new IngestionJob(jobId, conf, confWriter.ToArray());
+                        else
+                        {
+                            writerTest = new Writers.WriterConfiguration(Shared.Types.DestinationType.RDBMS, connectionString: postgresConnString, ModelMap: null);
+
+                            //Search Path=public;/Server =localhost; User Id = dev; Password = nwdidb19; Database = nwdi_ts; Port=5433;CommandTimeout=0
+                        }
+                        if (projectId != -1)
+                        {
+
+                            writerTest.ProjectId = projectId;
+                        }
+                        confWriter.Add(writerTest);
+
+                    }
+                    _ingestionJob = new IngestionJob(jobId, conf, confWriter.ToArray());
                     _ingestionJob.ControlTableConnectionString = connectionString;
                     _ingestionJob.UserId = userId;
                     LoadActor.Tell(_ingestionJob);

@@ -1,18 +1,17 @@
 ﻿using Akka.Actor;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Akka.Event;
 using DataAnalyticsPlatform.Actors.Master;
 using DataAnalyticsPlatform.Actors.Processors;
-using Akka.Event;
 using DataAnalyticsPlatform.Common;
-using System.Linq;
 using DataAnalyticsPlatform.Shared.Models;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace DataAnalyticsPlatform.Actors.Worker
 {
-    public class WorkerActor: ReceiveActor
+    public class WorkerActor : ReceiveActor
     {
         private readonly ILoggingAdapter _log = Logging.GetLogger(Context);
 
@@ -59,14 +58,14 @@ namespace DataAnalyticsPlatform.Actors.Worker
             {
                 List<Type> types = null;
                 //check if nill type ...then generate code and get types
-                if ( x.ReaderConfiguration.ModelType == null)
+                if (x.ReaderConfiguration.ModelType == null)
                 {
                     //
                     TransformationCodeGenerator codegen = new TransformationCodeGenerator();
                     if (x.ReaderConfiguration.SourcePath.EndsWith(".csv"))
                     {
                         Console.WriteLine("filename passed" + x.ReaderConfiguration.SourcePath);
-                        types = codegen.Code(x.ReaderConfiguration.TypeConfig, x.JobId,  Path.GetFileName(x.ReaderConfiguration.SourcePath));
+                        types = codegen.Code(x.ReaderConfiguration.TypeConfig, x.JobId, Path.GetFileName(x.ReaderConfiguration.SourcePath));
                     }
                     else if (x.ReaderConfiguration.SourcePath.EndsWith(".json"))
                     {
@@ -77,7 +76,7 @@ namespace DataAnalyticsPlatform.Actors.Worker
                         types = codegen.CodeJSON(x.ReaderConfiguration.TypeConfig, x.JobId);
                         ((TwitterConfiguration)x.ReaderConfiguration.ConfigurationDetails).MaxSearchEntriesToReturn = 100;
 
-                       ((TwitterConfiguration)x.ReaderConfiguration.ConfigurationDetails).MaxTotalResults = 5000;
+                        ((TwitterConfiguration)x.ReaderConfiguration.ConfigurationDetails).MaxTotalResults = 5000;
                     }
 
                     if (types != null && types.Count >= 1)//+x.JobId
@@ -93,7 +92,7 @@ namespace DataAnalyticsPlatform.Actors.Worker
                         object originalObject = Activator.CreateInstance(OriginalType);
                         x.ReaderConfiguration.ModelType = originalObject.GetType();
                         x.ReaderConfiguration.Types = types;
-                        
+
                     }
                 }
                 IActorRef coordinatorActor = Context.ActorOf(Props.Create(() => new CoordinatorActor(x, _masterActor)));
@@ -111,9 +110,9 @@ namespace DataAnalyticsPlatform.Actors.Worker
                 //Coordinator is dead
                 Console.WriteLine("WorkerActor CoordinatorIsDead");
                 _runningJobs.Remove(x.JobId);
-                _masterActor.Tell(new JobDone(x.JobId , x.FileId));
+                _masterActor.Tell(new JobDone(x.JobId, x.FileId));
                 _log.Debug("JobId: {0} done.", x.JobId);
-            }); 
+            });
         }
 
         protected override void PreStart()

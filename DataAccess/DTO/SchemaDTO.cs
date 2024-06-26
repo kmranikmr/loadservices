@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using DataAccess.Models;
-using System.Collections.Generic;
 
 namespace DataAccess.DTO
 {
@@ -17,7 +16,7 @@ namespace DataAccess.DTO
 
         public SchemaModelDTO[] SchemaModels { get; set; }
 
-       // public ModelMetadataDTO[] ModelMetadatas { get; set; }
+        // public ModelMetadataDTO[] ModelMetadatas { get; set; }
         public static SchemaDTO GetSampleObject(int projectId)
         {
             SchemaDTO s = new SchemaDTO();
@@ -37,7 +36,7 @@ namespace DataAccess.DTO
                         {
                             ColumnName = "col1",
                             ProjectId = projectId,
-                            DataType = "int",                            
+                            DataType = "int",
                         },
                         new ModelMetadataDTO()
                         {
