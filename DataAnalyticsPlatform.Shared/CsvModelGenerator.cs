@@ -1,4 +1,27 @@
-﻿using DataAnalyticsPlatform.Shared.Models;
+﻿/// <summary>
+/// CsvModelGenerator class is responsible for generating C# classes from CSV files.
+/// It dynamically inspects CSV file contents to infer column data types and generate
+/// appropriate class definitions. The class also includes methods for validating and
+/// formatting column names and handling various date formats.
+/// 
+/// Key Functionalities:
+/// 
+/// - Constructor: Initializes the CodeDomProvider for C# code generation.
+/// - CheckDateTime: Validates if a string represents a date in specified formats.
+/// - CheckandGetName: Ensures generated names are valid C# identifiers.
+/// - ClassGenerator: Generates a C# class definition from a CSV file.
+/// - skip10Lines: Reads and returns the first 10 lines of a CSV file.
+/// - GetAllFields: Extracts field information from the CSV file for schema modeling.
+/// - SplitCSV and SplitCSVReg: Utility methods for splitting CSV lines respecting quoted values.
+/// - GetVariableDeclaration: Infers and declares C# properties based on CSV column data.
+/// - GetDatatype: Determines the data type of a column.
+/// - AllDoubleValues, AllIntValues, AllDateTimeValues: Helper methods to check data type consistency in columns.
+/// 
+/// This class facilitates dynamic model generation from CSV files, aiding in schema
+/// extraction and data validation processes within the Data Analytics Platform.
+/// </summary>
+
+using DataAnalyticsPlatform.Shared.Models;
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
@@ -18,10 +41,7 @@ namespace DataAnalyticsPlatform.Shared
             provider = CodeDomProvider.CreateProvider("C#");
         }
 
-        //public Task<string> x = Task<string>.Factory.StartNew( (file_name)=>
-        //{
-        //    return ClassGenerator(file_name.ToString());
-        //});
+       
         public bool CheckDateTime(string dateString)
         {
             string[] formats = { "M/dd/yy", "MM/dd/yy", "MM/dd/yyyy", "MM/d/yy", "M/d/yy" };

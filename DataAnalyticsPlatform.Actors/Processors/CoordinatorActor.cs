@@ -1,4 +1,24 @@
-﻿using Akka.Actor;
+﻿/*
+ * This file contains classes related to job coordination and actors within the DataAnalyticsPlatform's Processors namespace.
+ * 
+ * TransformerEnd:
+ * - Empty class placeholder possibly intended for future use or extension.
+ * 
+ * CoordinatorActor:
+ * - Acts as a supervisor and coordinator for an ingestion job, managing interactions between reader, transformer, and writer actors.
+ * - Implements Akka.NET's ReceiveActor to handle various messages such as DoJob, ReaderEnd, TransformerEnd, WriterEnd, etc.
+ * - Coordinates the flow of data processing:
+ *   - Starts the reader actor to begin reading data.
+ *   - Receives records from the reader, transforms them using the transformer actor, and passes them to the writer actor for writing.
+ *   - Handles lifecycle events like no more records, end of reader, end of transformer, and end of writer.
+ * - Manages child actors (reader, transformer, writer) lifecycle and handles failures using Akka's supervision strategy.
+ * - Sends updates to a master actor regarding job status and completion.
+ * 
+ * Overall, this class orchestrates the processing of ingestion jobs through a series of actors, ensuring fault tolerance and scalability in the Data Analytics Platform.
+ */
+
+
+using Akka.Actor;
 using Akka.Event;
 using DataAccess.Models;
 using DataAnalyticsPlatform.Actors.Master;
@@ -164,27 +184,7 @@ namespace DataAnalyticsPlatform.Actors.Processors
         {
             return new OneForOneStrategy(localOnlyDecider: x =>
             {
-                //switch (x)
-                //{
-                //    //placeholders to flag the job error based on exception
-                //    case SomeException re:
-                //        {
-
-                //            return Directive.Stop;
-                //        }
-                //    case SomeException de:
-                //        {
-
-                //            return Directive.Stop;
-                //        }
-                //    case SomeException are:
-                //        {
-
-
-                //            return Directive.Stop;
-                //        }
-                //}
-
+              
                 _logger.Error(x, x.Message);
 
                 //stop the actor

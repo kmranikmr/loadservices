@@ -1,4 +1,21 @@
-﻿using CsvHelper;
+﻿/*
+ * This file defines the CsvReader class responsible for reading CSV files and converting records to structured data objects.
+ * 
+ * CsvReader:
+ * - Inherits from BaseReader and implements methods for reading records from CSV files based on a provided configuration.
+ * - Uses CsvHelper library to facilitate CSV parsing and mapping to object models.
+ * - Initializes with a ReaderConfiguration instance containing details about the CSV file path, configuration, and model mapping.
+ * - Uses HyphenToZeroConverter and HyphenToZeroConverterDouble custom converters to handle specific scenarios (e.g., replacing hyphens with zeros in numeric fields).
+ * - Supports configuration options such as skipping lines, handling quotes, specifying delimiters (including tab), and trimming fields.
+ * - Registers a class map (conf.ModelMap) to map CSV columns to object properties.
+ * - Implements methods to retrieve records as IRecord instances, where records are read from the CSV and wrapped in SingleRecord objects.
+ * - Provides error handling for exceptions during record retrieval, logging errors, and disposing of resources properly.
+ * 
+ * This class plays a crucial role in the Data Analytics Platform's data ingestion process, ensuring accurate and efficient parsing of CSV data into structured records for further processing.
+ */
+
+
+using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 using DataAnalyticsPlatform.Shared;

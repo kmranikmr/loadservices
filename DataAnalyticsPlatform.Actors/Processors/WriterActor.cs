@@ -1,4 +1,18 @@
-﻿using Akka.Actor;
+﻿/* WriterActor:
+ * - Implements Akka.NET's ReceiveActor to manage messages related to writing data records.
+ * - Handles messages such as WriteRecord, WriteList, ConsistentHashableEnvelope, and NoMoreTransformRecord.
+ * - Initializes with an IngestionJob to configure and instantiate writers based on WriterConfiguration.
+ * - Manages a primary writer (_writer) and an optional elastic writer (_elasticWriter) based on destination types.
+ * - Writes records or models to the configured destinations (_writer and _elasticWriter).
+ * - Responds to NoMoreTransformRecord messages to clean up resources and stop itself.
+ * - Implements error handling and logging for writer operations.
+ * - Provides a mechanism to report data size information after stopping.
+ * - Disposes of resources (_writer and _elasticWriter) during shutdown.
+ * 
+ * Overall, this actor plays a critical role in the data ingestion and transformation process within the Data Analytics Platform, ensuring data is efficiently written to configured destinations.
+ */
+
+using Akka.Actor;
 using Akka.Event;
 using Akka.Routing;
 using DataAnalyticsPlatform.Actors.Master;
@@ -58,8 +72,6 @@ namespace DataAnalyticsPlatform.Actors.Processors
         private IActorRef _writerManager;
         public string _schemaName { get; set; }
 
-        // public Dictionary<string, List<BaseModel>> _modelList;
-        // public List<object> _modelList;
         public WriterActor(IngestionJob j)
         {
             _ingestionJob = j;
@@ -157,25 +169,7 @@ namespace DataAnalyticsPlatform.Actors.Processors
                     throw new WriterException("Writer Error", ex, 0, Sender);
                 }
             });
-            //Receive<BaseModel>(x =>
-            //{
-            //    if (_modelList.Count >= 500)
-            //    {
-            //       _writer.Write(_modelList);
-            //    }
-            //    else
-            //    {
-            //        _modelList.Add(x);
-            //        //if ( !_modelList.TryGetValue( x.ModelName, out List<BaseModel> baseList))
-            //        //{
-            //        //    _modelList.Add(x.ModelName, new List<BaseModel>() { x});
-            //        //}
-            //        //else
-            //        //{
-            //        //    _modelList[x.ModelName].Add(x);
-            //        //}                   
-            //    }
-            //});
+           
             Receive<ConsistentHashableEnvelope>(x =>
                 {
                     object x1 = x.HashKey;

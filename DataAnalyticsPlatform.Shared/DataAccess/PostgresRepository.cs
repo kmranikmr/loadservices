@@ -1,4 +1,24 @@
-﻿using Newtonsoft.Json;
+﻿/// <summary>
+/// The PgRepository<TEntity> class provides a comprehensive data access layer for interacting with a PostgreSQL database using Npgsql.
+/// It supports operations such as creating schemas and tables, inserting entities with batch processing, and handling data type conversions.
+/// 
+/// Key functionalities include:
+/// 
+/// - Initialization and Connection Management: Establishes a connection to the PostgreSQL database using the provided connection string.
+///   Supports schema management and maintains a dictionary of created tables and commands for efficient reuse.
+/// 
+/// - Schema and Table Creation: Dynamically creates schemas and tables based on the entity's properties. Includes handling for different data types.
+/// 
+/// - Insertion: Handles entity insertion with support for batching to improve performance. Uses parameterized queries to avoid SQL injection.
+/// 
+/// - Transaction Management: Supports transaction handling for batch operations to ensure data consistency.
+/// 
+/// - Utility Methods: Provides utility methods for executing scalar queries and SQL commands.
+/// 
+/// - Disposal: Ensures proper disposal of database connections and transactions.
+/// </summary>
+
+using Newtonsoft.Json;
 using Npgsql;
 using NpgsqlTypes;
 using System;

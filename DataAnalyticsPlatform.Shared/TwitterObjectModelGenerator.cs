@@ -1,4 +1,21 @@
-﻿using Bogus;
+﻿// This file defines the TwitterObjectModelGenerator class, which provides functionality to
+// generate a list of FieldInfo objects representing the structure of given objects, including 
+// Twitter status data and deserialized JSON objects.
+//
+// Classes:
+// - TwitterObjectModelGenerator: Provides methods to extract field information from various 
+//   data sources and types.
+//
+// Methods:
+// - GetAllFields: Overloaded method to extract fields from LinqToTwitter.Status data or any object.
+// - GetAllFieldsWithDeserialization: Extracts fields from a JSON file by deserializing it into a specific type.
+// - GetDataTypeFromProp: Determines the DataType enum for a given .NET type, handling arrays and dictionaries.
+// - GetFieldsFromType: Recursively extracts properties from an object, populating FieldInfo instances.
+//
+
+
+
+using Bogus;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -151,86 +168,7 @@ namespace DataAnalyticsPlatform.Shared
             }
         }
 
-        //public void GetFieldsFromType(List<FieldInfo> fieldInfos, object propValue)
-        //{
-        //    if (propValue == null)
-        //        return;
-
-        //    if (fieldInfos == null) return;
-        //    Type objType = propValue.GetType();
-        //    var childProps = propValue.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
-        //    foreach (var prop in childProps)
-        //    {
-        //        var tt = prop.PropertyType;
-        //        FieldInfo _fieldInfo = null;
-        //        var name = prop.Name;
-        //        object value = null;
-        //        if (tt.IsArray)
-        //        {
-        //            var proparray = (object[])prop.GetValue(propValue, null);
-        //            if (proparray.Length > 0)
-        //            {
-        //                _fieldInfo = new FieldInfo(name, GetDataTypeFromProp(proparray[0].GetType(), true));
-        //                fieldInfos.Add(_fieldInfo);
-        //                GetFieldsFromType(_fieldInfo.InnerFields, proparray[0]);
-        //            }
-        //            else
-        //            {
-        //                var ty = proparray.GetType();
-
-        //                _fieldInfo = new FieldInfo(name, GetDataTypeFromProp(proparray.GetType()));
-        //                fieldInfos.Add(_fieldInfo);
-
-        //                //GetFieldsFromType(_fieldInfo.InnerFields, value);
-        //            }
-        //        }
-        //        else
-        //        {
-        //            value = prop.GetValue(propValue, null);
-        //        }
-        //        if (value == null || name == "Length") continue;
-        //        var elems = propValue as IList;
-        //        if (elems != null)
-        //        {
-        //            _fieldInfo = new FieldInfo(name, GetDataTypeFromProp(value.GetType()));
-        //            fieldInfos.Add(_fieldInfo);
-        //            foreach (var item in elems)
-        //            {
-
-        //                GetFieldsFromType(_fieldInfo.InnerFields, item);
-        //            }
-        //        }
-        //        else
-        //        {
-        //            if (prop.PropertyType.Assembly == objType.Assembly)
-        //            {
-        //                _fieldInfo = new FieldInfo(name, GetDataTypeFromProp(value.GetType()));
-        //                fieldInfos.Add(_fieldInfo);
-        //                GetFieldsFromType(_fieldInfo.InnerFields, value);
-        //            }
-        //            else
-        //            {
-        //                if (tt.IsArray)
-        //                {
-        //                    if (value != null)
-        //                    {
-        //                        _fieldInfo = new FieldInfo(name, GetDataTypeFromProp(tt.GetElementType()));
-        //                        fieldInfos.Add(_fieldInfo);
-        //                    }
-        //                }
-        //                else
-        //                {
-        //                    if (value != null)
-        //                    {
-        //                        _fieldInfo = new FieldInfo(name, GetDataTypeFromProp(value.GetType()));
-        //                        fieldInfos.Add(_fieldInfo);
-        //                    }
-        //                }
-        //            }
-        //        }
-
-        //    }
-        //}
+   
 
         public void GetFieldsFromType(FieldInfo fieldInfo, object propValue)
         {

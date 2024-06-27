@@ -1,4 +1,19 @@
-﻿using AutoMapper;
+﻿/*
+ * Controller for managing data preview, model generation, and schema operations.
+ * Handles authentication, retrieving project schemas, generating models based on files,
+ * updating model configurations, and providing data previews.
+ * Uses AutoMapper for object mapping, IRepository for data access, and IMemoryCache for caching.
+ * Endpoints:
+ * - GET /api/preview: Returns basic values.
+ * - GET /api/preview/{Projectid}/GetSchemas: Retrieves schemas for a project.
+ * - POST /api/preview/{ProjectId}/generatemodel: Generates models based on file IDs.
+ * - POST /api/preview/{ProjectId}/{SchemaId}/{ModelId}/getpreview: Provides data preview for a model.
+ * - POST /api/preview/{ProjectId}/{SchemaId}/updatemodel: Updates model configurations.
+ * - DELETE /api/preview/{ProjectId}/{SchemaId}: Deletes a schema for a project.
+ */
+
+
+using AutoMapper;
 using DataAccess.DTO;
 using DataAccess.Models;
 using DataAnalyticsPlatform.Actors;
@@ -542,55 +557,7 @@ namespace LoadServiceApi
                     System.Console.WriteLine("not exiting project");
                     return null;
                 }
-                // {
-                //     var NewprojectSchema = _mapper.Map<ProjectSchema>(schemaDTO);
-                //     NewprojectSchema.UserId = userId;
-                //     NewprojectSchema.SchemaId = previewUpdate.SchemaId;
-                // var projectSchema = await _repository.GetSchemasAsync(userId, ProjectId, true);
-                //var MatchedSchema = projectSchema.Where(x => x.SchemaId == previewUpdate.SchemaId).FirstOrDefault();
-                // if (MatchedSchema != null)
-                //  {
-
-                //           _repository.SetSchemaAsync(previewUpdate.SchemaId, NewprojectSchema);
-                //     }
-                // else
-                //    {
-
-                //   _repository.Add(NewprojectSchema);
-
-                //                        await _repository.SaveChangesAsync();
-                //   }
-                //result = await Task.FromResult(testData.UpdateModel(userId, ProjectId));
-
-                //  }
-                //  else
-                // {
-                //   return this.StatusCode(StatusCodes.Status204NoContent, " No Project found");
-                //}
-                //var projectSchema = await _repository.GetSchemaAsync(schemaId, true);
-
-                //if (projectSchema == null)          
-                //{
-
-                //}
-                //if (existingProject != null)
-                //{
-                //    var pSchema = _mapper.Map<ProjectSchema>(schemaDTO);
-
-                //    if (pSchema != null )
-                //    { 
-                //    pSchema.ProjectId = ProjectId;
-
-                //    pSchema.UserId = userId;
-
-                //    pSchema.SchemaName = 
-                //    _repository.Add(projectSchema);
-
-                //    await _repository.SaveChangesAsync();
-                //}
-
-
-
+       
             }
             catch (Exception ex)
             {

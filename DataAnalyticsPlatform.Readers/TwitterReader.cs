@@ -1,4 +1,21 @@
-﻿using AutoMapper;
+﻿/*This code demonstrates a Twitter reader implementation using the LinqToTwitter library and AutoMapper for object mapping.
+
+    1. PropertyCopier<TParent, TChild>:
+       -Utility class to copy properties from a parent object to a child object where names and types match.
+
+    2. TwitterApiConfig:
+       -Configuration class for Twitter API credentials(ConsumerKey, ConsumerSecret, AccessToken, AccessTokenSecret).
+
+
+   3.AppConfigReader:
+
+      -Reads Twitter API configuration from environment variables using AppConfigReader.ReadTwitterApiConfig() method.
+
+    4.TwitterReader : BaseReader:
+-Implements a Twitter reader that fetches tweets based on configuration and maps them to specified types using AutoMapper.
+*/
+
+using AutoMapper;
 using DataAnalyticsPlatform.Common.Twitter;
 using DataAnalyticsPlatform.Shared.Interfaces;
 using DataAnalyticsPlatform.Shared.Models;
@@ -33,6 +50,30 @@ namespace DataAnalyticsPlatform.Readers
             }
         }
     }
+
+    public class TwitterApiConfig
+    {
+        public string ConsumerKey { get; set; }
+        public string ConsumerSecret { get; set; }
+        public string AccessToken { get; set; }
+        public string AccessTokenSecret { get; set; }
+    }
+
+    public class AppConfigReader
+    {
+        public static TwitterApiConfig ReadTwitterApiConfig()
+        {
+            var config = new TwitterApiConfig
+            {
+                ConsumerKey = Environment.GetEnvironmentVariable("TwitterConsumerKey"),
+                ConsumerSecret = Environment.GetEnvironmentVariable("TwitterConsumerSecret"),
+                AccessToken = Environment.GetEnvironmentVariable("TwitterAccessToken"),
+                AccessTokenSecret = Environment.GetEnvironmentVariable("TwitterAccessTokenSecret")
+            };
+
+            return config;
+        }
+    }
     public class TwitterReader : BaseReader
     {
         public TwitterContext twitterContext = null;
@@ -50,19 +91,16 @@ namespace DataAnalyticsPlatform.Readers
             twitConf = (TwitterConfiguration)conf.ConfigurationDetails;
             twitCollection = new List<object>();
             sinceID = 1;
+            var twitterApiConfig = AppConfigReader.ReadTwitterApiConfig();
             //  var config = new MapperConfiguration(x => { x.CreateMap <GetConfiguration().ModelType>(); })
             var auth = new SingleUserAuthorizer
             {
                 CredentialStore = new SingleUserInMemoryCredentialStore
                 {
-                    //ConsumerKey = "lGKPJML9GIVeEgzv4RbuOhjsh",//((TwitterConfiguration)conf.ConfigurationDetails).twitterAccess.key3,
-                    //ConsumerSecret = "LIKdQnpsRbBID9Jof9HgNME7Kmuynwah8vWSWhjGbI3wDNDYRQ",//((TwitterConfiguration)conf.ConfigurationDetails).twitterAccess.key4,
-                    //AccessToken = "28496275-zYn9MCSpxa582fgfIPnSo2qwkfAYisRS0GZGycli4",//((TwitterConfiguration)conf.ConfigurationDetails).twitterAccess.key1,
-                    //AccessTokenSecret = "BBLuEw2FmwPyaXeJrjvdsHSNyF9FKUxQ0YAixgvI6Tjs1"//((TwitterConfiguration)conf.ConfigurationDetails).twitterAccess.key2
-                    ConsumerKey = "i78CO6iTEuLGh8dJbgH6dma1w",//((TwitterConfiguration)conf.ConfigurationDetails).twitterAccess.key3,
-                    ConsumerSecret = "sVwVsi1seEShjIURZWNz6Ht5mEUtcszYMGyjnQp5WaJq6ZmLSp",//((TwitterConfiguration)conf.ConfigurationDetails).twitterAccess.key4,
-                    AccessToken = "28496275-ibBJKL6muFzfoWqAI4Q87U7qTc4mhBJMENWxH06H3",//((TwitterConfiguration)conf.ConfigurationDetails).twitterAccess.key1,
-                    AccessTokenSecret = "I7pg2SJhPzmxxCr8sDEUEVBeOhfhfGOUlMXLSs7F6Gjmn"//((TwitterConfiguration)conf.ConfigurationDetails).twitterAccess.key2
+                    ConsumerKey = twitterApiConfig.ConsumerKey, 
+                    ConsumerSecret = twitterApiConfig.ConsumerSecret,
+                    AccessToken = twitterApiConfig.AccessToken,
+                    AccessTokenSecret = twitterApiConfig.AccessTokenSecret
 
                 }
             };
@@ -85,14 +123,6 @@ namespace DataAnalyticsPlatform.Readers
                 });
                 mapper_runtime = configuration.CreateMapper();
             }
-
-            //  var configuration = new MapperConfiguration(cfg => {
-            //     cfg.CreateMap<LinqToTwitter.Status, OriginalRecord>();
-            //cfg.CreateMap<LinqToTwitter.StatusMetaData, MetaData>();
-            //cfg.CreateMap<LinqToTwitter.Coordinate, Coordinates>();
-            //cfg.CreateMap<LinqToTwitter.User, Common.Twitter.User>();
-            //  });
-            // mapper = configuration.CreateMapper();
 
         }
 
@@ -171,20 +201,6 @@ namespace DataAnalyticsPlatform.Readers
                             }
                             else
                             {
-                                //var UserType = Types.Where(x => x.FullName.Contains("User")).FirstOrDefault();
-                                //var CordinateType = Types.Where(x => x.FullName.Contains("Coordinate")).FirstOrDefault();
-                                //var MetaDataType = Types.Where(x => x.FullName.Contains("MetaData")).FirstOrDefault();
-                                //var t = GetConfiguration().ModelType;
-                                //var configuration = new MapperConfiguration(cfg => {
-                                //    cfg.CreateMap(typeof(LinqToTwitter.Status),t );
-
-                                //    cfg.CreateMap(typeof(LinqToTwitter.StatusMetaData), MetaDataType);
-                                //    cfg.CreateMap(typeof(LinqToTwitter.Coordinate), CordinateType );
-                                //    cfg.CreateMap(typeof(LinqToTwitter.User), UserType);
-                                //});
-
-                                // dynamic obj = Activator.CreateInstance(GetConfiguration().ModelType);
-                                //  PropertyCopier<LinqToTwitter.Status, t>(status, obj);
                                 var result2 = mapper_runtime.Map(status, status.GetType(), GetConfiguration().ModelType);
                                 twitCollection.Add(result2);
                             }

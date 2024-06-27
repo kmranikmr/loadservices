@@ -1,4 +1,16 @@
-﻿using Akka.Actor;
+﻿/* WriterManager:
+ * - Implements Akka.NET's ReceiveActor to manage messages related to writing data records and managing the WriterActor pool.
+ * - Initializes with an IngestionJob to configure and instantiate writers based on WriterConfiguration.
+ * - Manages a pool of WriterActor instances (_writerPool) to distribute write tasks using consistent hashing.
+ * - Handles messages such as WriteRecord, NoMoreTransformRecord, WriterManagerDead, and List<ModelSizeData>.
+ * - Manages table creation and ensures tables are created only once per model type using a dictionary (TablesCreated).
+ * - Forwards write requests to the appropriate writer pool based on the type of data received (record, model list, or objects).
+ * - Handles shutdown and cleanup by stopping the _writerPool and notifying the coordinator actor about model size data.
+ * 
+ * Overall, this actor coordinates and optimizes the writing of data records and models to their respective destinations within the Data Analytics Platform.
+ */
+
+using Akka.Actor;
 using Akka.Routing;
 using DataAnalyticsPlatform.Actors.Master;
 using DataAnalyticsPlatform.Shared.DataAccess;
@@ -88,14 +100,12 @@ namespace DataAnalyticsPlatform.Actors.Processors
                 }
                 else if (x.Objects != null)
                 {
-                    //Console.WriteLine("WriterManager  Objects");
-                    //var Lists = (IEnumerable<object>)x.Objects;
+               
                     var Lists = (IEnumerable<BaseModel>)x.Objects;
 
                     var Grouped = Lists.GroupBy(y => ((BaseModel)y).ModelName);
                     if (Grouped != null)
-                        // Console.WriteLine("WriterManager  Objects Grouped Count" + Grouped.Count());
-                        // foreach (IEnumerable<object> list in Grouped)
+                       
                         foreach (IEnumerable<BaseModel> list in Grouped)
                         {
 

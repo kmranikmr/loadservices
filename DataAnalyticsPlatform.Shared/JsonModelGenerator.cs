@@ -1,4 +1,25 @@
-﻿using Newtonsoft.Json;
+﻿/*
+    JsonModelGenerator is a C# utility for dynamically generating C# class definitions 
+    from JSON schemas or objects. Key features include:
+
+    - Initialization and Identifier Handling:
+      - Initializes a CodeDomProvider and manages field name uniqueness using a dictionary.
+
+    - Type Handling:
+      - Methods like GetTypeData and getDataTypeString convert JSON schema types 
+        (JsonObjectType and JsonTypeEnum) to corresponding C# data types.
+
+    - Class Generation:
+      - GenerateClassfromFieldInfo recursively builds C# class strings from a list 
+        of FieldInfo objects, supporting nested objects and arrays.
+
+    - Field Metadata Collection:
+      - GenerateFieldMetaData collects metadata about fields from JSON schemas, 
+        facilitating dynamic class generation.
+*/
+
+
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NJsonSchema;
 using System;

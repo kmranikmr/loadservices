@@ -1,4 +1,32 @@
-﻿using System;
+﻿/*
+    Twitter Class for API Interaction
+
+    This class provides methods to interact with the Twitter API using OAuth 1.0 authentication
+    for accessing various endpoints such as user timelines, mentions, and posting status updates.
+
+    Properties:
+    - ConsumerKey: OAuth consumer key for authentication.
+    - ConsumerKeySecret: OAuth consumer key secret for authentication.
+    - AccessToken: OAuth access token for authentication.
+    - AccessTokenSecret: OAuth access token secret for authentication.
+
+    Methods:
+    - Constructor: Initializes the Twitter object with OAuth credentials.
+    - GetMentions(int count): Retrieves mentions from authenticated user's timeline.
+    - GetTweets(string screenName, int count): Retrieves tweets from a specified user's timeline.
+    - GetSearchedTweets(string query, int count): Searches tweets based on a query string.
+    - PostStatusUpdate(string status, double latitude, double longitude): Posts a status update.
+    - GetResponse(string resourceUrl, Method method, SortedDictionary<string, string> requestParameters): Executes HTTP requests to Twitter API endpoints.
+    
+    
+    Usage:
+    - Instantiate the class with OAuth credentials.
+    - Call methods to retrieve data from Twitter or post updates.
+    - Ensure proper error handling and exception management for network and API response issues.
+*/
+
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;

@@ -1,4 +1,16 @@
-﻿using System;
+﻿// This file defines the core classes and enums used for representing and handling field 
+// information, model information, and type configurations in a data analytics platform.
+// 
+// Classes:
+// - FieldInfo: Represents metadata and properties of a data field, including name, data type, length, mapping, and nested fields.
+// - TypeConfig: Represents a configuration of data types, including schema name, schema ID, and lists of base class fields and model information.
+// - ModelInfo: Represents metadata and properties of a data model, including model ID, model name, and list of fields within the model.
+// 
+// Enum:
+// - DataType: Enumerates various data types (e.g., String, Int, Double, DateTime, Object, etc.) used within FieldInfo for type identification.
+
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 namespace DataAnalyticsPlatform.Shared
@@ -81,26 +93,7 @@ namespace DataAnalyticsPlatform.Shared
 
             Map = name;
 
-            //  Path = name;
-            //if (DataType == DataType.Object || DataType == DataType.ObjectArray)
-            //{
-            //    if (Path != null && Path != "")
-            //    {
-            //        Path = Path + "[]." + name;
-
-            //    }
-            //    else
-            //    {
-            //        Path = name;
-            //    }
-            //}
-            //else
-            //{
-            //    if (Path != null && Path != "")
-            //        Path = Path + "." + name;
-            //    else
-            //        Path = name;
-            //}
+         
 
             if (t == DataType.Object || t == DataType.ObjectArray)
             {

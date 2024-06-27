@@ -1,4 +1,22 @@
-﻿using Microsoft.CodeAnalysis;
+﻿// This file defines the JsonReaderHelper class, which provides utility functions for parsing
+// and extracting field information from C# class definitions in a JSON-like structure using
+// the Roslyn API.
+//
+// Classes:
+// - JsonReaderHelper: Contains methods for parsing class definitions and properties, mapping 
+//   them to FieldInfo objects, and determining their data types.
+//
+// Methods:
+// - GetFieldInfos: Parses the provided text to extract class and property definitions, returning 
+//   a list of FieldInfo objects.
+// - GetProps: Recursively extracts properties from a given class, mapping them to FieldInfo objects.
+// - GetDataTypeFromString: Converts string representations of data types to DataType enums.
+//
+// Fields:
+// - NativeDataTypes: A set of strings representing native data types (e.g., "string", "int").
+
+
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;

@@ -1,4 +1,21 @@
-﻿using DataAnalyticsPlatform.Shared;
+﻿/*
+ * RDBMSWriter class handles writing data to a relational database management system (RDBMS).
+    It extends BaseWriter for common functionality and interacts with IRepository<object> for data operations.
+
+    Features:
+    - Constructor initializes with a connection string and optional schema.
+    - Implements IDisposable to manage resources and flush data on disposal.
+    - Uses repository pattern to interact with the database via PgRepository<object>.
+    - Supports batch writing of records and dynamic schema creation if not existent.
+    - Implements methods for writing single records, lists, and handling schema creation.
+
+    Note:
+    - Uses IEnumerable<object> for flexible record handling and batching.
+    - Ensures efficient data insertion and schema management based on configurable thresholds.
+
+ */
+
+using DataAnalyticsPlatform.Shared;
 using DataAnalyticsPlatform.Shared.DataAccess;
 using DataAnalyticsPlatform.Shared.Interfaces;
 using DataAnalyticsPlatform.Shared.Models;

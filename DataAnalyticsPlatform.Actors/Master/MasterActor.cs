@@ -1,4 +1,23 @@
-﻿using Akka.Actor;
+﻿/*
+ * This file contains several classes related to job management and actors within the DataAnalyticsPlatform's Master actors namespace.
+ * 
+ * IngestionJob:
+ * - Represents an ingestion job with properties such as JobId, UserId, and configurations for readers and writers.
+ * 
+ * JobRegistry:
+ * - Holds an IngestionJob and a PreviewRegistry instance for job registration and management.
+ * 
+ * MasterActor:
+ * - Manages the distribution and monitoring of ingestion jobs to worker nodes.
+ * - Uses Akka.NET to create and manage worker nodes for parallel job execution.
+ * - Communicates with worker nodes via Akka actors to distribute jobs and monitor their completion.
+ * - Handles job queues and limits the number of parallel jobs running simultaneously.
+ * - Includes functionality to notify job completion using a System.Notifier instance.
+ * - Coordinates schema creation in PostgreSQL using an IngestionMonitorActor.
+ * - Utilizes an AutomationCoordinatorActor for additional automation tasks related to job processing.
+ */
+
+using Akka.Actor;
 using Akka.Routing;
 using DataAnalyticsPlatform.Actors.Automation;
 using DataAnalyticsPlatform.Actors.Processors;
@@ -152,15 +171,7 @@ namespace DataAnalyticsPlatform.Actors.Master
         {
             if (Context.Child(WorkerRouterName).Equals(ActorRefs.Nobody))
             {
-                //  Use router config
-                //_workerActors =
-                //    Context.ActorOf(
-                //        Props.Create(() => new WorkerActor(Self))
-                //            .WithRouter(FromConfig.Instance), WorkerRouterName);
-
-                //_workerActors =
-                //    Context.ActorOf(
-                //        Props.Create(() => new WorkerActor(Self)), WorkerRouterName);
+                   Props.Create(() => new WorkerActor(Self)), WorkerRouterName);
 
                 _workerNodes = Context.Child(WorkerRouterName).Equals(ActorRefs.Nobody)
                   ? Context.ActorOf(Props.Empty.WithRouter(FromConfig.Instance), WorkerRouterName)

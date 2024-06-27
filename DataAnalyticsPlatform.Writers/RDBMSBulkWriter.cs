@@ -1,4 +1,15 @@
-﻿using DataAnalyticsPlatform.Shared.DataAccess;
+﻿/*RDBMSBulkWriter class facilitates bulk writing of data to a relational database management system (RDBMS).
+    It extends BaseWriter for common functionality and utilizes BulkPostgresRepository<BaseModel> for bulk operations.
+
+    Features:
+    - Constructor initializes with a connection string and optional schema.
+    - Implements IDisposable to manage resources and flush data on disposal.
+    - Supports bulk creation of database schema.
+    - Implements methods for writing single BaseModel records and lists of BaseModel.
+    - Uses repository pattern with BulkPostgresRepository<BaseModel> for efficient bulk data handling.
+*/
+
+using DataAnalyticsPlatform.Shared.DataAccess;
 using DataAnalyticsPlatform.Shared.Interfaces;
 using System;
 using System.Collections;

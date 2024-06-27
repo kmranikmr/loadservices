@@ -1,4 +1,17 @@
-﻿using Akka.Actor;
+﻿/*
+ * This file defines the DatabaseWatcherActor class, which is responsible for monitoring a database
+ * for changes to automation models. The actor retrieves, caches, and updates automation models,
+ * coordinating with the FolderWatcherActor to manage file system monitoring for the specified models.
+ *
+ * The following functionalities are implemented:
+ * - Fetching automation models from the database.
+ * - Adding and removing automation models based on changes in the database.
+ * - Coordinating with the FolderWatcherActor to start or stop monitoring folders.
+ * - Scheduling periodic checks for updates to the automation models.
+ */
+
+
+using Akka.Actor;
 using Akka.Event;
 using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;

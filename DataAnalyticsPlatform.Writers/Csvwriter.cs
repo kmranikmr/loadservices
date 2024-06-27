@@ -102,23 +102,6 @@ namespace DataAnalyticsPlatform.Writers
                 _mylist.Clear();
             }
 
-            //Type t = record.GetType();
-            //Type t1 = _csvWriter.GetTypeForRecord(record);
-            //object mapperObject = Activator.CreateInstance(record.GetType());
-            // Console.WriteLine(mapperObject);
-            // Console.WriteLine(record);
-            // mapperObject = record;
-            // var prop = GetProperties(record);
-            //foreach (KeyValuePair<string, List<BaseModel>> kvp in ((Dictionary<string, List<BaseModel>>)records))
-            //{
-            //    _csvWriter.WriteRecord(kvp);
-            //    _csvWriter.NextRecord();
-            //    Console.WriteLine(++count);
-            //}
-            //_csvWriter.Flush();
-            //_streamWriter.Close();
-
-
         }
         public override void Write(List<BaseModel> record)
         {
@@ -128,9 +111,7 @@ namespace DataAnalyticsPlatform.Writers
         {
             if (_mylist.Count > 0)
                 Dump();
-            //_csvWriter.Flush();
-            //_streamWriter.Close();
-
+          
         }
     }
 }

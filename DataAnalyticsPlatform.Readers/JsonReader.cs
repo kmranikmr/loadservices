@@ -1,4 +1,21 @@
-﻿using DataAnalyticsPlatform.Shared;
+﻿/*
+ * This file defines the JsonReader class responsible for reading JSON data and converting it into structured records.
+ * 
+ * JsonReader:
+ * - Inherits from BaseReader and implements methods for reading records from JSON files based on a provided configuration.
+ * - Uses Newtonsoft.Json library for JSON parsing and deserialization.
+ * - Initializes with a ReaderConfiguration instance containing details about the JSON file path.
+ * - Reads the entire JSON content from the file into memory and deserializes it into a list of objects (JsonData).
+ * - Supports deserialization into either a single object or a list of objects based on the JSON structure.
+ * - Implements GetRecords method to retrieve records as IRecord instances, iterating over the JsonData list.
+ * - Provides error handling for JSON parsing and deserialization exceptions.
+ * - Implements Dispose method to properly dispose of resources such as the StreamReader used for file reading.
+ * 
+ * This class facilitates the ingestion of JSON data within the Data Analytics Platform, ensuring that JSON files are parsed and converted into structured records for further processing and analysis.
+ */
+
+
+using DataAnalyticsPlatform.Shared;
 using DataAnalyticsPlatform.Shared.Interfaces;
 using DataAnalyticsPlatform.Shared.Models;
 using Newtonsoft.Json;

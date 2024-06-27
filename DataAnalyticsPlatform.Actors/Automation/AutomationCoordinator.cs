@@ -1,4 +1,18 @@
-﻿using Akka.Actor;
+﻿/*
+ * This file defines the AutomationCoordinator class, an actor responsible for coordinating the 
+ * automation process within the DataAnalyticsPlatform. The AutomationCoordinator manages folder 
+ * monitoring, file ingestion, schema validation, and data writing processes.
+ *
+ * Key functionalities include:
+ * - Monitoring folders for new project files and triggering ingestion jobs.
+ * - Interacting with DatabaseWatcherActor to manage automation models.
+ * - Handling events such as adding and removing automation models.
+ * - Writing project files to the database.
+ * - Validating schemas and updating configurations as necessary.
+ * - Executing ingestion jobs based on file type and configuration.
+ * */
+
+using Akka.Actor;
 using Akka.Event;
 using AutoMapper;
 using DataAccess.DTO;
@@ -368,16 +382,6 @@ namespace DataAnalyticsPlatform.Actors.Automation
                         confWriter.Add(writerTest);
 
                     }
-
-                    //@"Server =raja.db.elephantsql.com; User Id = aniwbjgk; Password = esypNF7dCv9kKReCSNvM48LsPoJX_IvG; Database = aniwbjgk; Port=5432;CommandTimeout=0
-                    //var confWriter = new Writers.WriterConfiguration(Shared.Types.DestinationType.RDBMS, connectionString: postgresConnString, ModelMap: null);//Search Path=public;/Server =localhost; User Id = dev; Password = nwdidb19; Database = nwdi_ts; Port=5433;CommandTimeout=0
-                    // if (projectId != -1)
-                    // {
-                    //    confWriter.ProjectId = projectId;
-                    //}
-
-                    //  var confWriter = new Writers.WriterConfiguration(Shared.Types.DestinationType.RDBMS, connectionString: @"Server =localhost; User Id = dev; Password = nwdidb19; Database = nwdi_ts; Port=5433;CommandTimeout=0", ModelMap: null);//Search Path=public;/Server =localhost; User Id = dev; Password = nwdidb19; Database = nwdi_ts; Port=5433;CommandTimeout=0
-
                     var ingestionJob = new IngestionJob(jobId, conf, confWriter.ToArray());
                     ingestionJob.ControlTableConnectionString = connectionString;
                     ingestionJob.UserId = userId;
@@ -398,13 +402,7 @@ namespace DataAnalyticsPlatform.Actors.Automation
                     {
                         conf.ProjectId = projectId;
                     }
-                    //var confWriter = new Writers.WriterConfiguration(Shared.Types.DestinationType.csv, connectionString: @"e:\temp\", ModelMap: null);
-                    // var confWriter = new Writers.WriterConfiguration(Shared.Types.DestinationType.RDBMS, connectionString: postgresConnString, ModelMap: null);//Search Path=public;
-                    /// var confWriter = new Writers.WriterConfiguration(Shared.Types.DestinationType.Mongo, connectionString: @"mongodb://localhost:27017/?connectTimeoutMS=30000&maxIdleTimeMS=600000", ModelMap: null);//Search Path=public;
-                    // if (projectId != -1)
-                    // {
-                    //     confWriter.ProjectId = projectId;
-                    //  }
+                  
                     List<WriterConfiguration> confWriter = new List<WriterConfiguration>();
 
                     foreach (var writer in writers)
@@ -418,7 +416,7 @@ namespace DataAnalyticsPlatform.Actors.Automation
                         {
                             writerTest = new Writers.WriterConfiguration(Shared.Types.DestinationType.RDBMS, connectionString: postgresConnString, ModelMap: null);
 
-                            //Search Path=public;/Server =localhost; User Id = dev; Password = nwdidb19; Database = nwdi_ts; Port=5433;CommandTimeout=0
+                            
                         }
                         if (projectId != -1)
                         {

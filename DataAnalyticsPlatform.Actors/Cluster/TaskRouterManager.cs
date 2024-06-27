@@ -1,4 +1,11 @@
-﻿
+﻿/* This file defines the TaskRouterManager class, an actor responsible for managing a task router in the DataAnalyticsPlatform.
+ * The TaskRouterManager class:
+ * - Initializes and supervises the ProcessRouter actor, which routes tasks to routees for processing.
+ * - Contains logic to wait until routees are available before processing any ingestion jobs.
+ * - Handles messages for router checks and ingestion jobs, ensuring tasks are assigned to available routees.
+ * - Utilizes Notifier and PreviewRegistry instances for notifying and managing previews, respectively.
+ */
+
 using Akka.Actor;
 using Akka.Routing;
 using DataAnalyticsPlatform.Actors.Master;

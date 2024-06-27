@@ -26,11 +26,7 @@ namespace DataAnalyticsPlatform.Shared.PostModels
 
     public class PreviewUpdateResponse
     {
-        // public int SchemaId { get; set; }
-        // public int UserId { get; set; }
-        //  public int ProjectId { get; set; }
-        //public List<int> FileId { get; set; }
-        // public List<ModelMapping> ModelMapping { get; set; }
+
         public Dictionary<int, List<Dictionary<string, object>>> ModelsPreview { get; set; }
     }
 

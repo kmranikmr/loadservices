@@ -1,4 +1,15 @@
-﻿using Akka.Actor;
+﻿/*LoadModels:
+ *-Manages the execution of ingestion jobs based on provided parameters like user ID, file name, type configurations, etc.
+ * - Provides functionality to create database schemas if they do not exist using Npgsql.
+ *-Uses Akka.NET actors managed by LoadActorProvider to distribute and manage ingestion tasks.
+ * - Supports ingestion from CSV and JSON files, configuring reader and writer configurations accordingly.
+ * - Handles special configurations for Twitter data and various destination types such as RDBMS and Elasticsearch.
+ * - Initializes ingestion jobs using IngestionJob instances and communicates with Akka actors to process the jobs asynchronously.
+ * - Retrieves necessary configuration details from a PreviewRegistry instance provided during initialization.
+ * - Integrates with external systems like PostgreSQL, Elasticsearch, and MongoDB based on provided connection strings and configurations.
+ */
+
+using Akka.Actor;
 using DataAnalyticsPlatform.Readers;
 using DataAnalyticsPlatform.Shared;
 using DataAnalyticsPlatform.Shared.Models;

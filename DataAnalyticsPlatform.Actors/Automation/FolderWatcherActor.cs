@@ -1,4 +1,6 @@
-﻿using Akka.Actor;
+﻿// This file defines the FolderWatcherActor class, which is responsible for monitoring a specific folder 
+
+using Akka.Actor;
 using Akka.Event;
 using DataAccess.Models;
 using Microsoft.Extensions.FileProviders;

@@ -1,20 +1,16 @@
 ﻿
 using DataAnalyticsPlatform.Shared;
+using DataAnalyticsPlatform.Shared.DataAccess;
 using DataAnalyticsPlatform.SharedUtils;
 using Microsoft.CSharp;
 using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Xml;
-using System.Linq;
-using CsvHelper;
-using System.Text.RegularExpressions;
-using CsvHelper.Configuration;
 using System.Globalization;
-using DataAnalyticsPlatform.Shared.DataAccess;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 //using DataAnalyticsPlatform.Shared.DataModels;
 namespace DataAnalyticsPlatform.Common
 {
@@ -243,7 +239,7 @@ namespace DataAnalyticsPlatform.Common
             {
                 f = $"public {Name}" + $" {Name}" + "{get;set;}\n";
             }
-                return f;
+            return f;
         }
         public Type GenerateModelCode(string gen, string classname)
         {
@@ -269,12 +265,12 @@ namespace DataAnalyticsPlatform.Common
             }
             return name;
         }
-        public List<Type> Code(TypeConfig typeConfig, int jobid = 0,  string Filename = "")
+        public List<Type> Code(TypeConfig typeConfig, int jobid = 0, string Filename = "")
         {
             List<string> classNames = new List<string>();
             string code = "";
             string f = "using System; using System.Collections.Generic; using CsvHelper.Configuration; using System.Linq; using System.Text.RegularExpressions; using DataAnalyticsPlatform.Shared.DataAccess;\n namespace DataAnalyticsPlatform.Common{";
-          //  f += "namespace " + typeConfig.SchemaName + "{";
+            //  f += "namespace " + typeConfig.SchemaName + "{";
             f += "public partial class OriginalRecord{\n";//+jobid+ "
             //gen base
             f += "static int rows = 1;";
@@ -286,18 +282,18 @@ namespace DataAnalyticsPlatform.Common
             foreach (FieldInfo fieldInfo in typeConfig.BaseClassFields)
             {
                 f += getDataTypeString(fieldInfo.DataType, fieldInfo.Name);
-                if ( fieldInfo.Name.Contains("rowid"))
+                if (fieldInfo.Name.Contains("rowid"))
                 {
                     hasRowid = true;
                 }
             }
             if (!hasRowid)
             {
-                f+= "public int rowid{get;set;}\n";
+                f += "public int rowid{get;set;}\n";
             }
             f += "public int fileid{get;set;}\n";
             f += "public long sessionid{get;set;}\n";
-             f += "public string FileName{get;set;}\n";
+            f += "public string FileName{get;set;}\n";
             f += "}\n";
             code = f;
             foreach (ModelInfo modelInfo in typeConfig.ModelInfoList)
@@ -322,7 +318,7 @@ namespace DataAnalyticsPlatform.Common
 
                     columnName = CheckandGetName(columnName);
 
-                   // var columnName = Regex.Replace(fieldInfo.DisplayName, @"[\s\.\-]", string.Empty, RegexOptions.IgnoreCase);
+                    // var columnName = Regex.Replace(fieldInfo.DisplayName, @"[\s\.\-]", string.Empty, RegexOptions.IgnoreCase);
 
                     //columnName = new string(columnName.Where(c => Char.IsLetter(c) || Char.IsDigit(c) || c == '_').ToArray());
 
@@ -335,7 +331,7 @@ namespace DataAnalyticsPlatform.Common
                 }
                 f += "public int fileid{get;set;}\n";
                 f += "public long sessionid{get;set;}\n";
-                  f += "public string FileName{get;set;}\n";
+                f += "public string FileName{get;set;}\n";
                 f += "}\n";
                 //f += "}\n";
                 code += f;
@@ -370,7 +366,7 @@ namespace DataAnalyticsPlatform.Common
             var myclass = new CodeTypeDeclaration("OriginalRecord");//+jobid
             myclass.IsClass = true;
             myclass.IsPartial = true;
-            
+
             foreach (ModelInfo modelInfo in typeConfig.ModelInfoList)
             {
                 string modelNametrim = modelInfo.ModelName.Replace("-", "");
@@ -421,7 +417,7 @@ namespace DataAnalyticsPlatform.Common
 
             foreach (ModelInfo modelInfo in typeConfig.ModelInfoList)
             {
-                string ModelNameTrim = modelInfo.ModelName.Replace("-","");
+                string ModelNameTrim = modelInfo.ModelName.Replace("-", "");
                 memberMethodMap.Statements.Add(new CodeSnippetStatement(ModelNameTrim + ".ModelName" + "=" + "\"" + ModelNameTrim + "\"" + ";"));
                 memberMethodProps.Statements.Add(new CodeSnippetStatement($"{ModelNameTrim}.Props = new string[] {{"));
                 memberMethodValues.Statements.Add(new CodeSnippetStatement($"{ModelNameTrim}.Values = new List<object>() {{"));
@@ -442,11 +438,11 @@ namespace DataAnalyticsPlatform.Common
                     }
 
                     columnName = CheckandGetName(columnName);
-                  //  var columnName = Regex.Replace(finfo.DisplayName ,@"[\s\.\-]", string.Empty, RegexOptions.IgnoreCase);//finfo.Name
-                   // columnName = new string(columnName.Where(c => Char.IsLetter(c) || Char.IsDigit(c) || c == '_').ToArray());
+                    //  var columnName = Regex.Replace(finfo.DisplayName ,@"[\s\.\-]", string.Empty, RegexOptions.IgnoreCase);//finfo.Name
+                    // columnName = new string(columnName.Where(c => Char.IsLetter(c) || Char.IsDigit(c) || c == '_').ToArray());
 
                     memberMethodMap.Statements.Add(new CodeSnippetStatement(ModelNameTrim + "." + columnName + "=" + finfo.Map + ";"));
-                    if ( commaStart > 0 )
+                    if (commaStart > 0)
                     {
                         memberMethodValues.Statements.Add(new CodeSnippetStatement(","));
                         memberMethodProps.Statements.Add(new CodeSnippetStatement(","));
@@ -455,11 +451,11 @@ namespace DataAnalyticsPlatform.Common
                     memberMethodProps.Statements.Add(new CodeSnippetStatement($"\"{columnName}\""));
                     commaStart++;
                 }
-                if ( !hasRowid )
+                if (!hasRowid)
                 {
                     memberMethodMap.Statements.Add(new CodeSnippetStatement(ModelNameTrim + "." + "rowid" + "=" + "rowid" + ";"));
                     memberMethodMap.Statements.Add(new CodeSnippetStatement(ModelNameTrim + "." + "sessionid" + "=" + jobid + ";"));
-                    memberMethodMap.Statements.Add(new CodeSnippetStatement(ModelNameTrim + "." + "FileName" + "=" + "\""+ Filename + "\""+ ";"));
+                    memberMethodMap.Statements.Add(new CodeSnippetStatement(ModelNameTrim + "." + "FileName" + "=" + "\"" + Filename + "\"" + ";"));
                     memberMethodValues.Statements.Add(new CodeSnippetStatement(","));
                     memberMethodProps.Statements.Add(new CodeSnippetStatement(","));
                     memberMethodValues.Statements.Add(new CodeSnippetStatement($"{ModelNameTrim}.rowid "));
@@ -471,7 +467,7 @@ namespace DataAnalyticsPlatform.Common
                     memberMethodValues.Statements.Add(new CodeSnippetStatement(","));
                     memberMethodProps.Statements.Add(new CodeSnippetStatement(","));
                     memberMethodValues.Statements.Add(new CodeSnippetStatement($"{ModelNameTrim}.FileName "));
-                    memberMethodProps.Statements.Add(new CodeSnippetStatement($"\"FileName\""));               
+                    memberMethodProps.Statements.Add(new CodeSnippetStatement($"\"FileName\""));
 
                 }
                 memberMethodValues.Statements.Add(new CodeSnippetStatement("}.ToArray();"));
@@ -536,7 +532,7 @@ namespace DataAnalyticsPlatform.Common
             return "";
         }
 
-        public string GenerateModelforJson(string ModelName, List<FieldInfo> modelInfo, List<string>classes, CodeMemberMethod memberMethodMap)
+        public string GenerateModelforJson(string ModelName, List<FieldInfo> modelInfo, List<string> classes, CodeMemberMethod memberMethodMap)
         {
             foreach (FieldInfo finfo in modelInfo)
             {
@@ -583,11 +579,11 @@ namespace DataAnalyticsPlatform.Common
             memberInit.ReturnType = new CodeTypeReference("partial void");
             memberInit.Attributes = MemberAttributes.Final;
 
-           // foreach (ModelInfo modelInfo in typeConfig.ModelInfoList)
-           // {
-              //  classNames.Add(modelInfo.ModelName);
-               // memberInit.Statements.Add(new CodeSnippetStatement(modelInfo.ModelName + " = " + "new " + modelInfo.ModelName + "();"));
-          //  }
+            // foreach (ModelInfo modelInfo in typeConfig.ModelInfoList)
+            // {
+            //  classNames.Add(modelInfo.ModelName);
+            // memberInit.Statements.Add(new CodeSnippetStatement(modelInfo.ModelName + " = " + "new " + modelInfo.ModelName + "();"));
+            //  }
             memberInit.Statements.Add(new CodeSnippetStatement("models = new List<BaseModel>();"));
             //foreach (ModelInfo modelInfo in typeConfig.ModelInfoList)
             //{
@@ -606,8 +602,8 @@ namespace DataAnalyticsPlatform.Common
             foreach (ModelInfo modelInfo in typeConfig.ModelInfoList)
             {
                 List<FieldInfo> fieldInfoList = modelInfo.ModelFields.ToList();
-                
-                fieldInfoList = fieldInfoList.Where(x => x.Map.Contains("[].") ).Select(x => x).ToList();
+
+                fieldInfoList = fieldInfoList.Where(x => x.Map.Contains("[].")).Select(x => x).ToList();
                 if (fieldInfoList.Count > 0)
                 {
                     fieldInfoList = fieldInfoList.OrderBy(q => q.Map.Split('.').Length).ToList();
@@ -616,7 +612,7 @@ namespace DataAnalyticsPlatform.Common
 
                 HashSet<string> uniqueInnerClasss = new HashSet<string>();
                 int count = 0;
-                if (fieldInfoList.Count > 0 )
+                if (fieldInfoList.Count > 0)
                 {
                     foreach (FieldInfo info in fieldInfoList)
                     {
@@ -633,7 +629,7 @@ namespace DataAnalyticsPlatform.Common
                         string MappingClass = "";
                         foreach (FieldInfo finfo in modelInfo.ModelFields)
                         {
-                            
+
                             if (!uniqueInnerClasss.Contains(myclassType))
                             {
                                 codefor = null;
@@ -672,15 +668,16 @@ namespace DataAnalyticsPlatform.Common
                                     }
                                     codefor.Statements.Add(new CodeSnippetStatement(modelInfo.ModelName + "." + finfo.Name + "=" + MappingClass + "." + MappingField + ";"));
                                 }
-                                else {
+                                else
+                                {
                                     codefor.Statements.Add(new CodeSnippetStatement(modelInfo.ModelName + "." + finfo.Name + "=" + formattedPath + ";"));
                                 }
-                               
-                                
+
+
                             }
-                            
-                         }
-                        
+
+                        }
+
                         if (codefor != null)
                         {
                             if (!hasRowid)
@@ -690,7 +687,7 @@ namespace DataAnalyticsPlatform.Common
                             }
                             codefor.Statements.Add(new CodeSnippetStatement("models.Add(" + modelInfo.ModelName + ")" + ";"));
                             memberMethodMap.Statements.Add(codefor);
-                          
+
                         }
                     }
                     fieldInfoList = fieldInfoList.Select(c => { c.Map = c.Map.Replace(".", "[]."); return c; }).ToList();
@@ -709,7 +706,7 @@ namespace DataAnalyticsPlatform.Common
                     memberMethodMap.Statements.Add(new CodeSnippetStatement("models.Add(" + modelInfo.ModelName + ")" + ";"));
                 }
             }
-            
+
 
 
             //foreach (ModelInfo modelInfo in typeConfig.ModelInfoList)
@@ -728,14 +725,14 @@ namespace DataAnalyticsPlatform.Common
             memberMethodMap.Statements.Add(new CodeSnippetStatement("fileid  = file_id; "));
             memberMethodMap.Statements.Add(new CodeSnippetStatement("return models; "));
             myclass.Members.Add(memberMethodMap);
-            
+
             ns.Types.Add(myclass);
             CodeCompileUnit compileUnit = new CodeCompileUnit();
             compileUnit.Namespaces.Add(ns);
             CSharpCodeProvider provider = new CSharpCodeProvider();
             StringWriter sw1 = new StringWriter();
             provider.GenerateCodeFromCompileUnit(compileUnit, sw1, new CodeGeneratorOptions());
-            return sw1.ToString() ;
+            return sw1.ToString();
 
         }
         public List<Type> CodeTwitter(TypeConfig typeConfig, int jobid = 0)
@@ -759,7 +756,7 @@ namespace DataAnalyticsPlatform.Common
             List<string> classes = new List<string>();
             Console.WriteLine(" common 1");
             bool hasRowid = typeConfig.BaseClassFields.Any(x => x.Name == "rowid");
-            
+
             if (!hasRowid)
             {
                 Pf += "public int rowid{get;set;}\n";
@@ -780,7 +777,7 @@ namespace DataAnalyticsPlatform.Common
             //    f += getDataTypeString(fieldInfo.DataType, fieldInfo.Name);
             //}
             //f += "}\n";
-            f += classes.Aggregate((i, j) => i +  "\n" + j);
+            f += classes.Aggregate((i, j) => i + "\n" + j);
 
             code = f;
             foreach (ModelInfo modelInfo in typeConfig.ModelInfoList)
@@ -805,7 +802,7 @@ namespace DataAnalyticsPlatform.Common
                 List<string> Mclasses = new List<string>();
                 GenerateClassfromFieldInfo(modelInfo.ModelFields, Mclasses, mf, "}\n", FieldNameExists);
                 f = Mclasses.Aggregate((i, j) => i + "\n" + j);
-              
+
                 code += f;
                 f = "";
             }
@@ -822,7 +819,7 @@ namespace DataAnalyticsPlatform.Common
                     new CodeNamespaceImport("DataAnalyticsPlatform.Shared.DataModels")
                  });
 
-            
+
             var myclass = new CodeTypeDeclaration("OriginalRecord");//+jobid
             string sw2 = AddModelPartials(ref myclass, typeConfig, hasRowid, jobid);
             code += sw2;

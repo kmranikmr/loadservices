@@ -1,4 +1,23 @@
-﻿
+﻿/// <summary>
+/// This  provides a set of models and utilities for handling schema and data transformation
+/// within the Data Analytics Platform. It includes definitions for user models, schema models,
+/// transformation processes, and a preview registry for managing model states and configurations.
+/// 
+/// Key Classes and Functionalities:
+/// 
+/// - UserModelKey: Represents key information for a user model, including user, project, and model identifiers.
+/// - SchemaModel: Defines a schema model with properties such as ModelId, SchemaId, and ClassDefinition,
+///   along with support for handling type configurations and field information.
+/// - SchemaModels: A collection of SchemaModel instances.
+/// - Transformations: Placeholder for future transformation logic and utilities.
+/// - TransformedModel: Holds transformed models and their types.
+/// - PreviewRegistry: Manages the registry of schema models and transformed models. Provides methods to
+///   add to and retrieve from the registry, and includes functionality for comparing type configurations and
+///   field information.
+/// 
+/// This namespace supports the dynamic handling and transformation of data models, facilitating schema 
+/// comparisons and ensuring data consistency across various user and project configurations.
+/// </summary>
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -138,34 +157,6 @@ namespace DataAnalyticsPlatform.Shared.Models
         }
         public class FieldInfoComparer : IEqualityComparer<FieldInfo>
         {
-            //public int Compare(FieldInfo x, FieldInfo y)
-            //{
-            //    if (x == null)
-            //    {
-            //        if (y == null)
-            //        {
-            //            return 0;
-            //        }
-            //        else
-            //        {
-            //            return -1;
-            //        }
-            //    }
-            //    else
-            //    {
-            //        if (y == null)
-            //        {
-            //            return 1;
-            //        }
-            //        else
-            //        {
-            //            int retVal = x.Name.CompareTo(y.Name);
-
-            //            return retVal;
-            //        }
-            //    }
-            //}
-
             public bool Equals(FieldInfo x, FieldInfo y)
             {
                 return x.Name.ToLower() == y.Name.ToLower();
@@ -191,16 +182,7 @@ namespace DataAnalyticsPlatform.Shared.Models
             Console.WriteLine("checking detailed");
             bool rv = Helper.ScrambledEquals(infieldInfoList.Select(x => x.Name).ToList(), otherFieldInfoList.Select(x => x.Name).ToList());
             Console.WriteLine("checking detailed " + rv);
-            //       for ( int j = 0; j < infieldInfoList.Count; j++)
-            //       {
-            //            Console.WriteLine(infieldInfoList[j].Name + " " + otherFieldInfoList[j].Name + " " + 
-            //                     infieldInfoList[j].DisplayName + " " + otherFieldInfoList[j].DisplayName);
-            //}
-
-            // if ((infieldInfoList.All(item => otherFieldInfoList.Contains(item)) &&
-            //  otherFieldInfoList.All(item => infieldInfoList.Contains(item))))
-            //var intersected = otherFieldInfoList.Intersect(infieldInfoList, new FieldInfoComparer());
-            //intersected.Count() == otherFieldInfoList.Count ||
+          
             if (rv)//otherFieldInfoList.All(item => infieldInfoList.Contains(item)) || rv)
             {
                 Console.WriteLine("Same Base");
@@ -248,34 +230,9 @@ namespace DataAnalyticsPlatform.Shared.Models
                 return EnumSchemaDiffType.SameBase;
             }
             return EnumSchemaDiffType.DiffBaseModels;
-            // }
-            //public T Create( int userId, int SchemaId, params object[] args) where T: class
-            //{
-            //    Type type = null;
-            //    if (_dictSchemaType.TryGetValue(SchemaId, out type))
-            //        return (T)Activator.CreateInstance(type, args);
-            //    return default(T);
-            //}
-
-            //public void Register<Tderived>(int userId, int SchemaId) where Tderived : T
-            //{
-            //    var type = typeof(Tderived);
-            //    _dictSchemaType.Add(SchemaId, type);
-            //}
+           
         }
     }
-    //public T Create( int userId, int SchemaId, params object[] args) where T: class
-    //{
-    //    Type type = null;
-    //    if (_dictSchemaType.TryGetValue(SchemaId, out type))
-    //        return (T)Activator.CreateInstance(type, args);
-    //    return default(T);
-    //}
-
-    //public void Register<Tderived>(int userId, int SchemaId) where Tderived : T
-    //{
-    //    var type = typeof(Tderived);
-    //    _dictSchemaType.Add(SchemaId, type);
-    //}
+   
 }
 

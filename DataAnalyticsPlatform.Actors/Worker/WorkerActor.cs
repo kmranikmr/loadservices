@@ -1,4 +1,20 @@
-﻿using Akka.Actor;
+﻿/*
+ * This file defines the WorkerActor class responsible for managing ingestion jobs in the DataAnalyticsPlatform's Worker namespace.
+ * 
+ * WorkerActor:
+ * - Implements Akka.NET's ReceiveActor to handle messages related to ingestion jobs and coordination with the master actor.
+ * - Initializes with an optional master actor reference (_masterActor) to communicate job statuses and results.
+ * - Receives messages such as CreateSchemaPostgres and IngestionJob to process schema creation and job execution.
+ * - Dynamically generates code for data transformation if the model type is not specified based on the file type or configuration details.
+ * - Creates a CoordinatorActor for each IngestionJob to oversee the execution and coordination of data ingestion tasks.
+ * - Manages job lifecycle by tracking running jobs (_runningJobs) and handling CoordinatorIsDead messages to clean up and notify the master actor.
+ * - Logs initialization and job status updates using Akka.NET's logging facilities.
+ * 
+ * Overall, this actor plays a pivotal role in initiating, monitoring, and completing data ingestion jobs within the Data Analytics Platform, ensuring robust job execution and status reporting.
+ */
+
+
+using Akka.Actor;
 using Akka.Event;
 using DataAnalyticsPlatform.Actors.Master;
 using DataAnalyticsPlatform.Actors.Processors;

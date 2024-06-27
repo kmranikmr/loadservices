@@ -1,4 +1,26 @@
-﻿
+﻿/*
+    RoslynCompiler class provides functionality for dynamically compiling C# code using Roslyn compiler.
+    It allows parsing C# source code into syntax trees and generating dynamic assemblies at runtime.
+
+    Features:
+    - Constructor initializes necessary properties and settings for compilation.
+    - Provides methods for parsing C# source code into SyntaxTree objects.
+    - Generates dynamic assemblies from parsed syntax trees with specified compilation options and references.
+    - Handles compilation errors and diagnostics, logging them to the console.
+    - Uses AssemblyLoadContext for loading assemblies from memory streams and retrieving generated types.
+
+    Note:
+    - Dependencies include Microsoft.CodeAnalysis and related namespaces for Roslyn compiler services.
+    - Uses CSharpCompilationOptions for configuring compilation settings (e.g., output kind, optimization).
+    - Supports loading assemblies from trusted platform assemblies based on needed assemblies list.
+
+    Usage:
+    - Instantiate RoslynCompiler to compile C# code dynamically.
+    - Use Parse method to parse C# source text into SyntaxTree.
+    - Use Generate method to compile the parsed syntax tree into a dynamic assembly and retrieve generated types.
+*/
+
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
@@ -95,89 +117,14 @@ namespace DataAnalyticsPlatform.SharedUtils
                         }
                     }
 
-
-                    //                DefaultReferences = trustedAssembliesPaths
-                    //.Where(p => neededAssemblies.Contains(Path.GetFileNameWithoutExtension(p)))
-                    //.Select(p => MetadataReference.CreateFromFile(p))
-                    //.ToList();
-                    //   DefaultReferences.MetadataReference.CreateFromFile(Path.Combine(projDir + @"\bin\debug", "DataAnalyticsPlatform.Common.dll")));//@"E:\source\growap\DataAnalyticsPlatform\bin\netstandard2.0\DataAnalyticsPlatform.Common.dll")
-                    //   DefaultReferences.ToList().Add(MetadataReference.CreateFromFile(Path.Combine(projDir + @"\bin\debug" , "DataAnalyticsPlatform.Shared.dll")));
-                    //                DefaultReferences =
-                    //DependencyContext.Default.CompileLibraries
-                    //.First(cl => cl.Name == "Microsoft.NETCore.App")
-                    //.ResolveReferencePaths()
-                    //.Select(asm => MetadataReference.CreateFromFile(asm))
-                    //.ToArray();
-
-                    foreach (MetadataReference meta in DefaultReferences1)
-                    {
-                        Console.WriteLine(meta.Display);
-                    }
-                    //      DefaultReferences =
-                    //       new[]
-                    //       {
-
-
-                    //  MetadataReference.CreateFromFile(Path.Combine(projDir, "mscorlib")),
-                    //  MetadataReference.CreateFromFile(Path.Combine(projDir, "System")),
-                    //  MetadataReference.CreateFromFile(Path.Combine(projDir, "System.Core")),
-                    //  MetadataReference.CreateFromFile(Path.Combine(projDir, "System.Linq.Expressions")),
-                    //  MetadataReference.CreateFromFile(Path.Combine(projDir, "System.Runtime")),
-                    //   MetadataReference.CreateFromFile(Path.Combine(projDir, "System.Collections")),
-                    //  MetadataReference.CreateFromFile(Path.Combine(projDir, "System.Private.CoreLib.dll")),
-
-
-                    ////  MetadataReference.CreateFromFile(Path.Combine(projDir + @"\bin\Debug", "CsvHelper.dll")),//@"E:\source\growap\DataAnalyticsPlatform\packages\CsvHelper.12.1.2\lib\net45\CsvHelper.dll"),
-                    // // MetadataReference.CreateFromFile(Path.Combine(projDir + @"\bin\Debug", "DataAnalyticsPlatform.Common.dll")),//@"E:\source\growap\DataAnalyticsPlatform\bin\netstandard2.0\DataAnalyticsPlatform.Common.dll")
-                    // //  MetadataReference.CreateFromFile(Path.Combine(projDir + @"\bin\Debug", "DataAnalyticsPlatform.Shared.dll"))//@"E:\source\growap\DataAnalyticsPlatform\bin\netstandard2.0\DataAnalyticsPlatform.Common.dll")
-
-                    //     MetadataReference.CreateFromFile(Path.Combine(projDir, "CsvHelper.dll")),//@"E:\source\growap\DataAnalyticsPlatform\packages\CsvHelper.12.1.2\lib\net45\CsvHelper.dll"),
-                    //  MetadataReference.CreateFromFile(Path.Combine(projDir, "DataAnalyticsPlatform.Common.dll")),//@"E:\source\growap\DataAnalyticsPlatform\bin\netstandard2.0\DataAnalyticsPlatform.Common.dll")
-                    //   MetadataReference.CreateFromFile(Path.Combine(projDir, "DataAnalyticsPlatform.Shared.dll"))//@"E:\source\growap\DataAnalyticsPlatform\bin\netstandard2.0\DataAnalyticsPlatform.Common.dll")
-
-                    //       };
                 }
-
-                //else
-                //{
-                //    Console.WriteLine(" sharedutils not debug" + projDir);
-                //    DefaultReferences =
-                //     new[]
-                //     {
-                //         // MetadataReference.CreateFromFile(@"E:\source\growap\DataAnalyticsPlatform\bin\DataAnalyticsPlatform.Shared.dll"),
-
-
-                //    MetadataReference.CreateFromFile(string.Format(runtimePath, "mscorlib")),
-                //    MetadataReference.CreateFromFile(string.Format(runtimePath, "System")),
-                //    MetadataReference.CreateFromFile(string.Format(runtimePath, "System.Core")),
-                //    MetadataReference.CreateFromFile(string.Format(runtimePath, "System.Linq.Expressions")),
-                //    MetadataReference.CreateFromFile(string.Format(runtimePath, "System.Runtime")),
-                //     MetadataReference.CreateFromFile(string.Format(runtimePath, "System.Collections")),
-                //    MetadataReference.CreateFromFile(Path.Combine(coreDir, "System.Private.CoreLib.dll")),
-
-
-                //  //  MetadataReference.CreateFromFile(Path.Combine(projDir, "CsvHelper.dll")),//@"E:\source\growap\DataAnalyticsPlatform\packages\CsvHelper.12.1.2\lib\net45\CsvHelper.dll"),
-                // //   MetadataReference.CreateFromFile(Path.Combine(projDir, "DataAnalyticsPlatform.Common.dll")),//@"E:\source\growap\DataAnalyticsPlatform\bin\netstandard2.0\DataAnalyticsPlatform.Common.dll")
-                ////     MetadataReference.CreateFromFile(Path.Combine(projDir , "DataAnalyticsPlatform.Shared.dll"))//@"E:\source\growap\DataAnalyticsPlatform\bin\netstandard2.0\DataAnalyticsPlatform.Common.dll")
-
-                //     };
-                //}
 
             }
             catch (Exception ex)
             {
-                int gg = 0;
+                Console.WriteLine("Exception in compile");
             }
-            //if (references != null)
-            //{
-            //    foreach (string reference in references)
-            //    {
-            //        string dir = Path.Combine(
-            //             Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), reference);
-            //        DefaultReferences.ToList().Add(MetadataReference.CreateFromFile(dir));
-            //        // MetadataReference.CreateFromFile(@"E:\source\tester\in\Repo.dll")
-            //    }
-            //}
+
             CSharpCompilationOptions DefaultCompilationOptions;
             Console.WriteLine(" sharedutils  compile");
 

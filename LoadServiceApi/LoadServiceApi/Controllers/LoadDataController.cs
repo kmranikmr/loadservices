@@ -1,4 +1,29 @@
-﻿using AutoMapper;
+﻿// This file defines the LoadDataController class, which handles API requests related to
+// loading data, managing jobs, and processing files. It includes methods for validating
+// and updating schemas, and for executing data loading operations.
+//
+// Classes:
+// - LoadDataController: A controller class that provides API endpoints to manage data loading tasks.
+//
+// Methods:
+// - CheckSchemaAndUpdate: Validates and updates schema information based on the provided reader type and configuration.
+// - Post: Handles POST requests to start a data loading job, processing multiple file types (CSV, JSON, etc.).
+// - backgroundWorker1_DoWork: A background worker method to update job statuses and simulate job processing.
+// - PerformBackgroundJob: Simulates a background job updating job statuses.
+//
+// Uses:
+// - AutoMapper: For mapping between domain and DTO objects.
+// - Coravel.Queuing.Interfaces: For queuing tasks.
+// - DataAccess: Includes data access models and DTOs.
+// - DataAnalyticsPlatform: Shared utilities, data models, and actor classes.
+// - Microsoft.AspNetCore.Mvc: For building the API controller.
+// - Microsoft.EntityFrameworkCore: For database context and operations.
+// - Newtonsoft.Json: For JSON deserialization.
+// - SignalR: For real-time notifications (currently commented out).
+
+
+
+using AutoMapper;
 using Coravel.Queuing.Interfaces;
 using DataAccess.DTO;
 using DataAccess.Models;
@@ -195,31 +220,7 @@ namespace LoadServiceApi.Controllers
             return jobId;
         }
 
-        //reader.
-        //        var readers = await _repository.GetReadersInProjectByTypes(ProjectId, readerTypeId);
-        //ReaderDTO[] readerDTOs = null;
-        //        if (readers != null && readers.Any())
-        //        {
-        //            readerDTOs = _mapper.Map<ReaderDTO[]>(readers);
-        //        }
-        //[HttpPost("{ProjectId}/loadmodel")]
-        //public async Task<ActionResult<int>> Post1(int ProjectId, [FromBody]int[] FileId)//we will make it a different incoming class with more props
-        //{
-
-        //    int count = 10000;
-        //    int userId = Convert.ToInt32(this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-        //    int jobId = _repository.GetNewJobId();
-        //    await _repository.AddJob(userId, ProjectId, jobId, 0, FileId.ToList());
-        //    BackgroundWorker bg = new BackgroundWorker();
-        //    bg.DoWork += (obj, e) => backgroundWorker1_DoWork(jobId, FileId.ToList(), _repository);
-        //    bg.RunWorkerAsync();
-        //    //  _queue.QueueAsyncTask(() => PerformBackgroundJob(jobId, request.FileId));
-        //    // await Task.Run(()=>PerformBackgroundJob());
-        //    return jobId;
-        //    //var result = await this.LoadModels.Execute(id, request.FileName);
-        //    //return result;
-        //    // return 1;
-        //}
+     
         private async void backgroundWorker1_DoWork(int jobId, List<int> fileId, IRepository _repository)// object sender, System.ComponentModel.DoWorkEventArgs e)
         {
             var options = SqlServerDbContextOptionsExtensions.UseSqlServer<DAPDbContext>(new DbContextOptionsBuilder<DAPDbContext>(), "Server=localhost\\SQLEXPRESS;Database=dap_master;Trusted_Connection=True;").Options;

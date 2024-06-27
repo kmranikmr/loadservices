@@ -1,4 +1,16 @@
-﻿using DataAnalyticsPlatform.Shared.DataAccess;
+﻿/* ElasticWriter class facilitates writing data to Elasticsearch using Nest library.
+    It extends BaseWriter for common functionality and utilizes IElasticClient for Elasticsearch operations.
+
+    Features:
+    - Constructor initializes with an Elasticsearch connection string and sets up the Nest IElasticClient.
+    - Uses JsonNetSerializer for custom JSON serialization settings (e.g., handling null values and reference loops).
+    - Implements methods for creating Elasticsearch indices and tables (not implemented).
+    - Provides methods for writing single BaseModel records and lists of BaseModel to Elasticsearch.
+    - Supports batching and dumping of records based on configurable thresholds.
+    - Utilizes asynchronous bulk operations for efficient data indexing, with error handling and logging.
+    - Implements IDisposable to manage resources and ensure data flushing on disposal.
+*/
+using DataAnalyticsPlatform.Shared.DataAccess;
 using DataAnalyticsPlatform.Shared.Interfaces;
 using Elasticsearch.Net;
 using Nest;

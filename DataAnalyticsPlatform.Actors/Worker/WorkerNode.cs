@@ -1,4 +1,20 @@
-﻿using Akka.Actor;
+﻿/*
+ * * 
+ * WorkerNode:
+ * - Implements Akka.NET's ReceiveActor to handle messages related to ingestion jobs and coordination with worker actors and monitors.
+ * - Initializes with parameters such as maximum number of concurrent workers (_maxNumberofConcurretWorker) and references to worker actors and monitors.
+ * - Tracks ingestion jobs using events (JobProcess and JobComplete) for handling job status updates and completion notifications.
+ * - Updates job status in a repository (Repository) and triggers job completion handling upon receiving JobDone messages.
+ * - Manages the lifecycle of worker actors and ingestion monitors (IngestionMonitorActor) during initialization (PreStart method).
+ * - Sends messages such as IngestionJob, JobDone, and CreateSchemaPostgres to appropriate actors for further processing.
+ * - Handles ModelSizeData messages to update model sizes in the database based on ingestion job configurations.
+ * - Implements asynchronous methods for sending job completion notifications to external services (SendAttempt method).
+ * 
+ * Overall, this actor plays a central role in coordinating and managing ingestion jobs within the Data Analytics Platform, ensuring efficient job execution and status reporting.
+ */
+
+
+using Akka.Actor;
 using Akka.Routing;
 using DataAccess.Models;
 using DataAnalyticsPlatform.Actors.Master;
@@ -38,17 +54,7 @@ namespace DataAnalyticsPlatform.Actors.Worker
         public string _connectionString { get; set; }
         //public IngestionJob ingestionJob { get; set; }
         public List<IngestionJob> ingestionJob { get; set; }
-        //private async void backgroundWorker1_DoWork(int jobId, int fileId)// object sender, System.ComponentModel.DoWorkEventArgs e)
-        //{
-        //    string connectionString = @"Server = localhost\\SQLEXPRESS; Database = dap_master; Trusted_Connection = True; ";
-        //    var buildrOption =  new DbContextOptionsBuilder<DAPDbContext>();
-
-        //    var options = SqlServerDbContextOptionsExtensions.UseSqlServer<DAPDbContext>(buildrOption, connectionString).Options;
-        //    var dbContext = new DAPDbContext(options);
-        //    IRepository repo = new Repository(dbContext, null);
-        //    await repo.UpdateJobStatus(jobId, 2, fileId);
-        //    await repo.UpdateJobStart(jobId, fileId);
-        //}
+       
         public void UpdateJobProcess(object sender, IngestionJob job)
         {
             Console.WriteLine("Worker Node UpdateJobProcess");
@@ -82,13 +88,7 @@ namespace DataAnalyticsPlatform.Actors.Worker
             _maxNumberofConcurretWorker = maxNumberofConcurretWorker;
             JobProcess += UpdateJobProcess;
             JobComplete += UpdateJobComplete;
-            //  string connectionString = @"Server = localhost\\SQLEXPRESS; Database = dap_master; Trusted_Connection = True; ";
-
-            //  var options = SqlServerDbContextOptionsExtensions.UseSqlServer<DAPDbContext>(new DbContextOptionsBuilder<DAPDbContext>(), connectionString).Options;
-            //  var dbContext = new DAPDbContext(options);
-            //   _repo = new Repository(dbContext, null);
-
-            //   _masterActor = masterActor;
+           
             ReceiveBlock();
         }
 
@@ -116,13 +116,9 @@ namespace DataAnalyticsPlatform.Actors.Worker
             Receive<IngestionJob>(x =>
             {
                 _masterActor = Sender;
-                // BackgroundWorker bg = new BackgroundWorker();
-                // bg.DoWork += (obj, e) => backgroundWorker1_DoWork(x.JobId, 3);
-                // bg.RunWorkerAsync();
+               
                 JobProcess?.Invoke(this, x);
-                // JobProcess  -= UpdateJobProcess;
-                // var h = UpdateJob(2, x.JobId);
-                // _repo.UpdateJobStatusSync(x.JobId, 2, 3);
+               
                 _workerActors.Tell(x);
 
             });
@@ -141,9 +137,7 @@ namespace DataAnalyticsPlatform.Actors.Worker
 
                 if (ingestionJob != null)//lets take th eingetsio njob and send the info to datsaervice for projecttrigger
                 {
-                    //SendAttempt(x);
-
-
+                  
                     Console.WriteLine("IngestionJob Check");
                     IngestionJob tbd = null;
                     foreach (var j in ingestionJob)

@@ -1,4 +1,19 @@
-﻿using Akka.Actor;
+﻿/*
+ * This file defines the ReaderActor class responsible for reading records in the DataAnalyticsPlatform's Processors namespace.
+ * 
+ * ReaderActor:
+ * - Implements Akka.NET's ReceiveActor to manage messages related to reading data.
+ * - Handles messages such as StartReading, ReaderReady, ReaderInitFailed, GetRecord, and NoMoreRecord.
+ * - Initializes a specific reader based on the provided IngestionJob's ReaderConfiguration.
+ * - Emits events for errors and informational messages during the reading process.
+ * - Retrieves records from the reader and sends them to the sender or signals when no more records are available.
+ * - Logs errors and informational messages using Akka's logging facilities.
+ * 
+ * Overall, this actor facilitates the reading of data from a specified source path, handling initialization, record retrieval, and error reporting within the Data Analytics Platform.
+ */
+
+
+using Akka.Actor;
 using Akka.Event;
 using DataAnalyticsPlatform.Actors.Master;
 using DataAnalyticsPlatform.Shared.Interfaces;
