@@ -98,12 +98,10 @@ Implements the Master API service, providing endpoints for managing the data pro
 Program: Entry point for the Master API service.
 Startup: Configures the services and middleware for the Master API.
 
-![alt text]https://github.com/kmranikmr/loadservices/blob/master/Presentation1.png
 
 System Architecture
 
-![Presentation1](https://github.com/kmranikmr/loadservices/assets/173465556/25d1e7bc-f747-4d23-934c-a53237e46b06)
-
+![alt text]https://github.com/kmranikmr/loadservices/blob/master/Presentation1.png?raw=true
 
 
 
