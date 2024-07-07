@@ -100,8 +100,8 @@ Startup: Configures the services and middleware for the Master API.
 
 System Architecture
 
-![Presentation1](h![Presentation1](https://github.com/kmranikmr/loadservices/assets/173465556/bd222204-b71d-4ed8-aa1b-f47951033046)
-ttps://github.com/kmranikmr/loadservices/assets/173465556/fe88a812-6c82-4343-b39b-1b015a959c4b)
+![Presentation1](https://github.com/kmranikmr/loadservices/assets/173465556/25d1e7bc-f747-4d23-934c-a53237e46b06)
+
 
 
 
