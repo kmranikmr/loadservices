@@ -1,8 +1,8 @@
-# Data Analytics Platform (DAP) Load Services
+# Data Analytics Platform Load Services
 
 ## Overview
 
-The Data Analytics Platform (DAP) Load Services is a robust and scalable framework designed to process, transform, and manage large datasets. It leverages actor-based concurrency to handle various data processing tasks efficiently.
+The Data Analytics Platform Load Services is a robust and scalable framework designed to process, transform, and manage large datasets. It leverages actor-based concurrency to handle various data processing tasks efficiently.
 
 ## Directory Structure
 
@@ -98,6 +98,9 @@ Implements the Master API service, providing endpoints for managing the data pro
 Program: Entry point for the Master API service.
 Startup: Configures the services and middleware for the Master API.
 
-Architecture
+System Architecture
 
-![image](https://github.com/kmranikmr/loadservices/assets/173465556/41f652f2-09ce-4363-b59e-ab6fbb55dc56)
+
+![image](https://github.com/kmranikmr/loadservices/assets/173465556/958c8af6-7daa-4741-b3d1-fb26242510e8)
+
+
