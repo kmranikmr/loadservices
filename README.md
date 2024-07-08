@@ -3,6 +3,9 @@
 ## Overview
 
 The Data Analytics Platform Load Services is a robust and scalable framework designed to process, transform, and manage large datasets. It leverages actor-based concurrency to handle various data processing tasks efficiently.
+## System Architecture
+
+![Presentation1](https://github.com/kmranikmr/loadservices/raw/master/Presentation1.png)
 
 ## Directory Structure
 
@@ -99,9 +102,7 @@ Program: Entry point for the Master API service.
 Startup: Configures the services and middleware for the Master API.
 
 
-System Architecture
 
-![Presentation1](https://github.com/kmranikmr/loadservices/raw/master/Presentation1.png)
 
 
 
