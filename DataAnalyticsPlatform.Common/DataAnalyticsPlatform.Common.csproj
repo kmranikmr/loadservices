@@ -35,7 +35,9 @@
     <Compile Include="Builders\PartialBuilder.cs" />
     <Compile Include="Builders\TwitterBuilder.cs" />
     <Compile Include="Builders\TypeConfigBuilder.cs" />
+    <Compile Include="Helpers\CodeGenHelper.cs" />
     <Compile Include="Helpers\CodeGenHelpers.cs" />
+    <Compile Include="Helpers\ModelCompiler.cs" />
     <Compile Include="Helpers\ModelCompilers.cs" />
   </ItemGroup>
   <PropertyGroup />

@@ -5,6 +5,11 @@ using DataAnalyticsPlatform.Common.Helpers;
 using DataAnalyticsPlatform.Common.Builders;
 using System;
 using System.Collections.Generic;
+using System.CodeDom;
+using System.CodeDom.Compiler;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace DataAnalyticsPlatform.Common
 {
@@ -14,7 +19,7 @@ namespace DataAnalyticsPlatform.Common
     /// </summary>
     public class TransformationCodeGenerator
     {
-        private readonly CodeGenHelpers _helpers;
+        private readonly CodeGenHelper _helpers;
         private readonly ModelCompiler _compiler;
         private readonly TypeConfigBuilder _typeConfigBuilder;
         private readonly JsonBuilder _jsonBuilder;
@@ -23,7 +28,7 @@ namespace DataAnalyticsPlatform.Common
 
         public TransformationCodeGenerator()
         {
-            _helpers = new CodeGenHelpers();
+            _helpers = new CodeGenHelper();
             _compiler = new ModelCompiler();
             _typeConfigBuilder = new TypeConfigBuilder(_helpers, _compiler);
             _jsonBuilder = new JsonBuilder(_helpers, _compiler);
