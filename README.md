@@ -6,7 +6,7 @@ The Data Analytics Platform Load Services is a robust and scalable framework des
 
 ## System Architecture
 
-![System Architecture Diagram](https://github.com/kmranikmr/loadservices/raw/master/presentation1.png)
+![System Architecture Diagram](https://github.com/kmranikmr/loadservices/raw/master/Presentation1.png)
 
 ### Data Ingestion Pipeline
 
