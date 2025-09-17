@@ -1,4 +1,26 @@
-# Data Analytics Platform Load Services
+# Data Ana### Data Ingestion Pipeline
+
+This platform handles data ingestion from various sources:
+- CSV files
+- JSON data 
+- Twitter API data (also JSON format)
+- Custom sources
+
+The pipeline process:
+1. Detects incoming data through file watchers, database watchers, or REST API endpoints
+2. Extracts and previews data schema (showing sample data for user inspection)
+3. Provides UI-driven entity mapping interface (external component) where users can:
+   - Map source fields to destination fields
+   - Set up transformations
+   - Configure data type conversions
+4. Transforms data using dynamic C# code generation via the CodeGenerator
+5. Maps data to appropriate tables/collections
+6. Outputs processed data to configurable destinations:
+   - Elasticsearch
+   - SQL databases
+   - MongoDB
+
+Preview endpoints allow users to view sample data and schema information before finalizing the mapping and processing.m Load Services
 
 ## Overview
 
@@ -6,7 +28,7 @@ The Data Analytics Platform Load Services is a robust and scalable framework des
 
 ## System Architecture
 
-![System Architecture Diagram](https://github.com/kmranikmr/loadservices/raw/master/system_diagram.png)
+![System Architecture Diagram](https://github.com/kmranikmr/loadservices/raw/master/presentation1.png)
 
 ### Data Ingestion Pipeline
 
@@ -221,35 +243,3 @@ Actors are the core components responsible for executing tasks in the system:
 - **System**: Handle notifications and coordination
 - **Common**: Shared utilities and code generators
 
-## License
-
-This project is licensed under the MIT License.
-
----
-
-## Architecture Details
-
-### Actor System
-
-The platform is built on an actor-based architecture for concurrent processing:
-
-- **Master Actors** - Coordinate overall processing
-- **Worker Actors** - Execute processing tasks
-- **Reader/Writer Actors** - Handle data I/O operations
-
-### Data Flow
-
-```
-Data Source → Reader → Processor → Transformer → Writer → Data Destination
-     ↑                                               ↓
-     └───────────── Progress Feedback ──────────────┘
-```
-
-### Extensibility
-
-The platform can be extended with:
-
-- Custom readers for new data sources
-- Custom writers for new destinations
-- Custom processors for specialized transformations
-- Custom actors for domain-specific processing
