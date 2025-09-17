@@ -140,6 +140,28 @@ The platform can be easily deployed on Linux using Docker and docker-compose:
    docker-compose up -d --scale worker=3
    ```
 
+## To Be Done
+
+The following enhancements are planned for future releases:
+
+1. **Docker Compose Improvements**
+   - Add dependencies and databases as part of the Docker Compose setup
+   - Create a standalone system that includes all required components
+   - Implement proper service discovery and networking
+
+2. **Example API Documentation**
+   - Add example API calls for common operations:
+     - Uploading data files
+     - Creating and modifying data mappings
+     - Triggering data processing jobs
+     - Monitoring job status
+     - Retrieving processed data
+
+3. **Developer Documentation**
+   - Detailed setup instructions for development environments
+   - API reference documentation
+   - Component diagrams and architecture details
+
 ## Features
 
 - **Multi-format Data Import** - CSV, JSON, API, and custom formats
