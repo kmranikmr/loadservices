@@ -10,41 +10,18 @@ The Data Analytics Platform Load Services is a robust and scalable framework des
 
 ### Data Ingestion Pipeline
 
-The Data Analytics Platform implements a comprehensive data ingestion pipeline that can process various data formats:
+This platform handles data ingestion from various sources:
+- CSV files
+- JSON data 
+- Twitter API data
+- Custom sources
 
-1. **Data Sources**:
-   - CSV files
-   - JSON data
-   - Third-party Twitter data (JSON format)
-   - Custom data sources
-
-2. **Processing Flow**:
-   - **FolderWatcher** monitors directories for new files to process
-   - **Database Watcher** tracks changes in database sources
-   - **Rest API Endpoint** accepts data through API requests
-   - **Automation Coordinator** orchestrates the ingestion workflow
-   - **Leader (Master)** delegates work to multiple Workers
-   - **Worker** nodes perform the actual data processing
-
-3. **Preview Services**:
-   - Schema detection and preview functionality
-   - CSV/JSON Schema Generator creates appropriate models
-   - UI-driven entity mapping (external component)
-   - Schema/Model storage in SQL Server database
-
-4. **Processing Components**:
-   - **Reader** components handle different data formats
-   - **Writer** components output to various destinations:
-     - Elasticsearch
-     - SQL databases
-     - MongoDB
-
-5. **Transformation Engine**:
-   - Dynamic code generation using C#
-   - Schema mapping and transformation
-   - Field-level data mapping and type conversion
-
-All components are configurable and can be extended to support additional data sources or destinations.
+The pipeline:
+1. Detects incoming data through file watchers or API endpoints
+2. Extracts and previews data schema
+3. Maps fields through a UI-driven process
+4. Transforms data using dynamic code generation
+5. Outputs to various destinations (Elasticsearch, PostgreSQL, MongoDB)
 
 ## Key Components
 
@@ -93,7 +70,7 @@ git clone https://github.com/kmranikmr/loadservices.git
 cd loadservices
 ```
 
-### Setup Development Environment
+### Windows Development Environment
 
 1. **Open in Visual Studio**
    - Open the `DataAnalyticsPlatform.sln` solution file in Visual Studio
@@ -113,6 +90,46 @@ cd loadservices
 5. **Run the Application**
    - Set the appropriate startup project
    - Press F5 to run in debug mode
+
+### Docker Deployment (Linux)
+
+The platform can be easily deployed on Linux using Docker and docker-compose:
+
+1. **Prerequisites**
+   - Docker installed on your Linux system
+   - docker-compose installed
+
+2. **Run the Application**
+   ```bash
+   # Start all services
+   docker-compose up -d
+   
+   # Start specific service
+   docker-compose up -d masterapi
+   ```
+
+3. **Configuration**
+   - Modify `docker-compose.yml` to adjust service configurations
+   - Environment variables can be set in the docker-compose file
+
+4. **Accessing Services**
+   - Master API: http://localhost:5000
+   - Preview Service: http://localhost:5001
+
+5. **Monitoring**
+   ```bash
+   # View logs
+   docker-compose logs -f
+   
+   # Check service status
+   docker-compose ps
+   ```
+
+6. **Scaling Workers**
+   ```bash
+   # Scale up worker nodes
+   docker-compose up -d --scale worker=3
+   ```
 
 ## Features
 
@@ -136,22 +153,6 @@ Run tests through Visual Studio's Test Explorer or via the command line:
 cd DataAnalyticsPlatform.Tests
 dotnet test
 ```
-
-## Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Commit your changes: `git commit -m 'Add amazing feature'`
-4. Push to the branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License.
-
----
 
 ## Architecture Details
 
@@ -196,44 +197,29 @@ Update the App.config file in the Application.Net project with the appropriate s
 ### Run the Application
 Set the DataAnalyticsPlatform.Application.Net project as the startup project and run it.
 
-Usage
-The application provides various forms and utilities to interact with the data processing actors. Use the provided forms to input data, configure processing tasks, and monitor the system.
-
-Contributing
-Contributions are welcome! Please submit pull requests or open issues to contribute to the project.
-
-License
-This project is licensed under the MIT License.
+## Usage
+The application provides forms and utilities to interact with the data processing actors:
+- Configure data sources
+- Map and transform data fields
+- Monitor processing progress
+- View results in target systems
 
 ## Design Outline
+
 ### Actors
-Actors are the core components responsible for executing various tasks in the system. The design follows the actor model, promoting high concurrency and fault tolerance.
+Actors are the core components responsible for executing tasks in the system:
 
-### Processors
-ReaderActor: Reads data from various sources.
-TransformerActor: Transforms data into the required format.
-WriterActor: Writes processed data to the destination.
-WriterManager: Manages writer actors and ensures data consistency.
-Registry
-GetAllRegistry: Retrieves all registry entries.
-RegistryActor: Manages individual registry entries.
-RegistryActorProvider: Provides registry actors as needed.
-System
-DAP: Main system actor responsible for overall coordination.
-Notifier: Handles system notifications.
-Utils
-HoconLoader: Utility for loading HOCON (Human-Optimized Config Object Notation) configurations.
-Worker
-WorkerActor: Executes tasks assigned to worker nodes.
-WorkerNode: Represents individual worker nodes.
+- **Master/Leader Actors**: Coordinate processing
+- **Worker Actors**: Execute data processing tasks
+- **Reader Actors**: Handle data ingestion
+- **Writer Actors**: Output to destinations
 
-Common
-Contains shared utilities and constants used across the system.
+### Core Components
 
-CommonActor: Base class for common actor functionalities.
-Constants: Defines various constants used in the system.
-Data
-Data provider actors manage the data access layer.
+- **Processors**: Transform and process data
+- **Registry**: Manage schema registry and type configurations
+- **System**: Handle notifications and coordination
+- **Common**: Shared utilities and code generators
 
 ## License
 
