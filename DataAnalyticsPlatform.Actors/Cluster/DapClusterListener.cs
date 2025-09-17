@@ -5,9 +5,15 @@ using System;
 
 namespace DataAnalyticsPlatform.Actors.Cluster
 {
+    // NLog for logging
+    using NLog;
+
+    /// <summary>
+    /// Actor that listens for Akka.NET cluster events and logs them.
+    /// </summary>
     public class DapClusterListener : ReceiveActor
     {
-        protected ILoggingAdapter Log = Context.GetLogger();
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         protected Akka.Cluster.Cluster Cluster = Akka.Cluster.Cluster.Get(Context.System);
 
@@ -20,35 +26,41 @@ namespace DataAnalyticsPlatform.Actors.Cluster
             SetReceiveHandlers();
         }
 
+        /// <summary>
+        /// Sets up message handlers for cluster events.
+        /// </summary>
         private void SetReceiveHandlers()
         {
+            // Log when a member joins the cluster
             Receive<ClusterEvent.MemberUp>(message =>
             {
-                Log.Info("Member is Up: {0}", message.Member);
+                logger.Info($"Member is Up: {message.Member}");
             });
 
+            // Log when a member becomes unreachable
             Receive<ClusterEvent.UnreachableMember>(message =>
             {
-                Log.Info("Member detected as unreachable: {0}", message.Member);
+                logger.Warn($"Member detected as unreachable: {message.Member}");
             });
 
+            // Log when a member is removed
             Receive<ClusterEvent.MemberRemoved>(message =>
             {
-                Log.Info("Member is Removed: {0}", message.Member);
+                logger.Info($"Member is Removed: {message.Member}");
             });
 
+            // Ignore other member events
             Receive<ClusterEvent.IMemberEvent>(message =>
             {
-                //ignore
+                // ignore
             });
 
+            // Handle any other messages
             ReceiveAny(message =>
             {
                 Unhandled(message);
             });
         }
-
-
 
         /// <summary>
         /// Need to subscribe to cluster changes
@@ -59,7 +71,7 @@ namespace DataAnalyticsPlatform.Actors.Cluster
         }
 
         /// <summary>
-        /// Re-subscribe on restart
+        /// Unsubscribe from cluster events on actor stop.
         /// </summary>
         protected override void PostStop()
         {

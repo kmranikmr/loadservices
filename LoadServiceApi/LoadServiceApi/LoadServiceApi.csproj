@@ -10,15 +10,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="AutoIngestion\**" />
     <Compile Remove="TestData\**" />
+    <Content Remove="AutoIngestion\**" />
     <Content Remove="TestData\**" />
+    <EmbeddedResource Remove="AutoIngestion\**" />
     <EmbeddedResource Remove="TestData\**" />
+    <None Remove="AutoIngestion\**" />
     <None Remove="TestData\**" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="BaseModel.cs" />
     <Compile Remove="LoadServiceApi.Shared\BaseModel.cs" />
+    <Compile Remove="LoadServiceApi.Shared\PostgresRespository.cs" />
     <Compile Remove="LoadServiceApi.Shared\Preview.cs" />
     <Compile Remove="LoadServiceApi.Shared\PreviewRegistry.cs" />
     <Compile Remove="LoadServiceApi.Shared\PreviewRequest.cs" />

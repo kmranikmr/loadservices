@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30717.126
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36414.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAnalyticsPlatform.Readers", "DataAnalyticsPlatform.Readers\DataAnalyticsPlatform.Readers.csproj", "{EB108CE7-49A7-4EF4-A4E6-A9212ED718C6}"
 EndProject
@@ -15,8 +15,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAnalyticsPlatform.Application", "DataAnalyticsPlatform.Application\DataAnalyticsPlatform.Application.csproj", "{7B4CFBC3-F31C-4AD4-B9A2-0480140E656D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAnalyticsPlatform.Writers", "DataAnalyticsPlatform.Writers\DataAnalyticsPlatform.Writers.csproj", "{522A5C4D-3319-425F-9306-D62BAEE9FF24}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAnalyticsWebApi", "DataAnalyticsWebApi\DataAnalyticsWebApi.csproj", "{09A5205F-A0B5-45F5-BD2F-5C635F04511D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAnalyticsPlatform.SharedUtils", "DataAnalyticsPlatform.SharedUtils\DataAnalyticsPlatform.SharedUtils.csproj", "{A6C1B7CC-075E-46F8-B211-5A815FAD7522}"
 EndProject
@@ -34,11 +32,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoadServiceApi", "LoadServi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "DataAccess\DataAccess.csproj", "{7DE434AF-ACFE-49A1-A295-4A543D1FA4E6}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{7BE61104-DC90-4168-86E8-992D9CF4BC91}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAnalyticsPlatform.Shared.Test", "DataAnalyticsPlatform.Shared.Test\DataAnalyticsPlatform.Shared.Test.csproj", "{513058CC-41F9-4AF8-B0EC-7BA11B872134}"
-EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{2BD77FF3-6AE3-4FD5-8136-73CDD5760122}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D8F6A8AF-74A2-45D1-A358-C99A59B7C1E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Writers.Tests", "DataAnalyticsPlatform.Tests\Writers.Tests\Writers.Tests.csproj", "{C6A983B3-38C6-3333-362B-356F68664072}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Readers.Tests", "DataAnalyticsPlatform.Tests\Readers.Tests\Readers.Tests.csproj", "{31551B2F-A52C-F926-5F4F-ECB819F0FF61}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -66,10 +66,6 @@ Global
 		{522A5C4D-3319-425F-9306-D62BAEE9FF24}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{522A5C4D-3319-425F-9306-D62BAEE9FF24}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{522A5C4D-3319-425F-9306-D62BAEE9FF24}.Release|Any CPU.Build.0 = Release|Any CPU
-		{09A5205F-A0B5-45F5-BD2F-5C635F04511D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{09A5205F-A0B5-45F5-BD2F-5C635F04511D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{09A5205F-A0B5-45F5-BD2F-5C635F04511D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{09A5205F-A0B5-45F5-BD2F-5C635F04511D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A6C1B7CC-075E-46F8-B211-5A815FAD7522}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A6C1B7CC-075E-46F8-B211-5A815FAD7522}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6C1B7CC-075E-46F8-B211-5A815FAD7522}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -102,20 +98,25 @@ Global
 		{7DE434AF-ACFE-49A1-A295-4A543D1FA4E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7DE434AF-ACFE-49A1-A295-4A543D1FA4E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7DE434AF-ACFE-49A1-A295-4A543D1FA4E6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{513058CC-41F9-4AF8-B0EC-7BA11B872134}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{513058CC-41F9-4AF8-B0EC-7BA11B872134}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{513058CC-41F9-4AF8-B0EC-7BA11B872134}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{513058CC-41F9-4AF8-B0EC-7BA11B872134}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2BD77FF3-6AE3-4FD5-8136-73CDD5760122}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2BD77FF3-6AE3-4FD5-8136-73CDD5760122}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2BD77FF3-6AE3-4FD5-8136-73CDD5760122}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2BD77FF3-6AE3-4FD5-8136-73CDD5760122}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6A983B3-38C6-3333-362B-356F68664072}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6A983B3-38C6-3333-362B-356F68664072}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6A983B3-38C6-3333-362B-356F68664072}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6A983B3-38C6-3333-362B-356F68664072}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31551B2F-A52C-F926-5F4F-ECB819F0FF61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31551B2F-A52C-F926-5F4F-ECB819F0FF61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31551B2F-A52C-F926-5F4F-ECB819F0FF61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31551B2F-A52C-F926-5F4F-ECB819F0FF61}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{513058CC-41F9-4AF8-B0EC-7BA11B872134} = {7BE61104-DC90-4168-86E8-992D9CF4BC91}
+		{C6A983B3-38C6-3333-362B-356F68664072} = {D8F6A8AF-74A2-45D1-A358-C99A59B7C1E6}
+		{31551B2F-A52C-F926-5F4F-ECB819F0FF61} = {D8F6A8AF-74A2-45D1-A358-C99A59B7C1E6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BF7F79F4-8EEC-480D-AEE4-1A63AECD55B8}

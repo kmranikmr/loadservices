@@ -1,29 +1,4 @@
-﻿// This file defines the LoadDataController class, which handles API requests related to
-// loading data, managing jobs, and processing files. It includes methods for validating
-// and updating schemas, and for executing data loading operations.
-//
-// Classes:
-// - LoadDataController: A controller class that provides API endpoints to manage data loading tasks.
-//
-// Methods:
-// - CheckSchemaAndUpdate: Validates and updates schema information based on the provided reader type and configuration.
-// - Post: Handles POST requests to start a data loading job, processing multiple file types (CSV, JSON, etc.).
-// - backgroundWorker1_DoWork: A background worker method to update job statuses and simulate job processing.
-// - PerformBackgroundJob: Simulates a background job updating job statuses.
-//
-// Uses:
-// - AutoMapper: For mapping between domain and DTO objects.
-// - Coravel.Queuing.Interfaces: For queuing tasks.
-// - DataAccess: Includes data access models and DTOs.
-// - DataAnalyticsPlatform: Shared utilities, data models, and actor classes.
-// - Microsoft.AspNetCore.Mvc: For building the API controller.
-// - Microsoft.EntityFrameworkCore: For database context and operations.
-// - Newtonsoft.Json: For JSON deserialization.
-// - SignalR: For real-time notifications (currently commented out).
-
-
-
-using AutoMapper;
+﻿using AutoMapper;
 using Coravel.Queuing.Interfaces;
 using DataAccess.DTO;
 using DataAccess.Models;
@@ -35,11 +10,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
@@ -47,219 +22,221 @@ using System.Threading.Tasks;
 
 namespace LoadServiceApi.Controllers
 {
-    // [Produces("application/json")]
     [Route("api/LoadData")]
     [Authorize]
     [ApiController]
-
     public class LoadDataController : Controller
     {
         private readonly IHubContext<ProgressHub> _progressHubContext;
         private readonly IRepository _repository;
         private readonly IQueue _queue;
         private readonly IMapper _mapper;
-        private int _numRunningJobs;
-        private LoadModels LoadModels { get; set; }
+        private readonly ILogger<LoadDataController> _logger;
+        private readonly LoadModels _loadModels;
+        private readonly PreviewRegistry _previewRegistry;
+
+        private readonly string _connectionString;
+        private readonly string _postgresWriter;
+        private readonly string _elasticSearch;
+        private readonly string _mongoDBString;
+
         private const int MaxJobCount = 5;
-        private PreviewRegistry previewRegistry;
-        private string _connectionString;
-        private string _postgresWriter;
-        private string _elasticSearch;
-        private string _mongoDBString;
-        //  private LoadModels LoadModels { get; set; }
-        //IHubContext<ProgressHub> progressHubContext,
-        public LoadDataController(IRepository repo, IMapper mapper, LoadModels LoadModels, IOptions<ConnectionStringsConfig> optionsAccessor)//LoadModels LoadModels)
+
+        public LoadDataController(
+            IRepository repository,
+            IMapper mapper,
+            LoadModels loadModels,
+            IOptions<ConnectionStringsConfig> optionsAccessor,
+            ILogger<LoadDataController> logger)
         {
-            int g = 0;
-            // _progressHubContext = progressHubContext;
-            _repository = repo;
+            _repository = repository;
             _mapper = mapper;
-            //  _queue = queue;
-            previewRegistry = new PreviewRegistry();
-            this.LoadModels = LoadModels;
+            _logger = logger;
+            _loadModels = loadModels;
+            _previewRegistry = new PreviewRegistry();
+
             _connectionString = optionsAccessor.Value.DefaultConnection;
             _postgresWriter = optionsAccessor.Value.PostgresConnection;
             _elasticSearch = optionsAccessor.Value.ElasticSearchString;
             _mongoDBString = optionsAccessor.Value.MongoDBString;
-            // this.LoadModels = LoadModels;
+
+            _logger.LogInformation("LoadDataController initialized");
         }
 
-        public async Task<TypeConfig> CheckSchemaAndUpdate(int ProjectId, int reader_type_id, string file_name, int file_id, List<TypeConfig> TypeConfigList, string configuration)
+        /// <summary>
+        /// Validates and updates schema information.
+        /// </summary>
+        private async Task<TypeConfig> CheckSchemaAndUpdate(
+            int projectId,
+            int readerTypeId,
+            string fileName,
+            int fileId,
+            List<TypeConfig> typeConfigList,
+            string configuration)
         {
+            _logger.LogInformation($"Checking schema for file {fileId} (reader {readerTypeId})");
+
             string className = string.Empty;
-            if (reader_type_id == 1)
+            List<FieldInfo> fieldInfoList = null;
+
+            switch (readerTypeId)
             {
-                CsvReaderConfiguration Csvconf = null;
-                if (!string.IsNullOrEmpty(configuration))
-                {
-                    Csvconf = JsonConvert.DeserializeObject<CsvReaderConfiguration>(configuration);
-                }
-                var fieldInfoList = new CsvModelGenerator().GetAllFields(file_name, ref className, ((CsvReaderConfiguration)Csvconf).delimiter, "", "", (CsvReaderConfiguration)Csvconf);
-                if (fieldInfoList == null || fieldInfoList.Count == 0) return null;
+                case 1: // CSV
+                    if (!string.IsNullOrEmpty(configuration))
+                    {
+                        var csvConf = JsonConvert.DeserializeObject<CsvReaderConfiguration>(configuration);
+                        fieldInfoList = new CsvModelGenerator().GetAllFields(fileName, ref className, csvConf.delimiter, "", "", csvConf);
+                    }
+                    break;
 
-                var matchedTypeConfig = TypeConfigList.Find(x => previewRegistry.CompareBaseFields(x.BaseClassFields, fieldInfoList) == PreviewRegistry.EnumSchemaDiffType.SameBase);
-                if (matchedTypeConfig != null)
-                {
-                    await _repository.SetSchemaId(file_id, matchedTypeConfig.SchemaId);
-                    return matchedTypeConfig;
-                }
+                case 2: // JSON
+                    if (!fileName.Contains("twitter"))
+                    {
+                        string classString = "";
+                        fieldInfoList = new JsonModelGenerator().GetAllFields(fileName, configuration, ref className, ref classString, "test");
+                    }
+                    break;
             }
-            else if (reader_type_id == 2 && !file_name.Contains("twitter"))
+
+            if (fieldInfoList == null || fieldInfoList.Count == 0)
             {
-
-                string ClassString = "";
-                var fieldInfoList = new JsonModelGenerator().GetAllFields(file_name, configuration, ref className, ref ClassString, "test");
-                if (fieldInfoList == null || fieldInfoList.Count == 0) return null;
-                var matchedTypeConfig = TypeConfigList.Find(x => previewRegistry.CompareBaseFields(x.BaseClassFields, fieldInfoList) == PreviewRegistry.EnumSchemaDiffType.SameBase);
-                if (matchedTypeConfig != null)
-                {
-                    await _repository.SetSchemaId(file_id, matchedTypeConfig.SchemaId);
-                    return matchedTypeConfig;
-                }
+                _logger.LogWarning($"No field info found for file {fileName}");
+                return null;
             }
-            return null;
 
+            var matchedTypeConfig = typeConfigList.Find(
+                x => _previewRegistry.CompareBaseFields(x.BaseClassFields, fieldInfoList) == PreviewRegistry.EnumSchemaDiffType.SameBase);
+
+            if (matchedTypeConfig != null)
+            {
+                _logger.LogInformation($"Matched schema {matchedTypeConfig.SchemaId} for file {fileId}");
+                await _repository.SetSchemaId(fileId, matchedTypeConfig.SchemaId);
+            }
+            else
+            {
+                _logger.LogInformation($"No matching schema found for file {fileId}");
+            }
+
+            return matchedTypeConfig;
         }
+
+        /// <summary>
+        /// Starts a data loading job.
+        /// </summary>
         [HttpPost("{ProjectId}/loadmodel")]
-        public async Task<ActionResult<int>> Post(int ProjectId, [FromBody] int[] FileId)//we will make it a different incoming class with more props
+        public async Task<ActionResult<int>> Post(int ProjectId, [FromBody] int[] fileIds)
         {
+            _logger.LogInformation($"Starting load job for project {ProjectId} with {fileIds.Length} files");
 
-            int count = 10000;
-            int userId = Convert.ToInt32(this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             int jobId = _repository.GetNewJobId();
-            Console.WriteLine("job Id : " + jobId);
-            var files = await _repository.GetProjectFiles(ProjectId, FileId);
-            if (files == null)
-                Console.WriteLine("files: null");
+            _logger.LogInformation($"Created job ID: {jobId} for user {userId}");
 
-            Console.WriteLine("files: " + files);
-            var projectSchemas = await _repository.GetSchemasAsync(userId, ProjectId, true);
-            Console.WriteLine("files: " + files);
-            List<TypeConfig> TypeConfigList = new List<TypeConfig>();
+            var files = await _repository.GetProjectFiles(ProjectId, fileIds);
+            if (files == null) return BadRequest("No files found for the specified project");
 
-            if (projectSchemas != null)
+            var typeConfigList = await BuildTypeConfigList(userId, ProjectId);
+
+            await _repository.AddJob(userId, ProjectId, jobId, 0, fileIds.ToList());
+            _logger.LogInformation($"Job {jobId} added to repository");
+
+            foreach (var file in files)
             {
-                var retMap = _mapper.Map<ProjectSchema[], SchemaDTO[]>(projectSchemas);
-                foreach (var projectSchema in retMap)
-                {
-
-                    var objTypeConfig = JsonConvert.DeserializeObject<TypeConfig>(projectSchema.TypeConfig);
-                    var schemaModelArray = _repository.GetModelsAsync(userId, projectSchema.SchemaId);
-                    foreach (var configObj in objTypeConfig.ModelInfoList)
-                    {
-                        for (int j = 0; j < schemaModelArray.Result.Length; j++)
-                        {
-                            if (schemaModelArray.Result[j] != null)
-                            {
-                                if (configObj.ModelName == schemaModelArray.Result[j].ModelName)
-                                {
-                                    configObj.ModelId = schemaModelArray.Result[j].ModelId;
-                                }
-                            }
-                        }
-                    }
-                    objTypeConfig.SchemaName = projectSchema.SchemaName;
-                    objTypeConfig.SchemaId = projectSchema.SchemaId;
-                    if (objTypeConfig != null)
-                    {
-                        TypeConfigList.Add(objTypeConfig);
-                    }
-                }
+                await ProcessFile(userId, ProjectId, jobId, file, typeConfigList);
             }
-            await _repository.AddJob(userId, ProjectId, jobId, 0, FileId.ToList());
 
-            string fullPath = "";
-            ; foreach (var file in files)
-            {
-                fullPath = "";
-                int readerTypeId = 0;
-                if (!string.IsNullOrEmpty(file.FileName))
-                {
-
-                    if (file.FileName.Contains(".csv"))
-                        readerTypeId = 1;
-                    else if (file.FileName.Contains(".json"))
-                        readerTypeId = 2;
-                    else if (file.FileName.Contains(".log"))
-                        readerTypeId = 3;
-                    fullPath = Path.Combine(file.FilePath, file.FileName);
-                }
-                else
-                {
-                    fullPath = "twitter";
-                }
-
-                string Configuration = "";
-                if (fullPath == "twitter")
-                {
-                    Configuration = file.SourceConfiguration;
-                }
-                else
-                {
-                    var reader = await _repository.GetReaderAsync((int)file.ReaderId);
-                    Configuration = reader.ReaderConfiguration;
-                }
-
-                var writer = await _repository.GetWritersInProject(userId, ProjectId);
-                TypeConfig retSchema = null;
-                if (readerTypeId == 1 || readerTypeId == 2)
-                {
-                    retSchema = await CheckSchemaAndUpdate(ProjectId, readerTypeId, fullPath, file.ProjectFileId, TypeConfigList, Configuration);
-                    if (retSchema == null) continue;
-
-                    await LoadModels.Execute(userId, fullPath, new List<TypeConfig> { retSchema }, file.ProjectFileId, jobId, Configuration, ProjectId, _connectionString, _postgresWriter, writer, _elasticSearch, _mongoDBString);
-                }
-                else
-                {
-                    await LoadModels.Execute(userId, fullPath, TypeConfigList, file.ProjectFileId, jobId, Configuration, ProjectId, _connectionString, _postgresWriter, writer, _elasticSearch, _mongoDBString);
-                }
-
-
-
-            }
+            _logger.LogInformation($"Job {jobId} processing started successfully");
             return jobId;
         }
 
-     
-        private async void backgroundWorker1_DoWork(int jobId, List<int> fileId, IRepository _repository)// object sender, System.ComponentModel.DoWorkEventArgs e)
+        /// <summary>
+        /// Builds a list of TypeConfigs for the project.
+        /// </summary>
+        private async Task<List<TypeConfig>> BuildTypeConfigList(int userId, int projectId)
         {
-            var options = SqlServerDbContextOptionsExtensions.UseSqlServer<DAPDbContext>(new DbContextOptionsBuilder<DAPDbContext>(), "Server=localhost\\SQLEXPRESS;Database=dap_master;Trusted_Connection=True;").Options;
-            var dbContext = new DAPDbContext(options);
-            IRepository repo = new Repository(dbContext, null);
-            for (int j = 0; j < fileId.Count; j++)
+            var typeConfigList = new List<TypeConfig>();
+            var projectSchemas = await _repository.GetSchemasAsync(userId, projectId, true);
+
+            if (projectSchemas == null) return typeConfigList;
+
+            var schemaDTOs = _mapper.Map<ProjectSchema[], SchemaDTO[]>(projectSchemas);
+
+            foreach (var schemaDTO in schemaDTOs)
             {
-                await repo.UpdateJobStatus(jobId, 2, fileId[j]);
-                await repo.UpdateJobStart(jobId, fileId[j]);
-                for (int i = 0; i <= 100; i += 1)
+                var objTypeConfig = JsonConvert.DeserializeObject<TypeConfig>(schemaDTO.TypeConfig);
+                var schemaModels = await _repository.GetModelsAsync(userId, schemaDTO.SchemaId);
+
+                foreach (var modelInfo in objTypeConfig.ModelInfoList)
                 {
-                    // await _progressHubContext.Clients.User(User.Identity?.Name)//(ProgressHub.GROUP_NAME)
-                    //                          .SendAsync("processing", (int)(i  / 100));
-
-                    // Debug.WriteLine($"Job COntinuing{i}");
-                    await Task.Delay(200);
-
+                    var matchedModel = schemaModels.FirstOrDefault(m => m?.ModelName == modelInfo.ModelName);
+                    if (matchedModel != null) modelInfo.ModelId = matchedModel.ModelId;
                 }
 
-                await repo.UpdateJobEnd(jobId, fileId[j]);
-                await repo.UpdateJobStatus(jobId, 3, fileId[j]);
+                objTypeConfig.SchemaName = schemaDTO.SchemaName;
+                objTypeConfig.SchemaId = schemaDTO.SchemaId;
+
+                typeConfigList.Add(objTypeConfig);
             }
+
+            return typeConfigList;
         }
-        private async Task PerformBackgroundJob(int jobId, List<int> fileId)
+
+        /// <summary>
+        /// Processes a single file.
+        /// </summary>
+        private async Task ProcessFile(int userId, int projectId, int jobId, ProjectFile file, List<TypeConfig> typeConfigList)
         {
-            for (int j = 0; j < fileId.Count; j++)
+            int readerTypeId = GetReaderType(file.FileName);
+            string fullPath = string.IsNullOrEmpty(file.FileName) ? "twitter" : Path.Combine(file.FilePath, file.FileName);
+
+            string configuration = await GetFileConfiguration(file, fullPath);
+
+            var writers = await _repository.GetWritersInProject(userId, projectId);
+            TypeConfig schema = null;
+
+            if (readerTypeId == 1 || readerTypeId == 2)
             {
-                await _repository.UpdateJobStatus(jobId, 2, fileId[j]);
-                for (int i = 0; i <= 100; i += 1)
-                {
-                    // await _progressHubContext.Clients.User(User.Identity?.Name)//(ProgressHub.GROUP_NAME)
-                    //                          .SendAsync("processing", (int)(i  / 100));
-
-                    Debug.WriteLine($"Job COntinuing{i}");
-                    await Task.Delay(100);
-
-                }
-                await _repository.UpdateJobStatus(jobId, 3, fileId[j]);
+                schema = await CheckSchemaAndUpdate(projectId, readerTypeId, fullPath, file.ProjectFileId, typeConfigList, configuration);
+                if (schema == null) return;
+                await _loadModels.Execute(userId, fullPath, new List<TypeConfig> { schema }, file.ProjectFileId, jobId, configuration, projectId,
+                                         _connectionString, _postgresWriter, writers, _elasticSearch, _mongoDBString);
             }
+            else
+            {
+                await _loadModels.Execute(userId, fullPath, typeConfigList, file.ProjectFileId, jobId, configuration, projectId,
+                                         _connectionString, _postgresWriter, writers, _elasticSearch, _mongoDBString);
+            }
+
+            _logger.LogInformation($"Processed file {file.ProjectFileId} successfully");
+        }
+
+        /// <summary>
+        /// Determines reader type from file extension.
+        /// </summary>
+        private int GetReaderType(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName))
+             return 0;
+
+            if (fileName.Contains(".csv"))
+                return 1;
+            else if (fileName.Contains(".json"))
+                return 2;
+            else if (fileName.Contains(".log"))
+                return 3;
+            
+            return 0;
+        }
+
+        /// <summary>
+        /// Retrieves configuration for a file.
+        /// </summary>
+        private async Task<string> GetFileConfiguration(ProjectFile file, string fullPath)
+        {
+            if (fullPath == "twitter") return file.SourceConfiguration;
+
+            var reader = await _repository.GetReaderAsync((int)file.ReaderId);
+            return reader.ReaderConfiguration;
         }
     }
 }

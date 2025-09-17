@@ -2,13 +2,46 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/.vs
+# Visual Studio files
+.vs/
 *.suo
 *.user
+*.userosscache
+*.sln.docstates
+*.userprefs
 _ReSharper.*
-bin
-obj
-packages
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# NuGet Packages
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
+
+# Project specific files
 /DataAnalyticsWebApi/node_modules
 /DataAnalyticsPlatform.Common/*.pdb
 /DataAnalyticsPlatform.Common/*.dll
@@ -17,3 +50,21 @@ packages
 /DataAnalyticsPlatform.Common/DataAnalyticsPlatform.Common.dll.config
 /DataAnalyticsPlatform.Common/DataAnalyticsPlatform.Common.dll
 /DataAnalyticsPlatform.Shared/TransformationCodeGenerator.cs
+
+# Backup & Report files
+*.bak
+*.save
+*~
+*.old
+UpgradeLog*.XML
+UpgradeLog*.htm
+ServiceFabricBackup/
+*.rptproj.bak
+
+# Temporary files
+New Text Document.txt
+*.tmp
+*.yml.save
+
+# Test Results
+TestResults/

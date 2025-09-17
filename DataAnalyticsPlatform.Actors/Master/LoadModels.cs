@@ -20,22 +20,44 @@ using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
+using NLog;
 
 namespace DataAnalyticsPlatform.Actors.Master
 {
+    /// <summary>
+    /// Manages the execution of ingestion jobs and schema creation for various data sources.
+    /// </summary>
     public class LoadModels
     {
-        private IActorRef LoadActor { get; set; }
-        private IngestionJob _ingestionJob;
-        private PreviewRegistry previewRegsitry;
+    /// <summary>
+    /// Reference to the Akka.NET actor responsible for job execution.
+    /// </summary>
+    private IActorRef LoadActor { get; set; }
+    /// <summary>
+    /// The current ingestion job being processed.
+    /// </summary>
+    private IngestionJob _ingestionJob;
+    /// <summary>
+    /// Registry containing preview configuration and schema models.
+    /// </summary>
+    private PreviewRegistry previewRegsitry;
+    private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
+        /// <summary>
+        /// Initializes a new instance of LoadModels with the provided actor provider.
+        /// </summary>
+        /// <param name="provider">Provider for Akka.NET actor and preview registry.</param>
         public LoadModels(LoadActorProvider provider)
         {
-            // this.Logger = logger;
             this.previewRegsitry = provider.previewRegistry;
             this.LoadActor = provider.Get();
         }
+        /// <summary>
+        /// Creates a schema in PostgreSQL if it does not exist.
+        /// </summary>
+        /// <param name="connectionString">Connection string for PostgreSQL.</param>
+        /// <param name="schemaName">Name of the schema to create.</param>
+        /// <returns>True if schema creation succeeds, false otherwise.</returns>
         public bool CreateSchema(string connectionString, string schemaName)
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
@@ -43,151 +65,122 @@ namespace DataAnalyticsPlatform.Actors.Master
                 try
                 {
                     connection.Open();
-
                     using (NpgsqlCommand command = connection.CreateCommand())
                     {
+                        // Create schema if it does not exist
                         command.CommandText = string.Format("create schema if not exists " + schemaName);
-
                         command.ExecuteNonQuery();
-
                     }
                 }
                 catch (Exception ex)
                 {
+                    // Log or handle exception as needed
                     return false;
                 }
                 return true;
             }
-            return false;
+        }
 
         }
 
 
-        public async Task<int> Execute(int userId, string FileName, List<TypeConfig> typeConfigList, int FileId = 1, int jobId = 1, string configuration = "", int projectId = -1, string connectionString = "", string postgresConnString = "", DataAccess.Models.Writer[] writers = null, string elasticSearchString = "", string mongoDBString = "")
+        /// <summary>
+        /// Executes an ingestion job based on file type and configuration.
+        /// </summary>
+        /// <param name="userId">User ID for the job.</param>
+        /// <param name="FileName">Name of the file to ingest.</param>
+        /// <param name="typeConfigList">List of type configurations.</param>
+        /// <param name="FileId">File ID.</param>
+        /// <param name="jobId">Job ID.</param>
+        /// <param name="configuration">Additional configuration in JSON format.</param>
+        /// <param name="projectId">Project ID.</param>
+        /// <param name="connectionString">General connection string.</param>
+        /// <param name="postgresConnString">PostgreSQL connection string.</param>
+        /// <param name="writers">Array of writer configurations.</param>
+        /// <param name="elasticSearchString">Elasticsearch connection string.</param>
+        /// <param name="mongoDBString">MongoDB connection string.</param>
+        /// <returns>Returns 1 if successful, -1 if configuration is invalid.</returns>
+        public async Task<int> Execute(
+            int userId,
+            string fileName,
+            List<TypeConfig> typeConfigList,
+            int fileId = 1,
+            int jobId = 1,
+            string configuration = "",
+            int projectId = -1,
+            string connectionString = "",
+            string postgresConnString = "",
+            DataAccess.Models.Writer[] writers = null,
+            string elasticSearchString = "",
+            string mongoDBString = "")
         {
-            Func<int> Function = new Func<int>(() =>
+            // Validate input
+            if (string.IsNullOrEmpty(fileName) || typeConfigList == null || typeConfigList.Count == 0 || writers == null)
+                return -1;
+
+            // Retrieve schema models for the user
+            var schemaModels = previewRegsitry.GetFromRegistry(userId);
+
+            // Determine source type
+            SourceType sourceType = fileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase)
+                ? SourceType.Csv
+                : SourceType.Json;
+
+            // Build reader configuration
+            var readerConfig = new ReaderConfiguration(typeConfigList[0], fileName, sourceType, fileId)
             {
-                SchemaModels smodels = previewRegsitry.GetFromRegistry(userId);
+                ProjectId = projectId != -1 ? projectId : (int?)null
+            };
 
-                if (FileName.EndsWith(".csv"))
+            // Deserialize configuration details if provided
+            if (!string.IsNullOrEmpty(configuration))
+            {
+                if (sourceType == SourceType.Csv)
                 {
-
-                    if (typeConfigList == null || (typeConfigList != null && typeConfigList.Count == 0)) return -1;
-
-                    var conf = new ReaderConfiguration
-                        (typeConfigList[0], FileName, SourceType.Csv, FileId);
-                    if (projectId != -1)
-                    {
-                        conf.ProjectId = projectId;
-                    }
-                    if (!string.IsNullOrEmpty(configuration))
-                    {
-                        CsvReaderConfiguration Csvconf = JsonConvert.DeserializeObject<CsvReaderConfiguration>(configuration);
-                        conf.ConfigurationDetails = Csvconf;
-                    }
-                    List<WriterConfiguration> confWriter = new List<WriterConfiguration>();
-                    //@"Server =raja.db.elephantsql.com; User Id = aniwbjgk; Password = esypNF7dCv9kKReCSNvM48LsPoJX_IvG; Database = aniwbjgk; Port=5432;CommandTimeout=0
-                    foreach (var writer in writers)
-                    {
-                        WriterConfiguration writerTest = null;
-                        if (writer.WriterTypeId == 4)
-                        {
-                            writerTest = new Writers.WriterConfiguration(Shared.Types.DestinationType.ElasticSearch, connectionString: elasticSearchString, ModelMap: null);//Search Path=public;/Server =localhost; User Id = dev; Password = nwdidb19; Database = nwdi_ts; Port=5433;CommandTimeout=0
-                        }
-                        else if (writer.WriterTypeId == 3)
-                        {
-                            //mongo 
-                            writerTest = new Writers.WriterConfiguration(Shared.Types.DestinationType.Mongo, connectionString: mongoDBString, ModelMap: null);
-                        }
-                        else
-                        {
-                            writerTest = new Writers.WriterConfiguration(Shared.Types.DestinationType.RDBMS, connectionString: postgresConnString, ModelMap: null);
-                            var _schemaName = conf.TypeConfig.SchemaName.Replace(" ", string.Empty);
-                            _schemaName = conf.ProjectId != -1 ? _schemaName + "_" + conf.ProjectId + "_" + userId : _schemaName;
-                            CreateSchema(postgresConnString, _schemaName);
-
-                            //Search Path=public;/Server =localhost; User Id = dev; Password = nwdidb19; Database = nwdi_ts; Port=5433;CommandTimeout=0
-                        }
-                        if (projectId != -1)
-                        {
-
-                            writerTest.ProjectId = projectId;
-                        }
-                        confWriter.Add(writerTest);
-
-                    }
-
-                    //  var confWriter = new Writers.WriterConfiguration(Shared.Types.DestinationType.RDBMS, connectionString: @"Server =localhost; User Id = dev; Password = nwdidb19; Database = nwdi_ts; Port=5433;CommandTimeout=0", ModelMap: null);//Search Path=public;/Server =localhost; User Id = dev; Password = nwdidb19; Database = nwdi_ts; Port=5433;CommandTimeout=0
-
-                    _ingestionJob = new IngestionJob(jobId, conf, confWriter.ToArray());
-                    _ingestionJob.ControlTableConnectionString = connectionString;
-                    _ingestionJob.UserId = userId;
-                    LoadActor.Tell(_ingestionJob);
+                    readerConfig.ConfigurationDetails = JsonConvert.DeserializeObject<CsvReaderConfiguration>(configuration);
                 }
-                else if (FileName.EndsWith(".json") || FileName.Contains("twitter"))
+                else if (fileName.Contains("twitter", StringComparison.OrdinalIgnoreCase))
                 {
-                    //-----commenedt below
-                    //  List<Type> types = smodels.SModels[0].AllTypes;
-                    ////  Type originalType = types.Where(x => x.FullName.Contains("OriginalRecord" + _ingestionJob.JobId)).FirstOrDefault();
-                    //   object originalObject = Activator.CreateInstance(originalType);
-
-                    ///---------------------------------------------------------
-
-                    // var conf = new ReaderConfiguration
-                    //     (originalObject.GetType(), null, FileName, SourceType.Json);
-
-                    // var conf = new ReaderConfiguration(smodels.SModels[0].TypeConfiguration, FileName, SourceType.Json, FileId);
-                    if (typeConfigList == null || (typeConfigList != null && typeConfigList.Count == 0)) return -1;
-                    var conf = new ReaderConfiguration(typeConfigList[0], FileName, SourceType.Json, FileId);
-                    if (FileName.Contains("twitter") && !string.IsNullOrEmpty(configuration))
-                    {
-                        TwitterConfiguration Csvconf = JsonConvert.DeserializeObject<TwitterConfiguration>(configuration);
-                        conf.ConfigurationDetails = Csvconf;
-                    }
-                    if (projectId != -1)
-                    {
-                        conf.ProjectId = projectId;
-                    }
-                    //var confWriter = new Writers.WriterConfiguration(Shared.Types.DestinationType.csv, connectionString: @"e:\temp\", ModelMap: null);
-                    // var confWriter = new Writers.WriterConfiguration(Shared.Types.DestinationType.RDBMS, connectionString: postgresConnString, ModelMap: null);//Search Path=public;
-                    /// var confWriter = new Writers.WriterConfiguration(Shared.Types.DestinationType.Mongo, connectionString: @"mongodb://localhost:27017/?connectTimeoutMS=30000&maxIdleTimeMS=600000", ModelMap: null);//Search Path=public;
-                    //  if (projectId != -1)
-                    // {
-                    //    confWriter.ProjectId = projectId;
-                    // }
-                    List<WriterConfiguration> confWriter = new List<WriterConfiguration>();
-                    //@"Server =raja.db.elephantsql.com; User Id = aniwbjgk; Password = esypNF7dCv9kKReCSNvM48LsPoJX_IvG; Database = aniwbjgk; Port=5432;CommandTimeout=0
-                    foreach (var writer in writers)
-                    {
-                        WriterConfiguration writerTest = null;
-                        if (writer.WriterTypeId == 4)
-                        {
-                            writerTest = new Writers.WriterConfiguration(Shared.Types.DestinationType.ElasticSearch, connectionString: elasticSearchString, ModelMap: null);//Search Path=public;/Server =localhost; User Id = dev; Password = nwdidb19; Database = nwdi_ts; Port=5433;CommandTimeout=0
-                        }
-                        else
-                        {
-                            writerTest = new Writers.WriterConfiguration(Shared.Types.DestinationType.RDBMS, connectionString: postgresConnString, ModelMap: null);
-
-                            //Search Path=public;/Server =localhost; User Id = dev; Password = nwdidb19; Database = nwdi_ts; Port=5433;CommandTimeout=0
-                        }
-                        if (projectId != -1)
-                        {
-
-                            writerTest.ProjectId = projectId;
-                        }
-                        confWriter.Add(writerTest);
-
-                    }
-                    _ingestionJob = new IngestionJob(jobId, conf, confWriter.ToArray());
-                    _ingestionJob.ControlTableConnectionString = connectionString;
-                    _ingestionJob.UserId = userId;
-                    LoadActor.Tell(_ingestionJob);
+                    readerConfig.ConfigurationDetails = JsonConvert.DeserializeObject<TwitterConfiguration>(configuration);
                 }
-                return 1;
-            });
-            // Logger.LogInformation($"Requesting model of user '{userId}'");
-            return await Task.Factory.StartNew<int>(Function);
+            }
 
+            // Build writer configurations
+            var writerConfigs = new List<WriterConfiguration>();
+            foreach (var writer in writers)
+            {
+                WriterConfiguration writerConfig = null;
+                switch (writer.WriterTypeId)
+                {
+                    case 4: // Elasticsearch
+                        writerConfig = new WriterConfiguration(DestinationType.ElasticSearch, elasticSearchString, null);
+                        break;
+                    case 3: // MongoDB
+                        writerConfig = new WriterConfiguration(DestinationType.Mongo, mongoDBString, null);
+                        break;
+                    default: // RDBMS
+                        writerConfig = new WriterConfiguration(DestinationType.RDBMS, postgresConnString, null);
+                        var schemaName = readerConfig.TypeConfig.SchemaName.Replace(" ", string.Empty);
+                        if (projectId != -1)
+                            schemaName += $"_{projectId}_{userId}";
+                        CreateSchema(postgresConnString, schemaName);
+                        break;
+                }
+                if (projectId != -1)
+                    writerConfig.ProjectId = projectId;
+                writerConfigs.Add(writerConfig);
+            }
+
+            // Initialize and send ingestion job to actor
+            _ingestionJob = new IngestionJob(jobId, readerConfig, writerConfigs.ToArray())
+            {
+                ControlTableConnectionString = connectionString,
+                UserId = userId
+            };
+            LoadActor.Tell(_ingestionJob);
+
+            // Run the ingestion job asynchronously
+            return await Task.FromResult(1);
         }
     }
 }

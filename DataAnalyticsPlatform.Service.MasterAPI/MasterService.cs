@@ -63,7 +63,7 @@ namespace DataAnalyticsPlatform.Service.MasterAPI
         public bool SpawnMaster()
         {
             //  this.MasterRouter = DAPClusterSystem.ActorOf(Props.Create(() => new MasterTaskRouter()), "masterTaskRouter");//acto
-            string el = ElasticString;// "http://idapt.duckdns.org:9200";
+            string el = ElasticString;// 
             MasterActor = DAPClusterSystem.ActorOf(Props.Create(() => new MasterActor(null, ConnectionString, PostgresString, el, MongoString)), "masterNode");
 
 

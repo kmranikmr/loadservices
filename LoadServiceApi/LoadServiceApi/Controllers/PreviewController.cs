@@ -1,34 +1,17 @@
-﻿/*
- * Controller for managing data preview, model generation, and schema operations.
- * Handles authentication, retrieving project schemas, generating models based on files,
- * updating model configurations, and providing data previews.
- * Uses AutoMapper for object mapping, IRepository for data access, and IMemoryCache for caching.
- * Endpoints:
- * - GET /api/preview: Returns basic values.
- * - GET /api/preview/{Projectid}/GetSchemas: Retrieves schemas for a project.
- * - POST /api/preview/{ProjectId}/generatemodel: Generates models based on file IDs.
- * - POST /api/preview/{ProjectId}/{SchemaId}/{ModelId}/getpreview: Provides data preview for a model.
- * - POST /api/preview/{ProjectId}/{SchemaId}/updatemodel: Updates model configurations.
- * - DELETE /api/preview/{ProjectId}/{SchemaId}: Deletes a schema for a project.
- */
-
-
-using AutoMapper;
+﻿using AutoMapper;
 using DataAccess.DTO;
 using DataAccess.Models;
 using DataAnalyticsPlatform.Actors;
 using DataAnalyticsPlatform.Actors.Preview;
 using DataAnalyticsPlatform.Shared;
 using DataAnalyticsPlatform.Shared.DataAccess;
-///using LoadServiceApi.Shared.Models;
 using DataAnalyticsPlatform.Shared.Models;
 using DataAnalyticsPlatform.Shared.PostModels;
 using LoadServiceApi.Shared;
 using Microsoft.AspNetCore.Authorization;
-//using DataAnalyticsPlatform.Shared.Models;
-//using LoadServiceApi.TestData;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -38,8 +21,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using TypeConfig = DataAnalyticsPlatform.Shared.TypeConfig;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace LoadServiceApi
 {
     [Route("api/preview")]
@@ -47,54 +28,66 @@ namespace LoadServiceApi
     [Authorize]
     public class PreviewController : Controller
     {
-        // public TestData.TestData testData = new TestData.TestData();
         private readonly IRepository _repository;
-
         private readonly IMapper _mapper;
-        private PreviewRegistry previewRegistry;
-        private GetModels GetModels { get; set; }
-        private GenerateModel GenerateModel { get; set; }
-        private UpdateModel UpdateModel { get; set; }
+        private readonly ILogger<PreviewController> _logger;
+        private readonly PreviewRegistry _previewRegistry;
+        private readonly GetModels _getModels;
+        private readonly GenerateModel _generateModel;
+        private readonly UpdateModel _updateModel;
+        private readonly List<string> _fileIdList;
+        private readonly List<int> _fileIdsUsed;
+        private readonly IMemoryCache _cache;
 
-        private List<string> FileIdList;
-        private List<int> FileIdsUsed;
-        private IMemoryCache _cache;
-        public PreviewController(IRepository repo, IMapper mapper,
-               GetModels GetModels, GenerateModel GenerateModel, UpdateModel UpdateModel, IMemoryCache Cache)
+        public PreviewController(
+            IRepository repo, 
+            IMapper mapper,
+            GetModels getModels, 
+            GenerateModel generateModel, 
+            UpdateModel updateModel, 
+            IMemoryCache cache,
+            ILogger<PreviewController> logger)
         {
             _repository = repo;
             _mapper = mapper;
-            this.GetModels = GetModels;
-            this.GenerateModel = GenerateModel;
-            this.UpdateModel = UpdateModel;
-            previewRegistry = new PreviewRegistry();
-            FileIdList = new List<string>();
-            FileIdsUsed = new List<int>();
-            _cache = Cache;
+            _getModels = getModels;
+            _generateModel = generateModel;
+            _updateModel = updateModel;
+            _previewRegistry = new PreviewRegistry();
+            _fileIdList = new List<string>();
+            _fileIdsUsed = new List<int>();
+            _cache = cache;
+            _logger = logger;
+            
+            _logger.LogInformation("PreviewController initialized");
         }
-        // GET: api/<controller>
+
         [HttpGet]
         public IEnumerable<string> Get()
         {
             return new string[] { "value1", "value2" };
         }
 
-
         [HttpGet("{Projectid}/GetSchemas")]
-        public async Task<List<DataAnalyticsPlatform.Shared.TypeConfig>> GetSchemas(int Projectid)//we will make it a different incoming class with more props
+        public async Task<List<TypeConfig>> GetSchemas(int Projectid)
         {
+            _logger.LogInformation($"Getting schemas for Project ID: {Projectid}");
+            
             int userId = Convert.ToInt32(this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            _logger.LogInformation($"User ID: {userId} requesting schemas for Project ID: {Projectid}");
+            
             var projectSchema = await _repository.GetSchemasAsync(userId, Projectid, true);
             if (projectSchema != null)
             {
-
                 var retMap = _mapper.Map<ProjectSchema[], SchemaDTO[]>(projectSchema);
                 List<TypeConfig> retConfig = new List<TypeConfig>();
+
                 foreach (var projSchema in retMap)
                 {
                     var objTypeConfig = JsonConvert.DeserializeObject<TypeConfig>(projSchema.TypeConfig);
                     objTypeConfig.SchemaId = projSchema.SchemaId;
                     objTypeConfig.SchemaName = projSchema.SchemaName;
+
                     foreach (var model in projSchema.SchemaModels)
                     {
                         foreach (var typeConfigModel in objTypeConfig.ModelInfoList)
@@ -107,95 +100,105 @@ namespace LoadServiceApi
                     }
                     retConfig.Add(objTypeConfig);
                 }
+                
+                _logger.LogInformation($"Found {retConfig.Count} schemas for Project ID: {Projectid}");
                 return retConfig;
             }
+            
+            _logger.LogWarning($"No schemas found for Project ID: {Projectid}");
             return null;
         }
 
         [HttpPost("{ProjectId}/generatemodel")]
-        public async Task<List<DataAnalyticsPlatform.Shared.TypeConfig>> GenerateModelV2(int ProjectId, [FromBody] int[] FileId)//we will make it a different incoming class with more props
+        public async Task<List<TypeConfig>> GenerateModelV2(int ProjectId, [FromBody] int[] FileId)
         {
-            List<DataAnalyticsPlatform.Shared.TypeConfig> result = new List<DataAnalyticsPlatform.Shared.TypeConfig>();
-            List<DataAnalyticsPlatform.Shared.TypeConfig> retConfig = new List<DataAnalyticsPlatform.Shared.TypeConfig>();
-            //  getfiles( for this eids)
+            _logger.LogInformation($"Generating model for Project ID: {ProjectId} with {FileId.Length} files");
+            
+            List<TypeConfig> result = new List<TypeConfig>();
+            List<TypeConfig> retConfig = new List<TypeConfig>();
             int userId = Convert.ToInt32(this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            Console.WriteLine("User Id : " + userId);
+            _logger.LogInformation($"User ID: {userId} generating model for Project ID: {ProjectId}");
+
             var files = await _repository.GetProjectFiles(ProjectId, FileId);
-            if (files == null)
-                Console.WriteLine("null file");
-            if (files == null) return null;
-            // result = await Task.FromResult(testData.GenerateModel(userId, ProjectId, FileId));
+            if (files == null) 
+            {
+                _logger.LogWarning($"No files found for Project ID: {ProjectId}");
+                return null;
+            }
+            
+            _logger.LogInformation($"Found {files.Length} files for Project ID: {ProjectId}");
+
             foreach (var file in files)
             {
-                Console.WriteLine("file " + file.FileName);
-                Console.WriteLine("clearing cachce");
-                FileIdList.Clear();
-                FileIdsUsed.Clear();
-
+                _fileIdList.Clear();
+                _fileIdsUsed.Clear();
                 _cache.Remove("Files");
                 _cache.Remove("FileIds");
-                Console.WriteLine("clearing cachce");
 
                 int readerTypeId = 0;
                 string fullPath = "";
+
                 if (!string.IsNullOrEmpty(file.FileName))
                 {
-                    if (file.FileName.Contains(".csv"))
-                        readerTypeId = 1;
-                    else if (file.FileName.Contains(".json"))
-                        readerTypeId = 2;
-                    else if (file.FileName.Contains(".log"))
-                        readerTypeId = 3;
+                    if (file.FileName.Contains(".csv")) readerTypeId = 1;
+                    else if (file.FileName.Contains(".json")) readerTypeId = 2;
+                    else if (file.FileName.Contains(".log")) readerTypeId = 3;
 
                     fullPath = Path.Combine(file.FilePath, file.FileName);
-                    Console.WriteLine("Ful Path " + fullPath);
-                    if (System.IO.File.Exists(fullPath) == true)
-                    {
-                        int g = 0;
-                    }
+                    _logger.LogInformation($"Processing file: {fullPath} with reader type: {readerTypeId}");
                 }
                 else
                 {
                     fullPath = "twitter";
-                    // if (file.ReaderId == null)
-                    //   file.ReaderId = 2;//lets call it json for now
+                    _logger.LogInformation("Processing Twitter data");
+                }
 
-                }
-                Console.WriteLine("file iteration 1");
-                if (_repository == null)
-                    Console.WriteLine("file iteration 1 null");
-                string Configuration = "";
+                string Configuration = fullPath == "twitter"
+                    ? file.SourceConfiguration
+                    : (await _repository.GetReaderAsync((int)file.ReaderId)).ReaderConfiguration;
 
-                if (fullPath == "twitter")
+                _fileIdList.Add(fullPath);
+                _fileIdsUsed.Add(file.ProjectFileId);
+                
+                _logger.LogInformation($"Executing model generation for file: {fullPath}");
+                try
                 {
-                    Configuration = file.SourceConfiguration;
+                    var singleConfig = await this._generateModel.Execute(userId, fullPath, Configuration);
+                    if (singleConfig != null && singleConfig.TypeConfiguration != null)
+                    {
+                        result.Add(singleConfig.TypeConfiguration);
+                        _logger.LogInformation($"Successfully generated model for file: {fullPath}");
+                    }
+                    else
+                    {
+                        _logger.LogWarning($"Failed to generate model for file: {fullPath}");
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    var reader = await _repository.GetReaderAsync((int)file.ReaderId);
-                    Configuration = reader.ReaderConfiguration == null ? reader.ConfigurationName : reader.ReaderConfiguration;
+                    _logger.LogError(ex, $"Error generating model for file: {fullPath}");
                 }
-                Console.WriteLine("file iteration 2");
-                FileIdList.Add(fullPath);
-                FileIdsUsed.Add(file.ProjectFileId);
-                Console.WriteLine("file iteration 3");
-                var singleConfig = await this.GenerateModel.Execute(userId, fullPath, Configuration);
-                Console.WriteLine("file iteration 4");
-                result.Add(singleConfig.TypeConfiguration);
             }
-            _cache.Set("Files", FileIdList);
-            _cache.Set("FileIds", FileIdsUsed);
+
+            _cache.Set("Files", _fileIdList);
+            _cache.Set("FileIds", _fileIdsUsed);
+            _logger.LogInformation($"Set cache with {_fileIdList.Count} files and {_fileIdsUsed.Count} file IDs");
+
             var projectSchema = await _repository.GetSchemasAsync(userId, ProjectId, true);
             PreviewRegistry previewReg = new PreviewRegistry();
-
+            
+            _logger.LogInformation($"Processing existing schemas for Project ID: {ProjectId}");
+            
             if (projectSchema != null)
             {
                 var retMap = _mapper.Map<ProjectSchema[], SchemaDTO[]>(projectSchema);
+
                 foreach (var projSchema in retMap)
                 {
-                    var objTypeConfig = JsonConvert.DeserializeObject<DataAnalyticsPlatform.Shared.TypeConfig>(projSchema.TypeConfig);
+                    var objTypeConfig = JsonConvert.DeserializeObject<TypeConfig>(projSchema.TypeConfig);
                     objTypeConfig.SchemaId = projSchema.SchemaId;
                     objTypeConfig.SchemaName = projSchema.SchemaName;
+
                     foreach (var model in projSchema.SchemaModels)
                     {
                         foreach (var typeConfigModel in objTypeConfig.ModelInfoList)
@@ -208,401 +211,366 @@ namespace LoadServiceApi
                     }
                     retConfig.Add(objTypeConfig);
                 }
-                int indexr = 0;
-                foreach (var oneTypeconfig in result)
-                {
-                    bool newSchema = true;
-                    foreach (var projSchema in retMap)
+
+                    foreach (var oneTypeconfig in result)
                     {
-                        var objTypeConfig = JsonConvert.DeserializeObject<DataAnalyticsPlatform.Shared.TypeConfig>(projSchema.TypeConfig);
-                        var EnumCompare = previewReg.CompareTypeConfigDetailed(oneTypeconfig, objTypeConfig);
-                        if (EnumCompare == PreviewRegistry.EnumSchemaDiffType.SameBase ||
-                            EnumCompare == PreviewRegistry.EnumSchemaDiffType.SameModelsBase)
+                        bool newSchema = true;
+
+                        foreach (var projSchema in retMap)
                         {
-                            //same schema
-                            Console.WriteLine("SAme schema detailedconfigcheck");
-                            newSchema = false;
+                            var objTypeConfig = JsonConvert.DeserializeObject<TypeConfig>(projSchema.TypeConfig);
+                            var EnumCompare = previewReg.CompareTypeConfigDetailed(oneTypeconfig, objTypeConfig);
 
-
-                        }
-
-                    }
-                    if (newSchema)
-                    {
-                        if (retConfig.Count > 0)
-                        {
-                            var EnumCompare = previewReg.CompareTypeConfigDetailed(oneTypeconfig, retConfig[0]);
-                            if (EnumCompare != PreviewRegistry.EnumSchemaDiffType.SameBase &&
-                            EnumCompare != PreviewRegistry.EnumSchemaDiffType.SameModelsBase)
+                            if (EnumCompare == PreviewRegistry.EnumSchemaDiffType.SameBase ||
+                                EnumCompare == PreviewRegistry.EnumSchemaDiffType.SameModelsBase)
                             {
-                                Console.WriteLine("DIFF! schema detailedconfigcheck");
-                                retConfig.Add(oneTypeconfig);
+                                newSchema = false;
+                                _logger.LogInformation($"Found matching schema for generated model: {projSchema.SchemaName}");
                             }
                         }
-                        else
+
+                        if (newSchema)
                         {
-                            Console.WriteLine("DIFF! schema detailedconfigcheck 2");
-                            retConfig.Add(oneTypeconfig);
-                        }
-
-
-                    }
-
-                    //if new schema lets persist
-                }
-
-                //lets add new if schema doenst have anything - its first time
-
-                return retConfig;
-            }
-            else
-            {
-                //new project
-                retConfig.AddRange(result);
-            }
-
-            return retConfig;
-        }
-
-        [HttpPost("{ProjectId}/{SchemaId}/{ModelId}/getpreview")]
-        public async Task<ActionResult<List<Dictionary<string, object>>>> Post(int ProjectId, int SchemaId, int ModelId, [FromBody] int[] FileId)//we will make it a different incoming class with more props
-        {
-
-            int userId = Convert.ToInt32(this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            PreviewUpdateResponse result = null;
-            PreviewUpdateResponse ret = null;
-            Console.WriteLine("update model ");
-            var existingProject = await _repository.GetProjectAsync(userId, ProjectId);
-            if (existingProject != null)
-            {
-                Console.WriteLine("update model existing");
-                var schemaModels = await _repository.GetSchemaAsync(SchemaId, true);
-                TypeConfig SchemaTypeConfig = JsonConvert.DeserializeObject<TypeConfig>(schemaModels.TypeConfig);
-                Console.WriteLine("update model schema found");
-                Dictionary<string, List<BaseModel>> PreviewData = null;
-                // _cache.TryGetValue("Files", out FileIdList);
-                // _cache.TryGetValue("FileIds", out FileIdsUsed);
-               //var files = await _repository.GetProjectFiles(ProjectId, FileId);
-                var schemaModel = schemaModels.SchemaModels.Where(x => x.ModelId == ModelId).FirstOrDefault();
-                Console.WriteLine("update model schemamodel");
-                
-                int fileIndex = 0;
-                ProjectFile[] projFiles;
-                // if (FileIdsUsed.Count < fileIndex)
-                {
-                    projFiles = await _repository.GetProjectFiles(ProjectId, FileId);
-                    if (projFiles == null)//FileIdList == null)
-                    {
-                        Console.WriteLine("NullFieleid");
-                        return null;
-                    }
-                }
-                string fullPath = "";
-                foreach (var file in projFiles)
-                {
-                    fullPath = "";
-                    if (!string.IsNullOrEmpty(file.FileName))
-                    {
-                        int readerTypeId = 0;
-                        if (file.FileName.Contains(".csv"))
-                            readerTypeId = 1;
-                        else if (file.FileName.Contains(".json"))
-                            readerTypeId = 2;
-                        else if (file.FileName.Contains(".log"))
-                            readerTypeId = 3;
-                        Console.WriteLine("file iteration 1");
-                        if (_repository == null)
-                            Console.WriteLine("file iteration 1 null");
-
-                        fullPath = Path.Combine(file.FilePath, file.FileName);
-                    }
-                    else
-                    {
-                        fullPath = "twitter";
-                        // if (file.ReaderId == null)
-                        //  file.ReaderId = 2;//lets call it json for now
-                    }
-                    // var reader = await _repository.GetReaderAsync((int)file.ReaderId);
-
-                    string Configuration = "";
-
-                    if (fullPath == "twitter")
-                    {
-                        Configuration = file.SourceConfiguration;
-                    }
-                    else
-                    {
-                        var reader = await _repository.GetReaderAsync((int)file.ReaderId);
-                        Configuration = reader.ReaderConfiguration;
-                    }
-                    //ProjectFile[] projFiles;
-                    //if (FileIdsUsed.Count < fileIndex)
-                    //{
-                    //    projFiles = await _repository.GetProjectFiles(ProjectId, FileIdsUsed[fileIndex]);
-                    //}
-                    //else
-                    //{
-                    //    break;
-                    //}
-                    fileIndex++;
-                    var Preview = await this.UpdateModel.Execute(userId, SchemaTypeConfig, fullPath, Configuration);
-                    Console.WriteLine("Preview Done");
-                    if (Preview == null)
-                    {
-                        Console.WriteLine("Preview is Null");
-                        return null;
-                    }
-                    var modelSelected = Preview.Item2.Where(x => x.Value.Any(y => y.ModelName == schemaModel.ModelName)).ToDictionary(x => x.Key, x => x.Value);//Select(x => schemaModel.Where(y => y.ModelName == x.Key) );
-                    if (modelSelected == null)
-                    {
-                        Console.WriteLine("modelSelected is Null");
-                        return null;
-                    }
-                    if (PreviewData == null)
-                    {
-                        PreviewData = (Dictionary<string, List<BaseModel>>)modelSelected;
-                        //  PreviewData.ToDictionary()
-                    }
-                    else
-                    {
-                        foreach (KeyValuePair<string, List<BaseModel>> kvp in modelSelected)
-                        {
-                            if (PreviewData.ContainsKey(kvp.Key))
+                            if (retConfig.Count > 0)
                             {
-                                PreviewData[kvp.Key].AddRange(kvp.Value);
+                                var EnumCompare = previewReg.CompareTypeConfigDetailed(oneTypeconfig, retConfig[0]);
+                                if (EnumCompare != PreviewRegistry.EnumSchemaDiffType.SameBase &&
+                                    EnumCompare != PreviewRegistry.EnumSchemaDiffType.SameModelsBase)
+                                {
+                                    retConfig.Add(oneTypeconfig);
+                                    _logger.LogInformation("Added new schema to return configuration");
+                                }
                             }
                             else
                             {
-                                PreviewData.Add(kvp.Key, kvp.Value);
+                                retConfig.Add(oneTypeconfig);
+                                _logger.LogInformation("Added first schema to return configuration");
                             }
                         }
                     }
+                    
+                    _logger.LogInformation($"Returning {retConfig.Count} schemas for Project ID: {ProjectId}");
+                    return retConfig;
                 }
+                else
+                {
+                    _logger.LogInformation("No existing schemas found, returning generated schemas");
+                    retConfig.AddRange(result);
+                }
+
+                _logger.LogInformation($"Returning {retConfig.Count} schemas for Project ID: {ProjectId}");
+                return retConfig;
+            }        [HttpPost("{ProjectId}/{SchemaId}/{ModelId}/getpreview")]
+        public async Task<ActionResult<List<Dictionary<string, object>>>> Post(int ProjectId, int SchemaId, int ModelId, [FromBody] int[] FileId)
+        {
+            _logger.LogInformation($"Getting preview for Project ID: {ProjectId}, Schema ID: {SchemaId}, Model ID: {ModelId}");
+            
+            int userId = Convert.ToInt32(this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            _logger.LogInformation($"User ID: {userId} requesting preview");
+            
+            var existingProject = await _repository.GetProjectAsync(userId, ProjectId);
+            if (existingProject != null)
+            {
+                var schemaModels = await _repository.GetSchemaAsync(SchemaId, true);
+                if (schemaModels == null)
+                {
+                    _logger.LogWarning($"Schema ID {SchemaId} not found");
+                    return null;
+                }
+                
+                TypeConfig SchemaTypeConfig = JsonConvert.DeserializeObject<TypeConfig>(schemaModels.TypeConfig);
+                Dictionary<string, List<BaseModel>> PreviewData = null;
+
+                ProjectFile[] projFiles = await _repository.GetProjectFiles(ProjectId, FileId);
+                if (projFiles == null)
+                {
+                    _logger.LogWarning($"No files found for Project ID: {ProjectId}");
+                    return null;
+                }
+                
+                _logger.LogInformation($"Processing {projFiles.Length} files for preview");
+
+                foreach (var file in projFiles)
+                {
+                    string fullPath = !string.IsNullOrEmpty(file.FileName)
+                        ? Path.Combine(file.FilePath, file.FileName)
+                        : "twitter";
+                        
+                    _logger.LogInformation($"Processing file: {fullPath}");
+
+                    string Configuration = fullPath == "twitter"
+                        ? file.SourceConfiguration
+                        : (await _repository.GetReaderAsync((int)file.ReaderId)).ReaderConfiguration;
+
+                    try
+                    {
+                        var Preview = await this._updateModel.Execute(userId, SchemaTypeConfig, fullPath, Configuration);
+                        if (Preview == null)
+                        {
+                            _logger.LogWarning($"Failed to get preview for file: {fullPath}");
+                            continue;
+                        }
+                        
+                        _logger.LogInformation($"Successfully generated preview for file: {fullPath}");
+
+                        var schemaModel = schemaModels.SchemaModels.FirstOrDefault(x => x.ModelId == ModelId);
+                        if (schemaModel == null)
+                        {
+                            _logger.LogWarning($"Model ID {ModelId} not found in schema");
+                            continue;
+                        }
+                        
+                        var modelSelected = Preview.Item2.Where(x => x.Value.Any(y => y.ModelName == schemaModel.ModelName))
+                            .ToDictionary(x => x.Key, x => x.Value);
+
+                        if (PreviewData == null)
+                            PreviewData = modelSelected;
+                        else
+                        {
+                            foreach (var kvp in modelSelected)
+                            {
+                                if (PreviewData.ContainsKey(kvp.Key))
+                                    PreviewData[kvp.Key].AddRange(kvp.Value);
+                                else
+                                    PreviewData.Add(kvp.Key, kvp.Value);
+                            }
+                        }
+                        
+                        _logger.LogInformation($"Added {modelSelected.Sum(x => x.Value.Count)} records to preview");
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, $"Error generating preview for file: {fullPath}");
+                    }
+                }
+
                 List<Dictionary<string, object>> DataCollection = new List<Dictionary<string, object>>();
-                //result = await Task.FromResult(testData.UpdateModel(userId, ProjectId));
-                Console.WriteLine("data collection");
                 if (PreviewData != null)
                 {
-                    var t = PreviewData.ToDictionary(k => k.Key, k => (object)k.Value);
-                    Console.WriteLine("data collection done");
-                    foreach (KeyValuePair<string, List<BaseModel>> kvp in PreviewData)
+                    foreach (var kvp in PreviewData)
                     {
                         foreach (var model in kvp.Value)
                         {
-                            var tye = model.GetType();
-                            Console.WriteLine("data collection model");
-                            var row = (Dictionary<string, object>)model.ToDictionary();
-                            Console.WriteLine("data collection dict");
-                            DataCollection.Add(row);
+                            DataCollection.Add((Dictionary<string, object>)model.ToDictionary());
                         }
                     }
+                    
                     if (DataCollection.Count > 0)
+                    {
+                        _logger.LogInformation($"Returning {DataCollection.Count} records for preview");
                         return DataCollection;
-                    // return (List<Dictionary<string, object>>)new List<Dictionary<string, object>>() { PreviewData.Cast<Dictionary<string,object>>().ToDictionary()};
+                    }
                 }
+                
+                _logger.LogWarning("No preview data found");
+                return null;
             }
-            //if (ret != null && ret.ModelsPreview.ContainsKey(ModelId))
-            //{
-            //    return ret.ModelsPreview[ModelId];
-            //}
+            
+            _logger.LogWarning($"Project ID {ProjectId} not found for user {userId}");
             return null;
         }
 
         [HttpPost("{ProjectId}/{SchemaId}/updatemodel")]
-        public async Task<List<SchemaModelMapping>> Post(int ProjectId, int SchemaId, [FromBody] PreviewUpdate previewUpdate)//we will make it a different incoming class with more props
+        public async Task<List<SchemaModelMapping>> Post(int ProjectId, int SchemaId, [FromBody] PreviewUpdate previewUpdate)
         {
-            //return null;
-            PreviewUpdateResponse result = null;
+            _logger.LogInformation($"Updating model for Project ID: {ProjectId}, Schema ID: {SchemaId}");
+            
             List<SchemaModelMapping> RetSchemaModelMappingList = null;
             int userId = Convert.ToInt32(this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            System.Console.WriteLine("updatemodel");
+            _logger.LogInformation($"User ID: {userId} updating model");
+
             try
             {
                 var existingProject = await _repository.GetProjectAsync(userId, ProjectId);
-                System.Console.WriteLine("check exiting project");
-                if (previewUpdate.updatedConfig.ModelInfoList == null || previewUpdate.updatedConfig.ModelInfoList.Count == 0)//lets make a copy of basefields
+                if (existingProject == null)
                 {
-                    previewUpdate.updatedConfig.ModelInfoList = new List<ModelInfo>();
-                    previewUpdate.updatedConfig.ModelInfoList.Add(new ModelInfo());
-                    previewUpdate.updatedConfig.ModelInfoList[0].ModelFields = new List<DataAnalyticsPlatform.Shared.FieldInfo>(previewUpdate.updatedConfig.BaseClassFields);
-                    previewUpdate.updatedConfig.ModelInfoList[0].ModelName = "OriginalModel";
-
+                    _logger.LogWarning($"Project ID {ProjectId} not found for user {userId}");
+                    return null;
                 }
+
+                if (previewUpdate.updatedConfig.ModelInfoList == null || previewUpdate.updatedConfig.ModelInfoList.Count == 0)
+                {
+                    _logger.LogInformation("No model info list found, creating default model");
+                    previewUpdate.updatedConfig.ModelInfoList = new List<ModelInfo> { 
+                        new ModelInfo { 
+                            ModelFields = new List<FieldInfo>(previewUpdate.updatedConfig.BaseClassFields), 
+                            ModelName = "OriginalModel" 
+                        } 
+                    };
+                }
+
                 SchemaDTO schemaDTO = TypeConfigToSchemaDTO.Tranform(previewUpdate.updatedConfig, ProjectId, SchemaId, userId);
                 schemaDTO.SchemaName = previewUpdate.SchemaName;
+                _logger.LogInformation($"Transformed schema with name: {schemaDTO.SchemaName}");
+                
                 var NewprojectSchema = _mapper.Map<ProjectSchema>(schemaDTO);
                 NewprojectSchema.UserId = userId;
+                foreach (var mod in NewprojectSchema.SchemaModels) mod.UserId = userId;
 
-                foreach (var mod in NewprojectSchema.SchemaModels)
-                {
-                    mod.UserId = userId;
-                }
                 ProjectSchema MatchedSchema = null;
                 int[] FileId = previewUpdate.FileId;
+                _logger.LogInformation($"Processing {FileId.Length} files for schema update");
+
                 if (existingProject != null)
                 {
-                   // _cache.TryGetValue("FileIds", out FileIdsUsed);
-                     foreach(var fid in FileId)
-                    {
-                        FileIdsUsed.Add(fid);
-                    }
-                    System.Console.WriteLine("exiting project");
+                    foreach (var fid in FileId) _fileIdsUsed.Add(fid);
                     var projectSchema = await _repository.GetSchemasAsync(userId, ProjectId, true);
                     PreviewRegistry.EnumSchemaDiffType diffType = PreviewRegistry.EnumSchemaDiffType.None;
+
                     foreach (var project in projectSchema)
                     {
-
                         var thisTypeConifg = JsonConvert.DeserializeObject<TypeConfig>(project.TypeConfig);
-                        diffType = previewRegistry.CompareTypeConfigDetailed(thisTypeConifg, previewUpdate.updatedConfig);
-                        // var test = thisTypeConifg.BaseClassFields.Where(y => previewUpdate.updatedConfig.BaseClassFields.Any(z => y.Name == z.Name)); 
+                        diffType = _previewRegistry.CompareTypeConfigDetailed(thisTypeConifg, previewUpdate.updatedConfig);
+
                         if (diffType == PreviewRegistry.EnumSchemaDiffType.SameBase ||
                             diffType == PreviewRegistry.EnumSchemaDiffType.SameModelsBase)
                         {
                             MatchedSchema = project;
+                            _logger.LogInformation($"Found matching schema: {project.SchemaName} with ID: {project.SchemaId}");
                             break;
                         }
                     }
 
-                    // var MatchedSchema =  projectSchema.Where(x=> JToken.DeepEquals(x.TypeConfig, NewprojectSchema.TypeConfig)).FirstOrDefault();
                     if (SchemaId != 0)
                     {
-                        MatchedSchema = projectSchema.Where(x => x.SchemaId == SchemaId).FirstOrDefault();
+                        MatchedSchema = projectSchema.FirstOrDefault(x => x.SchemaId == SchemaId);
+                        _logger.LogInformation($"Using specified Schema ID: {SchemaId}");
                     }
+                    
                     if (SchemaId == 0 && MatchedSchema != null)
                     {
                         SchemaId = MatchedSchema.SchemaId;
+                        _logger.LogInformation($"Using matched Schema ID: {SchemaId}");
                     }
+
                     if (MatchedSchema != null)
                     {
                         NewprojectSchema.SchemaId = SchemaId;
                         NewprojectSchema.IsActive = true;
-                        var RetprojectSchema = _repository.SetSchemaAsync(SchemaId, NewprojectSchema);
-                        if (FileIdsUsed != null)
+                        await _repository.SetSchemaAsync(SchemaId, NewprojectSchema);
+                        _logger.LogInformation($"Updated existing schema with ID: {SchemaId}");
+
+                        if (_fileIdsUsed != null)
                         {
-                            for (int i = 0; i < FileIdsUsed.Count; i++)
+                            foreach (var fid in _fileIdsUsed)
                             {
-                                await _repository.SetSchemaId(FileIdsUsed[i], SchemaId);
+                                await _repository.SetSchemaId(fid, SchemaId);
+                                _logger.LogInformation($"Associated file ID: {fid} with Schema ID: {SchemaId}");
                             }
                         }
                     }
                     else
                     {
                         _repository.Add(NewprojectSchema);
-
                         await _repository.SaveChangesAsync();
+                        _logger.LogInformation("Created new schema");
+                        
                         projectSchema = await _repository.GetSchemasAsync(userId, ProjectId, true);
-                        if (projectSchema != null)
+                        var thisSchema = projectSchema.FirstOrDefault(x => x.SchemaName == previewUpdate.SchemaName);
+                        
+                        if (thisSchema != null)
                         {
-
-                            var thisSchema = projectSchema.Where(x => x.SchemaName == previewUpdate.SchemaName).FirstOrDefault();
-                            //add automtaion folder
-                            var folderName = Path.Combine("AutoIngestion", "UserData_" + userId, thisSchema.Project.ProjectName);//+"_"+ thisSchema.SchemaName);
-
+                            _logger.LogInformation($"New schema created with ID: {thisSchema.SchemaId}, Name: {thisSchema.SchemaName}");
+                            
+                            var folderName = Path.Combine("AutoIngestion", "UserData_" + userId, thisSchema.Project.ProjectName);
                             var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
                             if (!Directory.Exists(pathToSave))
                             {
                                 Directory.CreateDirectory(pathToSave);
-                                if (FileIdsUsed != null && FileIdsUsed.Count > 0)
-                                {
-                                    var readerId = _repository.GetReaderFromProjectFile(FileIdsUsed[0]);//get teh file to get reader
-
-                                    if (readerId != null && readerId.Result > 0)
-                                    { //add automation folder
-                                        var projAutomation = new ProjectAutomation
-                                        {
-                                            CreatedBy = userId,
-                                            ProjectId = ProjectId,
-                                            FolderPath = pathToSave,
-                                            ProjectSchemaId = thisSchema.SchemaId,
-                                            ReaderId = readerId.Result
-                                        };
-
-                                        _repository.Add(projAutomation);
-                                    }
-                                }
+                                _logger.LogInformation($"Created directory: {pathToSave}");
                             }
-                            if (thisSchema != null)
+
+                            if (_fileIdsUsed != null)
                             {
-                                for (int i = 0; i < FileIdsUsed.Count; i++)
+                                foreach (var fid in _fileIdsUsed)
                                 {
-                                    await _repository.SetSchemaId(FileIdsUsed[i], thisSchema.SchemaId);
+                                    await _repository.SetSchemaId(fid, thisSchema.SchemaId);
+                                    _logger.LogInformation($"Associated file ID: {fid} with new Schema ID: {thisSchema.SchemaId}");
                                 }
                             }
                         }
-
-
-                    }
-                    List<SchemaModelMapping> schemaModelMappingList = new List<SchemaModelMapping>();
-                    foreach (ProjectSchema pSchema in projectSchema)
-                    {
-                        List<ModelMapping> ModelMappingList = new List<ModelMapping>();
-                        foreach (DataAccess.Models.SchemaModel schemaModel in pSchema.SchemaModels)
+                        else
                         {
-                            if (schemaModel.ModelName != null)
-                            {
-                                ModelMapping modelMapping = new ModelMapping { ModelId = schemaModel.ModelId, ModelName = schemaModel.ModelName };
-                                ModelMappingList.Add(modelMapping);
-                            }
+                            _logger.LogWarning($"Could not find newly created schema with name: {previewUpdate.SchemaName}");
                         }
-                        schemaModelMappingList.Add(new SchemaModelMapping { SchemaMName = pSchema.SchemaName, SchemaId = pSchema.SchemaId, ModelMap = ModelMappingList });
                     }
-                    RetSchemaModelMappingList = schemaModelMappingList;
 
-                    // result = await Task.FromResult(testData.UpdateModel(userId, ProjectId));
+                    RetSchemaModelMappingList = projectSchema.Select(pSchema => new SchemaModelMapping
+                    {
+                        SchemaMName = pSchema.SchemaName,
+                        SchemaId = pSchema.SchemaId,
+                        ModelMap = pSchema.SchemaModels.Where(x => x.ModelName != null)
+                            .Select(m => new ModelMapping { ModelId = m.ModelId, ModelName = m.ModelName }).ToList()
+                    }).ToList();
 
+                    _logger.LogInformation($"Returning {RetSchemaModelMappingList.Count} schema model mappings");
                     return RetSchemaModelMappingList;
                 }
                 else
                 {
-                    System.Console.WriteLine("not exiting project");
+                    _logger.LogWarning($"Project ID {ProjectId} not found for user {userId}");
                     return null;
                 }
-       
             }
             catch (Exception ex)
             {
-                System.Console.WriteLine("exception " + ex.Message);
+                _logger.LogError(ex, $"Error updating model for Project ID: {ProjectId}, Schema ID: {SchemaId}");
                 return null;
             }
-            return null;
         }
 
         [HttpDelete("{ProjectId}/{SchemaId}")]
         public async Task<IActionResult> DeleteSchema([FromRoute] int projectId, [FromRoute] int SchemaId)
         {
+            _logger.LogInformation($"Deleting schema ID: {SchemaId} from project ID: {projectId}");
+            
             if (!ModelState.IsValid)
             {
+                _logger.LogWarning("Invalid model state for delete schema request");
                 return BadRequest(ModelState);
             }
+            
             int userId = Convert.ToInt32(this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            _logger.LogInformation($"User ID: {userId} deleting schema");
 
-            bool result = await _repository.DeleteSchema(userId, projectId, SchemaId);
-
-            if (result == false)
+            try
             {
-                return NotFound();
+                bool result = await _repository.DeleteSchema(userId, projectId, SchemaId);
+                
+                if (result)
+                {
+                    _logger.LogInformation($"Successfully deleted schema ID: {SchemaId}");
+                    return Ok(SchemaId);
+                }
+                else
+                {
+                    _logger.LogWarning($"Schema ID: {SchemaId} not found or could not be deleted");
+                    return NotFound();
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return Ok(SchemaId);
+                _logger.LogError(ex, $"Error deleting schema ID: {SchemaId}");
+                return StatusCode(500, "An error occurred while deleting the schema");
             }
         }
-        // POST api/<controller>
+
         [HttpPost]
-        public void Post([FromBody] string value)
+        public void Post([FromBody] string value) 
         {
+            _logger.LogInformation("Default Post method called");
         }
 
-        // PUT api/<controller>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public void Put(int id, [FromBody] string value) 
         {
+            _logger.LogInformation($"Default Put method called with ID: {id}");
         }
 
-        // DELETE api/<controller>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public void Delete(int id) 
         {
+            _logger.LogInformation($"Default Delete method called with ID: {id}");
         }
     }
 }

@@ -3,37 +3,144 @@
 ## Overview
 
 The Data Analytics Platform Load Services is a robust and scalable framework designed to process, transform, and manage large datasets. It leverages actor-based concurrency to handle various data processing tasks efficiently.
+
 ## System Architecture
 
-![Presentation1](https://github.com/kmranikmr/loadservices/raw/master/Presentation1.png)
+![System Architecture Diagram](https://github.com/kmranikmr/loadservices/raw/master/Presentation1.png)
+
+## Key Components
+
+### Data Processing Pipeline
+
+- **Readers** - Import data from various sources (CSV, JSON, API)
+- **Processors** - Transform and analyze data
+- **Writers** - Export processed data to destinations (databases, files)
+
+### Concurrency Model
+
+The platform uses an actor-based concurrency model with Akka.NET, providing:
+- Fault tolerance and supervision
+- High throughput processing
+- Scalable and distributed workloads
 
 ## Directory Structure
 
-- **Actors**: Contains actors responsible for different processing tasks.
-- **Processors**: Handles reading, transforming, and writing data.
-- **Registry**: Manages registry-related operations.
-- **System**: System-level functionalities such as notifications.
-- **Utils**: Utility functions.
-- **Worker**: Manages worker nodes and actors.
-- **Application.Net**: .NET application files, including forms and configurations.
-- **Common**: Common utilities and constants.
-- **Data**: Data provider actors and related functionalities.
-- **Readers**: File reading functionalities.
-- **Service.MasterAPI**: Service implementation for the Master API.
+| Component | Description |
+|-----------|-------------|
+| **Actors** | Contains actors responsible for different processing tasks |
+| **Processors** | Handles reading, transforming, and writing data |
+| **Registry** | Manages schema registry and type configurations |
+| **System** | System-level functionalities such as notifications |
+| **Utils** | Utility functions and helpers |
+| **Worker** | Manages worker nodes and distributes processing |
+| **Application.Net** | .NET application files, including forms and configurations |
+| **Common** | Common utilities and constants |
+| **Readers** | File reading implementations for various formats |
+| **Writers** | Data export implementations |
+| **Service.MasterAPI** | Service implementation for the Master API |
 
 ## Prerequisites
 
 - .NET Core 3.1 or higher
 - Visual Studio 2019 or higher
-- Any database supported by the DAP (e.g., SQL Server, PostgreSQL)
+- Any database supported by the platform (SQL Server, PostgreSQL, MongoDB)
+- Docker (optional, for containerized deployment)
 
 ## Getting Started
 
 ### Clone the Repository
 
 ```bash
-git clone <repository-url>
-cd DAPLoadServices
+git clone https://github.com/kmranikmr/loadservices.git
+cd loadservices
+```
+
+### Setup Development Environment
+
+1. **Open in Visual Studio**
+   - Open the `DataAnalyticsPlatform.sln` solution file in Visual Studio
+
+2. **Restore NuGet Packages**
+   - Right-click on the solution in Solution Explorer
+   - Select "Restore NuGet Packages"
+
+3. **Build the Solution**
+   - Build the solution to ensure all dependencies are correctly resolved
+   - `Ctrl+Shift+B` or Build → Build Solution
+
+4. **Configure Application Settings**
+   - Update the connection strings in `appsettings.json` files
+   - Configure any required API keys or service endpoints
+
+5. **Run the Application**
+   - Set the appropriate startup project
+   - Press F5 to run in debug mode
+
+## Features
+
+- **Multi-format Data Import** - CSV, JSON, API, and custom formats
+- **Schema Detection** - Automatic schema detection and mapping
+- **Transformation** - Data cleaning, transformation, and enrichment
+- **Batched Processing** - Efficient processing of large datasets
+- **Multiple Export Options** - SQL, MongoDB, CSV, Elasticsearch
+- **Real-time Progress Tracking** - SignalR-based progress notifications
+
+## Testing
+
+The solution includes NUnit tests for verifying reader and writer components:
+
+- **Readers.Tests** - Tests for data import functionality
+- **Writers.Tests** - Tests for data export functionality
+
+Run tests through Visual Studio's Test Explorer or via the command line:
+
+```bash
+cd DataAnalyticsPlatform.Tests
+dotnet test
+```
+
+## Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Commit your changes: `git commit -m 'Add amazing feature'`
+4. Push to the branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License.
+
+---
+
+## Architecture Details
+
+### Actor System
+
+The platform is built on an actor-based architecture for concurrent processing:
+
+- **Master Actors** - Coordinate overall processing
+- **Worker Actors** - Execute processing tasks
+- **Reader/Writer Actors** - Handle data I/O operations
+
+### Data Flow
+
+```
+Data Source → Reader → Processor → Transformer → Writer → Data Destination
+     ↑                                               ↓
+     └───────────── Progress Feedback ──────────────┘
+```
+
+### Extensibility
+
+The platform can be extended with:
+
+- Custom readers for new data sources
+- Custom writers for new destinations
+- Custom processors for specialized transformations
+- Custom actors for domain-specific processing
 
 
 ### Open in Visual Studio
@@ -90,21 +197,35 @@ Constants: Defines various constants used in the system.
 Data
 Data provider actors manage the data access layer.
 
-DataProviderActor: Provides data access functionalities.
-Readers
-File readers are responsible for reading data from various file formats.
+## License
 
-FileReaderActor: Reads data from files and sends it to the processor actors.
-Service.MasterAPI
-Implements the Master API service, providing endpoints for managing the data processing tasks.
+This project is licensed under the MIT License.
 
-Program: Entry point for the Master API service.
-Startup: Configures the services and middleware for the Master API.
+---
 
+## Architecture Details
 
+### Actor System
 
+The platform is built on an actor-based architecture for concurrent processing:
 
+- **Master Actors** - Coordinate overall processing
+- **Worker Actors** - Execute processing tasks
+- **Reader/Writer Actors** - Handle data I/O operations
 
+### Data Flow
 
+```
+Data Source → Reader → Processor → Transformer → Writer → Data Destination
+     ↑                                               ↓
+     └───────────── Progress Feedback ──────────────┘
+```
 
+### Extensibility
 
+The platform can be extended with:
+
+- Custom readers for new data sources
+- Custom writers for new destinations
+- Custom processors for specialized transformations
+- Custom actors for domain-specific processing

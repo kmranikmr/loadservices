@@ -26,9 +26,6 @@ namespace DataAnalyticsPlatform.Readers
 
             List body = new List();
 
-            // body.Add(new DataParameter("consumerKey", "lGKPJML9GIVeEgzv4RbuOhjsh"));
-            //body.Add(new DataParameter("consumerSecret", "LIKdQnpsRbBID9Jof9HgNME7Kmuynwah8vWSWhjGbI3wDNDYRQ"));
-            //  var config = new MapperConfiguration(x => { x.CreateMap <GetConfiguration().ModelType>(); })
             var auth = new SingleUserAuthorizer
             {
                 CredentialStore = new SingleUserInMemoryCredentialStore

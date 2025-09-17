@@ -1,24 +1,4 @@
-﻿/*
- * This file contains classes related to job coordination and actors within the DataAnalyticsPlatform's Processors namespace.
- * 
- * TransformerEnd:
- * - Empty class placeholder possibly intended for future use or extension.
- * 
- * CoordinatorActor:
- * - Acts as a supervisor and coordinator for an ingestion job, managing interactions between reader, transformer, and writer actors.
- * - Implements Akka.NET's ReceiveActor to handle various messages such as DoJob, ReaderEnd, TransformerEnd, WriterEnd, etc.
- * - Coordinates the flow of data processing:
- *   - Starts the reader actor to begin reading data.
- *   - Receives records from the reader, transforms them using the transformer actor, and passes them to the writer actor for writing.
- *   - Handles lifecycle events like no more records, end of reader, end of transformer, and end of writer.
- * - Manages child actors (reader, transformer, writer) lifecycle and handles failures using Akka's supervision strategy.
- * - Sends updates to a master actor regarding job status and completion.
- * 
- * Overall, this class orchestrates the processing of ingestion jobs through a series of actors, ensuring fault tolerance and scalability in the Data Analytics Platform.
- */
-
-
-using Akka.Actor;
+﻿using Akka.Actor;
 using Akka.Event;
 using DataAccess.Models;
 using DataAnalyticsPlatform.Actors.Master;
@@ -28,198 +8,180 @@ using System.Collections.Generic;
 
 namespace DataAnalyticsPlatform.Actors.Processors
 {
-    public class TransformerEnd
-    {
+    // Message indicating the transformer actor has finished processing
+    public class TransformerEnd { }
 
-    }
+    /// <summary>
+    /// Coordinates the ingestion job by managing reader, transformer, and writer actors.
+    /// Handles job lifecycle, message passing, and error supervision.
+    /// </summary>
     public class CoordinatorActor : ReceiveActor
     {
         #region Messages
 
-        public class ReaderEnd
-        {
-
-        }
-
-        public class DoJob
-        {
-
-        }
-
-        public class WriterEnd
-        {
-
-        }
-
+        public class ReaderEnd { }
+        public class DoJob { }
+        public class WriterEnd { }
 
         #endregion
 
-
         public const string ReaderActor = "ReaderActor";
-
         public const string WriterManager = "WriterManager";
-
         public const string TransformerActor = "TransformerActor";
 
-        private ILoggingAdapter _logger = Context.GetLogger();
+        private readonly ILoggingAdapter _logger = Context.GetLogger();
 
-        IActorRef _reader;
+        private IActorRef _reader;
+        private IActorRef _transformationActor;
+        private IActorRef _writer;
 
-        IActorRef _transformationActor;
+        private readonly IngestionJob _ingestionJob;
+        private readonly IRepository _repo;
+        private readonly IActorRef _masterActor;
 
-        IActorRef _writer;
+        private int _recordCount = 0;
+        private int _transformedRecordCount = 0;
 
-        IngestionJob _ingestionJob = null;
-
-        IRepository _repo = null;
-
-        IActorRef _masterActor;
         public CoordinatorActor(IngestionJob j, IActorRef masterActor)
         {
             _ingestionJob = j;
-
             _masterActor = masterActor;
-
             SetReceiveBlocks();
         }
 
-        private int _recordCount = 0;
-
-        private int _transformedRecordCount = 0;
-
-
+        /// <summary>
+        /// Sets up message handlers for actor communication.
+        /// </summary>
         private void SetReceiveBlocks()
         {
-            Receive<DoJob>(x =>
+            Receive<DoJob>(_ =>
             {
-
+                _logger.Info("Received DoJob. Starting reader actor.");
                 _reader.Tell(new ReaderActor.StartReading());
             });
-            Receive<CreateSchemaPostgres>(x =>
+
+            Receive<CreateSchemaPostgres>(msg =>
             {
-                _masterActor.Tell(x);
-            });
-            Receive<ReaderActor.ReaderReady>(x =>
-            {
-                //Console.WriteLine("Start GetRecord");
-                _reader.Tell(new ReaderActor.GetRecord());
-                //TODO    who will ask for next record? may be writer?
+                _logger.Info("Forwarding CreateSchemaPostgres to master actor.");
+                _masterActor.Tell(msg);
             });
 
-            Receive<ReaderActor.ReaderInitFailed>(x =>
+            Receive<ReaderActor.ReaderReady>(_ =>
             {
-                //may be shutdown coordinator here
-                //kill coordinator
+                _logger.Info("Reader is ready. Requesting first record.");
+                _reader.Tell(new ReaderActor.GetRecord());
+            });
+
+            Receive<ReaderActor.ReaderInitFailed>(_ =>
+            {
+                _logger.Error("Reader initialization failed. Shutting down coordinator.");
                 Self.Tell(PoisonPill.Instance);
             });
 
-            Receive<IRecord>(x =>
+            Receive<IRecord>(record =>
             {
-                if (x != null)
+                if (record != null)
                 {
                     _recordCount++;
-                    // Console.WriteLine("Start TransformRecord");
-                    _transformationActor.Tell(new TransformerActor.TransformRecord(x));
+                    _logger.Info($"Received record #{_recordCount}. Sending to transformer.");
+                    _transformationActor.Tell(new TransformerActor.TransformRecord(record));
                 }
                 else
                 {
+                    _logger.Warning("Received null record. Requesting next record.");
                     _reader.Tell(new ReaderActor.GetRecord());
                 }
             });
 
-            Receive<TransformerActor.TransformedRecord>(x =>
+            Receive<TransformerActor.TransformedRecord>(msg =>
             {
-
-
-                if (x.Record != null)
+                if (msg.Record != null)
                 {
-                    // Console.WriteLine("Start WriteRecord");
-                    _writer.Tell(new WriterActor.WriteRecord(x.Record));
+                    _logger.Info("Received transformed record. Sending to writer.");
+                    _writer.Tell(new WriterActor.WriteRecord(msg.Record));
                 }
                 else
                 {
-                    //   Console.WriteLine("Start WriteRecord");
-                    //foreach (object bm in x.Models)
-                    _writer.Tell(new WriterActor.WriteRecord(x.Objects));
-
+                    _logger.Info("Received transformed objects. Sending to writer.");
+                    _writer.Tell(new WriterActor.WriteRecord(msg.Objects));
                 }
                 _reader.Tell(new ReaderActor.GetRecord());
-
                 _transformedRecordCount++;
             });
 
-            Receive<ReaderActor.NoMoreRecord>(x =>
+            Receive<ReaderActor.NoMoreRecord>(_ =>
             {
-                Console.WriteLine("Coordintaor NoMoreRecord");
+                _logger.Info("No more records from reader. Stopping reader actor.");
                 _reader.Tell(PoisonPill.Instance);
             });
 
-            Receive<ReaderEnd>(x =>
+            Receive<ReaderEnd>(_ =>
             {
-                Console.WriteLine("Coordintaor ReaderEnd");
+                _logger.Info("Reader actor ended. Stopping transformer actor.");
                 _transformationActor.Tell(PoisonPill.Instance);
             });
 
-            Receive<TransformerEnd>(x =>
+            Receive<TransformerEnd>(_ =>
             {
-                Console.WriteLine("Coordintaor TransformerEnd");
+                _logger.Info("Transformer actor ended. Notifying writer of no more records.");
                 _writer.Tell(new NoMoreTransformRecord());
             });
 
-            Receive<WriterEnd>(x =>
+            Receive<WriterEnd>(_ =>
             {
-                Console.WriteLine("Coordintaor WriterEnd");
-                //   _repo.UpdateJobStatus(_ingestionJob.JobId, 3, _ingestionJob.ReaderConfiguration.SourcePathId);
-                //  _repo.UpdateJobEnd(_ingestionJob.JobId, _ingestionJob.ReaderConfiguration.SourcePathId);
-                //kill coordinator
+                _logger.Info("Writer actor ended. Shutting down coordinator.");
                 Self.Tell(PoisonPill.Instance);
             });
-            Receive<List<WriterActor.ModelSizeData>>(x =>
+
+            Receive<List<WriterActor.ModelSizeData>>(msg =>
             {
-                _masterActor.Tell(x);
+                _logger.Info("Forwarding model size data to master actor.");
+                _masterActor.Tell(msg);
             });
         }
 
+        /// <summary>
+        /// Supervises child actors. Stops actors on failure.
+        /// </summary>
         protected override SupervisorStrategy SupervisorStrategy()
         {
-            return new OneForOneStrategy(localOnlyDecider: x =>
+            return new OneForOneStrategy(localOnlyDecider: ex =>
             {
-              
-                _logger.Error(x, x.Message);
-
-                //stop the actor
+                _logger.Error(ex, ex.Message);
                 return Directive.Stop;
-
-            }, loggingEnabled: true, maxNrOfRetries: 0, withinTimeMilliseconds: 0
-            );
+            }, loggingEnabled: true, maxNrOfRetries: 0, withinTimeMilliseconds: 0);
         }
 
         public override void AroundPostStop()
         {
-
+            _logger.Info("CoordinatorActor stopped.");
             base.AroundPostStop();
         }
+
+        /// <summary>
+        /// Initializes child actors and sets up monitoring.
+        /// </summary>
         protected override void PreStart()
         {
             if (Context.Child(ReaderActor).Equals(ActorRefs.Nobody))
             {
                 _reader = Context.ActorOf(Props.Create(() => new ReaderActor(_ingestionJob)), ReaderActor);
-
                 Context.WatchWith(_reader, new ReaderEnd());
+                _logger.Info("Reader actor created and watched.");
             }
 
             if (Context.Child(TransformerActor).Equals(ActorRefs.Nobody))
             {
                 _transformationActor = Context.ActorOf(Props.Create(() => new TransformerActor(_ingestionJob.ReaderConfiguration)), TransformerActor);
-
                 Context.WatchWith(_transformationActor, new TransformerEnd());
+                _logger.Info("Transformer actor created and watched.");
             }
 
             if (Context.Child(WriterManager).Equals(ActorRefs.Nobody))
             {
                 _writer = Context.ActorOf(Props.Create(() => new WriterManager(_ingestionJob, Self)), WriterManager);
-
                 Context.WatchWith(_writer, new WriterEnd());
+                _logger.Info("Writer actor created and watched.");
             }
 
             base.PreStart();

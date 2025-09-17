@@ -15,6 +15,7 @@ using Akka.Routing;
 using DataAnalyticsPlatform.Actors.Master;
 using DataAnalyticsPlatform.Shared.DataAccess;
 using DataAnalyticsPlatform.Shared.Interfaces;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,10 +23,7 @@ using static DataAnalyticsPlatform.Actors.Processors.WriterActor;
 
 namespace DataAnalyticsPlatform.Actors.Processors
 {
-    public class NoMoreTransformRecord
-    {
-
-    }
+    public class NoMoreTransformRecord { }
 
     public class CreateSchemaPostgres
     {
@@ -37,187 +35,160 @@ namespace DataAnalyticsPlatform.Actors.Processors
         public string SchemaName { get; set; }
         public string ConnectionString { get; set; }
     }
+
     public class WriterManager : ReceiveActor
     {
-        public class WriterManagerDead
-        {
+        public class WriterManagerDead { }
 
-        }
-
-
-
-        private string WriterActor = "WriterActor";
-
-        IngestionJob _ingestionJob;
-        public IActorRef _writerPool = null;
+        private readonly string WriterActor = "WriterActor";
+        private readonly IngestionJob _ingestionJob;
+        public IActorRef _writerPool = ActorRefs.Nobody;
         private int _recordCount = 0;
         private IWriter _writer;
-        private IActorRef _coordinatorActor;
-        Dictionary<string, bool> TablesCreated;
+        private readonly IActorRef _coordinatorActor;
+        private readonly Dictionary<string, bool> TablesCreated;
         public string _schemaName { get; set; }
-        public WriterManager(IngestionJob j, IActorRef cordinatorActor)
+        private readonly ILogger<WriterManager> _logger;
+
+        public WriterManager(IngestionJob job, IActorRef coordinatorActor)
         {
-            _ingestionJob = j;
-            _coordinatorActor = cordinatorActor;
-            _schemaName = j.ReaderConfiguration.TypeConfig.SchemaName.Replace(" ", string.Empty);
-            _schemaName = j.ReaderConfiguration.ProjectId != -1 ? _schemaName + "_" + j.ReaderConfiguration.ProjectId + "_" + j.UserId : _schemaName;
-            Console.WriteLine("WriterManager _schemaName" + _schemaName);
+            _ingestionJob = job;
+            _coordinatorActor = coordinatorActor;
+            _logger = DataAnalyticsPlatform.Shared.Logging.LoggerFactory.CreateLogger<WriterManager>();
+
+            // Prepare schema name
+            _schemaName = job.ReaderConfiguration.TypeConfig.SchemaName.Replace(" ", string.Empty);
+            _schemaName = job.ReaderConfiguration.ProjectId != -1
+                ? $"{_schemaName}_{job.ReaderConfiguration.ProjectId}_{job.UserId}"
+                : _schemaName;
+
+            _logger.LogInformation("WriterManager initialized with schema: {SchemaName}", _schemaName);
+
             if (_ingestionJob.WriterConfiguration == null)
             {
-                Console.WriteLine("WriterManager Null WriterConfiguration");
+                _logger.LogWarning("WriterManager received null WriterConfiguration");
             }
+
+            // Initialize writer for non-ElasticSearch destinations
             foreach (var writerConf in _ingestionJob.WriterConfiguration)
             {
                 if (writerConf.DestinationType != Shared.Types.DestinationType.ElasticSearch)
                 {
                     writerConf.SchemaName = _schemaName;
                     _writer = Writers.Factory.GetWriter(writerConf);
-                    _writer.SchemaName = _schemaName != string.Empty ? _schemaName : "public";
-                    Console.WriteLine("WriterManager  _writer.SchemaName" + _writer.SchemaName);
-                    //_writer.CreateTables((List<BaseModel>)null, "", "", "");
-                    // _coordinatorActor.Tell(new CreateSchemaPostgres(_writer.SchemaName, writerConf.ConnectionString));
+                    _writer.SchemaName = !string.IsNullOrEmpty(_schemaName) ? _schemaName : "public";
+                    _logger.LogInformation("WriterManager writer schema set to: {WriterSchema}", _writer.SchemaName);
                 }
             }
+
             TablesCreated = new Dictionary<string, bool>();
             SetReceiveBlocks();
         }
 
+        /// <summary>
+        /// Sets up message handlers for the actor.
+        /// </summary>
         private void SetReceiveBlocks()
         {
-            Receive<WriteRecord>(x =>
+            // Handles WriteRecord messages
+            Receive<WriteRecord>(msg =>
             {
                 _recordCount++;
-                //  Console.WriteLine("WriterManager  WriteRecord");
-                if (x.Model != null)
+
+                if (msg.Model != null)
                 {
-                    Console.WriteLine("model List received");
-                    //  var ModelMsg = new ModelMsg(((BaseModel)x.Model).ModelName, (BaseModel)x.Model);
-                    string key = ((BaseModel)x.Model[0]).ModelName;
-                    key = key.Remove(0, 5);
-                    int key_int = Convert.ToInt32(key);
-                    var hashMsg = new ConsistentHashableEnvelope(x, key_int * 1000);
+                    _logger.LogDebug("Model list received for writing.");
+                    string key = ((BaseModel)msg.Model[0]).ModelName.Remove(0, 5);
+                    int keyInt = Convert.ToInt32(key);
+                    var hashMsg = new ConsistentHashableEnvelope(msg, keyInt * 1000);
                     _writerPool.Tell(hashMsg);
                 }
-                else if (x.Objects != null)
+                else if (msg.Objects != null)
                 {
-               
-                    var Lists = (IEnumerable<BaseModel>)x.Objects;
+                    var lists = (IEnumerable<BaseModel>)msg.Objects;
+                    var grouped = lists.GroupBy(y => y.ModelName);
 
-                    var Grouped = Lists.GroupBy(y => ((BaseModel)y).ModelName);
-                    if (Grouped != null)
-                       
-                        foreach (IEnumerable<BaseModel> list in Grouped)
-                        {
-
-                            string key = ((BaseModel)list.ElementAt(0)).ModelName;
-                            if (!TablesCreated.TryGetValue(key, out bool truth))
-                            {
-
-                                // _writer.CreateTables(list.ToList(), "", _writer.SchemaName , key);
-                                TablesCreated.Add(key, true);
-                            }
-
-                            _writerPool.Tell(new WriteRecord(list));// hashMsg);
-                        }
-
-                }
-                else if (x.Record != null)
-                {
-                    Console.WriteLine("WriterManager  Record");
-                    string key = _ingestionJob.ReaderConfiguration.TypeConfig.SchemaName;
-                    Console.WriteLine("WriterManager  key" + key);
-                    if (!TablesCreated.TryGetValue(key, out bool truth))
+                    foreach (var list in grouped)
                     {
-                        var obj = new List<object>();
-                        obj.Add(x.Record.Instance);
-                        // _ingestionJob.ReaderConfiguration.TypeConfig.SchemaName
-                        // _writer.CreateTables(obj, "", _writer.SchemaName, key);
+                        string key = list.ElementAt(0).ModelName;
+                        if (!TablesCreated.ContainsKey(key))
+                        {
+                            // Table creation logic can be added here if needed
+                            TablesCreated.Add(key, true);
+                        }
+                        _writerPool.Tell(new WriteRecord(list));
+                    }
+                }
+                else if (msg.Record != null)
+                {
+                    _logger.LogDebug("Single record received for writing.");
+                    string key = _ingestionJob.ReaderConfiguration.TypeConfig.SchemaName;
+                    if (!TablesCreated.ContainsKey(key))
+                    {
+                        var obj = new List<object> { msg.Record.Instance };
+                        // Table creation logic can be added here if needed
                         TablesCreated.Add(key, true);
                     }
-                    //var hashMsg = new ConsistentHashableEnvelope((object)x, 1000);
-                    _writerPool.Tell(x);
+                    _writerPool.Tell(msg);
                 }
-
             });
 
-            Receive<NoMoreTransformRecord>(x =>
+            // Handles NoMoreTransformRecord messages
+            Receive<NoMoreTransformRecord>(_ =>
             {
-                Console.WriteLine("NoMoreTransformRecord");
-                if (_writerPool == null)
-                    Console.WriteLine("WriterManager _writerPool null");
-                _writerPool.Tell(x);
+                _logger.LogInformation("NoMoreTransformRecord received.");
+                if (_writerPool == ActorRefs.Nobody)
+                {
+                    _logger.LogWarning("WriterManager _writerPool is null.");
+                }
+                _writerPool.Tell(_);
             });
-            //WriterManagerDead
-            Receive<WriterManagerDead>(x =>
-           {
-               Console.WriteLine("WriterManagerDead");
-               Self.Tell(PoisonPill.Instance);
-           });
-            Receive<List<ModelSizeData>>(x => { _coordinatorActor.Tell(x); });
+
+            // Handles WriterManagerDead messages
+            Receive<WriterManagerDead>(_ =>
+            {
+                _logger.LogInformation("WriterManagerDead received. Stopping self.");
+                Self.Tell(PoisonPill.Instance);
+            });
+
+            // Forwards model size data to coordinator
+            Receive<List<ModelSizeData>>(data =>
+            {
+                _coordinatorActor.Tell(data);
+            });
         }
 
-        //protected override SupervisorStrategy SupervisorStrategy()
-        //{
-        //    return new OneForOneStrategy(localOnlyDecider: x =>
-        //    {
-        //        switch (x)
-        //        {
-        //            case WriterException we:
-        //                //update table using dbUtils.              
-
-        //                return Directive.Escalate;
-
-        //        }
-
-        //      //  _logger.Error(x, x.Message);
-
-        //        return Akka.Actor.SupervisorStrategy.DefaultStrategy.Decider.Decide(x);
-
-        //    }, loggingEnabled: true, maxNrOfRetries: 0, withinTimeMilliseconds: 0
-        //    );
-        //}
+        /// <summary>
+        /// Initializes the writer pool actor on start.
+        /// </summary>
         protected override void PreStart()
         {
             if (Context.Child(WriterActor).Equals(ActorRefs.Nobody))
             {
-                // _writerPool =Context.ActorOf(Props.Create(() => new WriterActor(_ingestionJob)).WithRouter(new ConsistentHashingPool(10)), "writerpool");
-
-                _writerPool = Context.ActorOf(Props.Create(() => new WriterActor(_ingestionJob))
-                    /*.
-                    WithSupervisorStrategy(new OneForOneStrategy(0, 0, ex =>
-                    {
-                        switch (ex)
-                        {
-                            case WriterException we:
-                              return Directive.Resume;
-                        } 
-                        return Directive.Resume;
-                    })) */
-
-                    , "writerpool");
+                _writerPool = Context.ActorOf(
+                    Props.Create(() => new WriterActor(_ingestionJob)),
+                    "writerpool"
+                );
                 Context.WatchWith(_writerPool, new WriterManagerDead());
+                _logger.LogInformation("Writer pool actor created and watched.");
             }
         }
     }
 
+    /// <summary>
+    /// Message for consistent hashing based on model name.
+    /// </summary>
     internal class ModelMsg : IConsistentHashable
     {
-        public string ModelName;
-        public BaseModel Model;
+        public string ModelName { get; }
+        public BaseModel Model { get; }
 
-
-        public ModelMsg(string p1, BaseModel p2)
+        public ModelMsg(string modelName, BaseModel model)
         {
-            this.ModelName = p1;
-            this.Model = p2;
+            ModelName = modelName;
+            Model = model;
+        }
 
-        }
-        public object ConsistentHashKey
-        {
-            get
-            {
-                return this.ModelName;
-            }
-        }
+        public object ConsistentHashKey => ModelName;
     }
 }

@@ -19,7 +19,7 @@ namespace DataAnalyticsPlatform.Application
             Console.WriteLine("Press Enter to start...");
 
             Console.ReadLine();
-            string sourcePath = @"C:\Users\bibek\Downloads\FL_insurance_sample.csv\FL_insurance_sample.csv";
+            string sourcePath = @"FL_insurance_sample.csv";
 
             Post(@"http://localhost:50926/api/Preview/1/generatemodel", sourcePath);
 

@@ -56,10 +56,9 @@ namespace DataAnalyticsPlatform.Actors.Processors
         }
         public class WriteList
         {
-
             public WriteList(List<object> list)
             {
-
+                // Placeholder for future implementation
             }
         }
         #endregion
@@ -68,7 +67,7 @@ namespace DataAnalyticsPlatform.Actors.Processors
 
         private IWriter _writer = null;
         private IWriter _elasticWriter = null;
-        IngestionJob _ingestionJob;
+        private IngestionJob _ingestionJob;
         private IActorRef _writerManager;
         public string _schemaName { get; set; }
 
@@ -76,50 +75,48 @@ namespace DataAnalyticsPlatform.Actors.Processors
         {
             _ingestionJob = j;
             _schemaName = j.ReaderConfiguration.TypeConfig.SchemaName.Replace(" ", string.Empty);
-
             _schemaName = j.ReaderConfiguration.ProjectId != -1 ? _schemaName + "_" + j.ReaderConfiguration.ProjectId + "_" + j.UserId : _schemaName;
-            Console.WriteLine("WriterActor  _schemaName" + _schemaName);
+
+            _log.Info("WriterActor _schemaName: {0}", _schemaName);
+
             if (_ingestionJob.WriterConfiguration == null)
             {
-                Console.WriteLine("WriterActor  WriterConfiguration Null");
+                _log.Warning("WriterActor WriterConfiguration is null");
             }
+
+            // Initialize writers based on configuration
             foreach (var writerConf in _ingestionJob.WriterConfiguration)
             {
                 if (writerConf.DestinationType != Shared.Types.DestinationType.ElasticSearch)
                 {
                     writerConf.SchemaName = _schemaName;
                     _writer = Writers.Factory.GetWriter(writerConf);
-
-                    _writer.SchemaName = _schemaName != string.Empty ? _schemaName : "public";
-                    Console.WriteLine("WriterActor  WriterConfiguration _writer.SchemaName" + _writer.SchemaName);
-
+                    _writer.SchemaName = !string.IsNullOrEmpty(_schemaName) ? _schemaName : "public";
+                    _log.Info("WriterActor WriterConfiguration _writer.SchemaName: {0}", _writer.SchemaName);
                 }
                 if (writerConf.DestinationType == Shared.Types.DestinationType.ElasticSearch)
                 {
-                    _elasticWriter = Writers.Factory.GetWriter(writerConf); //new ElasticWriter("http://192.168.1.11:9200");
+                    _elasticWriter = Writers.Factory.GetWriter(writerConf); 
                     _elasticWriter.SchemaName = _schemaName;
-                    Console.WriteLine("WriterActor  WriterConfiguration    _elasticWriter.SchemaName " + _elasticWriter.SchemaName);
+                    _log.Info("WriterActor WriterConfiguration _elasticWriter.SchemaName: {0}", _elasticWriter.SchemaName);
                 }
-                else
+                else if (writerConf.DestinationType == Shared.Types.DestinationType.Mongo)
                 {
-                    if (writerConf.DestinationType == Shared.Types.DestinationType.Mongo)
-                    {
-                        _elasticWriter = Writers.Factory.GetWriter(writerConf); //new ElasticWriter("http://192.168.1.11:9200");
-                        _elasticWriter.SchemaName = _schemaName;
-                        Console.WriteLine("WriterActor  WriterConfiguration    _elasticWriter.SchemaName " + _elasticWriter.SchemaName);
-                    }
+                    _elasticWriter = Writers.Factory.GetWriter(writerConf); 
+                    _elasticWriter.SchemaName = _schemaName;
+                    _log.Info("WriterActor WriterConfiguration _elasticWriter.SchemaName: {0}", _elasticWriter.SchemaName);
                 }
             }
 
-            //   _modelList = new List<object>(); //new Dictionary<string, List<BaseModel>>();
-
-            _writer.OnError += _writer_OnError;
-
-            _writer.OnInfo += _writer_OnInfo;
+            // Subscribe to writer events for logging
+            if (_writer != null)
+            {
+                _writer.OnError += _writer_OnError;
+                _writer.OnInfo += _writer_OnInfo;
+            }
             if (_elasticWriter != null)
             {
                 _elasticWriter.OnError += _Ewriter_OnError;
-
                 _elasticWriter.OnInfo += _Ewriter_OnInfo;
             }
 
@@ -135,25 +132,23 @@ namespace DataAnalyticsPlatform.Actors.Processors
                     _writerManager = Sender;
                     if (x.Record != null)
                     {
-                        Console.WriteLine("WriterActor x.Record");
-
+                        _log.Info("WriterActor received WriteRecord with Record");
                         _writer.Write(x.Record);
                         if (_elasticWriter != null)
                             _elasticWriter.Write(x.Record);
                     }
                     else if (x.Model != null)
                     {
-                        Console.WriteLine("WriterActor x.Model");
+                        _log.Info("WriterActor received WriteRecord with Model");
                         _writer.Write(x.Model);
                         if (_elasticWriter != null)
                             _elasticWriter.Write(x.Model);
                     }
                     else if (x.Objects != null)
                     {
-                        //Console.WriteLine("WriterActor x.Objects");
                         if (_writer == null)
                         {
-                            Console.WriteLine("WriterActor _writer null");
+                            _log.Warning("WriterActor _writer is null");
                         }
                         _writer.Write(x.Objects);
                         if (_elasticWriter != null)
@@ -161,56 +156,65 @@ namespace DataAnalyticsPlatform.Actors.Processors
                     }
                     else
                     {
-                        Console.WriteLine("WriterActor diff type" + x.GetType());
+                        _log.Warning("WriterActor received WriteRecord of unknown type: {0}", x.GetType());
                     }
                 }
                 catch (Exception ex)
                 {
+                    _log.Error(ex, "WriterActor encountered an error while writing record");
                     throw new WriterException("Writer Error", ex, 0, Sender);
                 }
             });
-           
+
             Receive<ConsistentHashableEnvelope>(x =>
-                {
-                    object x1 = x.HashKey;
-                });
+            {
+                // Handle ConsistentHashableEnvelope if needed
+                object x1 = x.HashKey;
+            });
+
             Receive<NoMoreTransformRecord>(x =>
-                {
-                    Console.WriteLine("NoMoreTransformRecord at WriterActor");
-                    Context.Stop(Self);
-                });
+            {
+                _log.Info("NoMoreTransformRecord received at WriterActor, stopping actor.");
+                Context.Stop(Self);
+            });
+
             ReceiveAny(x =>
             {
-                Console.WriteLine("Writeractor receiveany" + x.GetType());
+                _log.Info("WriterActor received unknown message type: {0}", x.GetType());
             });
         }
+
         public override void AroundPostStop()
         {
+            // Dispose writers and report data size
+            _writer?.Dispose();
+            var sizeMap = _writer?.DataSize();
+            _log.Info("WriterActor AroundPostStop called.");
 
-
-            _writer.Dispose();
-            var sizeMap = _writer.DataSize();
-            Console.WriteLine(" AroundPostStop ");
             List<ModelSizeData> sizeData = new List<ModelSizeData>();
-            foreach (var item in sizeMap)
+            if (sizeMap != null)
             {
-                Console.WriteLine(" AroundPostStop " + item.Key + " " + item.Value);
-                ModelSizeData data = new ModelSizeData
+                foreach (var item in sizeMap)
                 {
-                    ModelName = item.Key,
-                    Size = item.Value
-                };
-                sizeData.Add(data);
+                    _log.Info("Model: {0}, Size: {1}", item.Key, item.Value);
+                    sizeData.Add(new ModelSizeData
+                    {
+                        ModelName = item.Key,
+                        Size = item.Value
+                    });
+                }
             }
-            if (sizeMap == null || sizeMap.Count == 0)
+            else
             {
-                Console.WriteLine(" AroundPostStop sizeMap is null or 0");
+                _log.Warning("WriterActor AroundPostStop: sizeMap is null or empty.");
             }
-            _writerManager.Tell(sizeData);
+
+            _writerManager?.Tell(sizeData);
 
             if (_elasticWriter != null)
                 _elasticWriter.Dispose();
         }
+
         private void _writer_OnInfo(object sender, Shared.ExceptionUtils.InfoArgument e)
         {
             _log.Info(e.Information);
@@ -230,14 +234,11 @@ namespace DataAnalyticsPlatform.Actors.Processors
         {
             _log.Error(e.ErrorMessage);
         }
-
-
     }
 
     public class WriterException : Exception
     {
         public long FileId { get; private set; }
-
         public IActorRef Caller { get; private set; }
 
         public WriterException(string errorMessage, Exception ex, long fileId, IActorRef caller) : base(errorMessage, ex)

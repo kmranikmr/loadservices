@@ -5,15 +5,23 @@ using System.Collections.Generic;
 
 namespace DataAnalyticsPlatform.Actors.messages
 {
+    /// <summary>
+    /// Contains message classes for preview actor operations.
+    /// </summary>
     public partial class PreviewActor
     {
-        public class GetModel : MsgUserId
+    /// <summary>
+    /// Message to request a model for a given user.
+    /// </summary>
+    public class GetModel : MsgUserId
         {
-            // public string file_name = "";
             public GetModel(int userId = 0) : base(userId) { }
         }
 
-        public class GenerateModel : MsgUserId
+    /// <summary>
+    /// Message to generate a model with file and configuration details.
+    /// </summary>
+    public class GenerateModel : MsgUserId
         {
             public string file_name = "";
             public int jobId { get; set; }
@@ -42,7 +50,10 @@ namespace DataAnalyticsPlatform.Actors.messages
             }
         }
 
-        public class UpdateModel : MsgUserId
+    /// <summary>
+    /// Message to update a model with type configuration and file details.
+    /// </summary>
+    public class UpdateModel : MsgUserId
         {
             public TypeConfig typeConfig;
             public List<ModelInfo> splitSchemaList;

@@ -1,13 +1,13 @@
-﻿/*RDBMSBulkWriter class facilitates bulk writing of data to a relational database management system (RDBMS).
-    It extends BaseWriter for common functionality and utilizes BulkPostgresRepository<BaseModel> for bulk operations.
-
-    Features:
-    - Constructor initializes with a connection string and optional schema.
-    - Implements IDisposable to manage resources and flush data on disposal.
-    - Supports bulk creation of database schema.
-    - Implements methods for writing single BaseModel records and lists of BaseModel.
-    - Uses repository pattern with BulkPostgresRepository<BaseModel> for efficient bulk data handling.
-*/
+﻿/*
+ * RDBMSBulkWriter.cs
+ * 
+ * This file implements a bulk writer component for relational database management systems (RDBMS).
+ * It provides functionality for efficient bulk writing of data records to database tables
+ * using the BulkPostgresRepository for optimized bulk operations.
+ * 
+ * Author: Data Analytics Platform Team
+ * Last Modified: September 17, 2025
+ */
 
 using DataAnalyticsPlatform.Shared.DataAccess;
 using DataAnalyticsPlatform.Shared.Interfaces;
@@ -18,110 +18,217 @@ using BaseModel = DataAnalyticsPlatform.Shared.DataAccess.BaseModel;
 
 namespace DataAnalyticsPlatform.Writers
 {
+    /// <summary>
+    /// Writer implementation for RDBMS output with bulk operations. Inherits from BaseWriter and provides
+    /// functionality to export data records to relational database tables using bulk operations.
+    /// </summary>
     public class RDBMSBulkWriter : BaseWriter
     {
-        BulkPostgresRepository<BaseModel> repository;
-        public List<BaseModel> _mylist;
+        /// <summary>
+        /// The repository for bulk database operations
+        /// </summary>
+        private BulkPostgresRepository<BaseModel> _repository;
+        
+        /// <summary>
+        /// Buffer of records to be written
+        /// </summary>
+        private List<BaseModel> _recordBuffer;
+        
+        /// <summary>
+        /// Maximum number of records to buffer before writing
+        /// </summary>
+        private const int BATCH_SIZE = 500;
+        
+        /// <summary>
+        /// Gets or sets the database schema name
+        /// </summary>
         public string Schema { get; set; }
+        
+        /// <summary>
+        /// Initializes a new instance of the RDBMSBulkWriter class with the specified connection string and optional schema.
+        /// </summary>
+        /// <param name="connectionString">The database connection string</param>
+        /// <param name="schema">The optional database schema name</param>
         public RDBMSBulkWriter(string connectionString, string schema = "") : base(connectionString, Shared.Types.DestinationType.RDBMS)
         {
-            Console.WriteLine("Start RDBMSBulkWriter" + connectionString);
+            LogInfo($"Initializing RDBMSBulkWriter with schema '{(string.IsNullOrEmpty(schema) ? "default" : schema)}'");
+            
             Schema = schema;
-            Console.WriteLine("schema " + schema);
-            repository = new BulkPostgresRepository<BaseModel>(connectionString, Schema);
-
-            _mylist = new List<BaseModel>();
+            _repository = new BulkPostgresRepository<BaseModel>(connectionString, Schema);
+            _recordBuffer = new List<BaseModel>();
+            
+            LogInfo("RDBMSBulkWriter initialized successfully");
         }
 
+        /// <summary>
+        /// Creates database tables for the specified BaseModel objects.
+        /// </summary>
+        /// <param name="model">The list of BaseModel objects</param>
+        /// <param name="db">The database name</param>
+        /// <param name="schema">The schema name</param>
+        /// <param name="table">The table name</param>
+        /// <returns>True if tables were created successfully</returns>
         public override bool CreateTables(List<BaseModel> model, string db, string schema, string table)
         {
-            repository.CreateSchema();
+            LogInfo($"Creating schema for database '{db}', schema '{schema}', table '{table}'");
+            _repository.CreateSchema();
+            LogInfo("Schema created successfully");
             return true;
         }
+        
+        /// <summary>
+        /// Creates tables for the specified objects (not implemented).
+        /// </summary>
+        /// <param name="model">The list of objects</param>
+        /// <param name="db">The database name</param>
+        /// <param name="schema">The schema name</param>
+        /// <param name="table">The table name</param>
+        /// <returns>False as this method is not implemented</returns>
         public override bool CreateTables(List<object> model, string db, string schema, string table)
         {
+            LogInfo("CreateTables(List<object>) called but not implemented for RDBMSBulkWriter");
             return false;
         }
+        
+        /// <summary>
+        /// Releases resources used by the RDBMS bulk writer and writes any remaining buffered records.
+        /// </summary>
         public override void Dispose()
         {
-            if (_mylist.Count > 0)
+            LogInfo("Disposing RDBMSBulkWriter");
+            
+            if (_recordBuffer.Count > 0)
+            {
+                LogInfo($"Writing {_recordBuffer.Count} remaining records during disposal");
                 Dump();
-            Console.WriteLine("Disposed");
-            _mylist.Clear();
-            // throw new NotImplementedException();
-            //if (_mylist.Count > 0)
-            //     Dump();
-            // _mylist.Clear();
-
-            //if (Helper.FileNametoId.Count > 0)
-            //{
-
-            //    foreach (var kvp in Helper.FileNametoId)
-            //    {
-            //        _mylist.Add(new FileNames(kvp.Value, kvp.Key, DateTime.Now.ToString()));
-            //    }
-            //   // repository.CreateTables(_mylist, Schema);
-            //    Dump();
-            //}
-            // repository.Dispose();
+            }
+           
+            _recordBuffer.Clear();
+            LogInfo("RDBMSBulkWriter disposed");
         }
 
+        /// <summary>
+        /// Returns information about the data size.
+        /// </summary>
+        /// <returns>A dictionary containing data size information</returns>
         public override Dictionary<string, long?> DataSize()
         {
-            return repository.DataSize();
+            LogInfo("DataSize method called");
+            return _repository.DataSize();
         }
+        
+        /// <summary>
+        /// Writes an object (or collection of objects) to the RDBMS.
+        /// </summary>
+        /// <param name="record">The object to write</param>
         public override void Write(object record)
         {
-            if (record is IEnumerable)
+            if (record == null)
             {
-                var list = ((IEnumerable<BaseModel>)record);
-
-                _mylist.AddRange(list);
+                LogError("Write(object) called with null record");
+                return;
             }
-            else
-            {
-
-                _mylist.Add((BaseModel)record);
-            }
-            //_mylist.Add(record);
-
-            // repository.CreateTables(_mylist, "public", true);
-
-            if (_mylist.Count >= 500)
-            {
-                Dump();
-                _mylist.Clear();
-            }
-        }
-
-        public void Dump()
-        {
+            
             try
             {
-                repository.Write(_mylist);
-                Console.Write("*");
+                if (record is IEnumerable && !(record is string))
+                {
+                    var list = ((IEnumerable<BaseModel>)record);
+                    LogInfo($"Processing enumerable with {list.Cast<BaseModel>().Count()} records");
+                    _recordBuffer.AddRange(list);
+                }
+                else if (record is BaseModel)
+                {
+                    LogInfo("Processing single BaseModel record");
+                    _recordBuffer.Add((BaseModel)record);
+                }
+                else
+                {
+                    LogError($"Unsupported record type: {record.GetType().Name}");
+                    return;
+                }
+                
+                if (_recordBuffer.Count >= BATCH_SIZE)
+                {
+                    LogInfo($"Buffer size ({_recordBuffer.Count}) exceeds batch size ({BATCH_SIZE}), writing to database");
+                    Dump();
+                    _recordBuffer.Clear();
+                }
             }
             catch (Exception ex)
             {
-                throw ex;
+                LogError($"Error writing record: {ex.Message}");
+                throw;
             }
         }
+
+        /// <summary>
+        /// Writes the buffered records to the database.
+        /// </summary>
+        public void Dump()
+        {
+            if (_recordBuffer.Count == 0)
+            {
+                LogInfo("Dump called but no records to write");
+                return;
+            }
+            
+            LogInfo($"Writing {_recordBuffer.Count} records to database");
+            
+            try
+            {
+                _repository.Write(_recordBuffer);
+                LogInfo($"Successfully wrote {_recordBuffer.Count} records to database");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error writing records to database: {ex.Message}");
+                throw;
+            }
+        }
+        
+        /// <summary>
+        /// Writes a record to RDBMS (not fully implemented).
+        /// </summary>
+        /// <param name="record">The record to write</param>
         public override void Write(IRecord record)
         {
-            Console.WriteLine("RDBMS bulk record no imp" + record.GetType());
+            LogInfo($"Write(IRecord) called with record type {record?.GetType().Name ?? "null"} but not fully implemented");
         }
 
-        public override void Write(List<object> record)
+        /// <summary>
+        /// Writes a list of objects to RDBMS (not fully implemented).
+        /// </summary>
+        /// <param name="records">The list of objects to write</param>
+        public override void Write(List<object> records)
         {
-            Console.WriteLine("RDBMS bulk List<object> record" + record.GetType());
+            LogInfo($"Write(List<object>) called with {records?.Count ?? 0} records but not fully implemented");
         }
-        public override void Write(List<BaseModel> record)
+        
+        /// <summary>
+        /// Writes a list of BaseModel objects to RDBMS.
+        /// </summary>
+        /// <param name="records">The list of BaseModel objects to write</param>
+        public override void Write(List<BaseModel> records)
         {
-            Console.WriteLine("RDBMS Bulkl writer List<BaseModel> ");
-
-            repository.Write(record);
-
-            //throw new NotImplementedException();
+            if (records == null || records.Count == 0)
+            {
+                LogInfo("Write(List<BaseModel>) called with empty or null records");
+                return;
+            }
+            
+            LogInfo($"Writing {records.Count} BaseModel records directly to repository");
+            
+            try
+            {
+                _repository.Write(records);
+                LogInfo($"Successfully wrote {records.Count} BaseModel records");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error writing BaseModel records: {ex.Message}");
+                throw;
+            }
         }
     }
 }

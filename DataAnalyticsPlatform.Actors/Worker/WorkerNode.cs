@@ -13,7 +13,6 @@
  * Overall, this actor plays a central role in coordinating and managing ingestion jobs within the Data Analytics Platform, ensuring efficient job execution and status reporting.
  */
 
-
 using Akka.Actor;
 using Akka.Routing;
 using DataAccess.Models;
@@ -25,6 +24,7 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace DataAnalyticsPlatform.Actors.Worker
 {
@@ -36,117 +36,134 @@ namespace DataAnalyticsPlatform.Actors.Worker
         public int jobId { get; set; }
         public int UserId { get; set; }
     }
+
     public class WorkerNode : ReceiveActor
     {
         private const string WorkerPool = "WorkerPool";
-
         private const string IngestionMonitor = "IngestionMonitorActor";
 
-        int _maxNumberofConcurretWorker;
-
-        IActorRef _workerActors;
+        private readonly int _maxNumberofConcurretWorker;
+        private IActorRef _workerActors;
         private IActorRef _ingestionMonitorActor;
-        IActorRef _masterActor;
+        private IActorRef _masterActor;
         private Repository _repo;
+        private readonly ILogger<WorkerNode> _logger;
+
         public event EventHandler<IngestionJob> JobProcess;
         public event EventHandler<JobDone> JobComplete;
-        public delegate void MyEventHandler(object sender, int e);
+
         public string _connectionString { get; set; }
-        //public IngestionJob ingestionJob { get; set; }
         public List<IngestionJob> ingestionJob { get; set; }
-       
-        public void UpdateJobProcess(object sender, IngestionJob job)
-        {
-            Console.WriteLine("Worker Node UpdateJobProcess");
-            //ingestionJob = job;
-            ingestionJob.Add(job);
-            Console.WriteLine(" job at update process " + job.ReaderConfiguration.TypeConfig.ModelInfoList[0].ModelId.ToString() + " " + job.ReaderConfiguration.TypeConfig.ModelInfoList[0].ModelName);
-            string connectionString = job.ControlTableConnectionString;//"Server = localhost\\SQLEXPRESS; Database = dap_master; Trusted_Connection = True; ";// @"Server = dapdb.cqzm7ymwpoc8.us-east-1.rds.amazonaws.com; Database = dap_master; User Id = admin; Password = dapdata123";//// @"Server = localhost\\SQLEXPRESS; Database = dap_master; Trusted_Connection = True; ";
-            _connectionString = connectionString;
-            var options = SqlServerDbContextOptionsExtensions.UseSqlServer(new DbContextOptionsBuilder<DAPDbContext>(), connectionString).Options;
-            var dbContext = new DAPDbContext(options, connectionString);
-            _repo = new Repository(dbContext, null);
-            var x = _repo.UpdateJobStatusSync(job.JobId, 2, job.ReaderConfiguration.SourcePathId);
-            var y = _repo.UpdateJobStart(job.JobId, job.ReaderConfiguration.SourcePathId);
-        }
 
-        public async void UpdateJobComplete(object sender, JobDone job)
-        {
-            Console.WriteLine("Worker Node UpdateJobComplete " + job.FileId);
-            string connectionString = _connectionString;//@"Server = localhost\\SQLEXPRESS; Database = dap_master; Trusted_Connection = True; ";// "Server = dapdb.cqzm7ymwpoc8.us-east-1.rds.amazonaws.com; Database = dap_master; User Id = admin; Password = dapdata123"; //@"Server = localhost\\SQLEXPRESS; Database = dap_master; Trusted_Connection = True; ";
-            var options = SqlServerDbContextOptionsExtensions.UseSqlServer(new DbContextOptionsBuilder<DAPDbContext>(), connectionString).Options;
-            var dbContext = new DAPDbContext(options);
-            _repo = new Repository(dbContext, null);
-
-            var x = _repo.UpdateJobStatusSync(job.JobId, 3, job.FileId);
-            var y = _repo.UpdateJobEnd(job.JobId, job.FileId);
-
-        }
         public WorkerNode(int maxNumberofConcurretWorker)
         {
             ingestionJob = new List<IngestionJob>();
             _maxNumberofConcurretWorker = maxNumberofConcurretWorker;
+
+            // Setup logger (replace with your DI or logger factory as needed)
+            _logger = LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger<WorkerNode>();
+
             JobProcess += UpdateJobProcess;
             JobComplete += UpdateJobComplete;
-           
+
             ReceiveBlock();
         }
 
+        /// <summary>
+        /// Handles job process update, sets connection string, updates job status in DB.
+        /// </summary>
+        public void UpdateJobProcess(object sender, IngestionJob job)
+        {
+            _logger.LogInformation("Worker Node UpdateJobProcess");
+            ingestionJob.Add(job);
+
+            _logger.LogInformation("Job at update process {ModelId} {ModelName}",
+                job.ReaderConfiguration.TypeConfig.ModelInfoList[0].ModelId,
+                job.ReaderConfiguration.TypeConfig.ModelInfoList[0].ModelName);
+
+            string connectionString = job.ControlTableConnectionString;
+            _connectionString = connectionString;
+
+            var options = SqlServerDbContextOptionsExtensions.UseSqlServer(new DbContextOptionsBuilder<DAPDbContext>(), connectionString).Options;
+            var dbContext = new DAPDbContext(options, connectionString);
+            _repo = new Repository(dbContext, null);
+
+            _repo.UpdateJobStatusSync(job.JobId, 2, job.ReaderConfiguration.SourcePathId);
+            _repo.UpdateJobStart(job.JobId, job.ReaderConfiguration.SourcePathId);
+        }
+
+        /// <summary>
+        /// Handles job completion, updates job status and end time in DB.
+        /// </summary>
+        public async void UpdateJobComplete(object sender, JobDone job)
+        {
+            _logger.LogInformation("Worker Node UpdateJobComplete {FileId}", job.FileId);
+
+            string connectionString = _connectionString;
+            var options = SqlServerDbContextOptionsExtensions.UseSqlServer(new DbContextOptionsBuilder<DAPDbContext>(), connectionString).Options;
+            var dbContext = new DAPDbContext(options);
+            _repo = new Repository(dbContext, null);
+
+            _repo.UpdateJobStatusSync(job.JobId, 3, job.FileId);
+            _repo.UpdateJobEnd(job.JobId, job.FileId);
+        }
+
+        /// <summary>
+        /// Updates job status asynchronously.
+        /// </summary>
         public async Task<bool> UpdateJob(int updateStatus, int jobId)
         {
-            Func<bool> func = new Func<bool>(() =>
+            Func<bool> func = () =>
             {
                 if (updateStatus == 2)
                 {
-                    var x = _repo.UpdateJobStatus(jobId, 2, 3);
-                    var y = _repo.UpdateJobStart(jobId, 3);
+                    _repo.UpdateJobStatus(jobId, 2, 3);
+                    _repo.UpdateJobStart(jobId, 3);
                 }
-                else// if (updateStatus == 3)
+                else
                 {
-                    var c = _repo.UpdateJobStatus(jobId, 2, 3);
-                    var d = _repo.UpdateJobStart(jobId, 3);
+                    _repo.UpdateJobStatus(jobId, 2, 3);
+                    _repo.UpdateJobStart(jobId, 3);
                 }
                 return true;
-            });
+            };
             return await Task.Factory.StartNew(func);
         }
+
+        /// <summary>
+        /// Defines message handlers for the actor.
+        /// </summary>
         public void ReceiveBlock()
         {
-
+            // Handles incoming IngestionJob messages
             Receive<IngestionJob>(x =>
             {
                 _masterActor = Sender;
-               
                 JobProcess?.Invoke(this, x);
-               
                 _workerActors.Tell(x);
-
             });
+
+            // Handles JobDone messages
             Receive<JobDone>(x =>
             {
-                Console.WriteLine(" Worker Node Job Done");
+                _logger.LogInformation("Worker Node Job Done");
                 int st = 2;
-                if (JobComplete != null)
-                {
-                    Console.WriteLine(" Worker Node Job Done ");
-                }
                 JobComplete?.Invoke(this, x);
-                Console.WriteLine(" Worker Node before Master ");
-                // var ret = UpdateJob(st).ConfigureAwait(true);
+
+                _logger.LogInformation("Worker Node before Master");
                 _masterActor.Tell(x);
 
-                if (ingestionJob != null)//lets take th eingetsio njob and send the info to datsaervice for projecttrigger
+                // Send project trigger info to data service for completed jobs
+                if (ingestionJob != null)
                 {
-                  
-                    Console.WriteLine("IngestionJob Check");
+                    _logger.LogInformation("IngestionJob Check");
                     IngestionJob tbd = null;
                     foreach (var j in ingestionJob)
                     {
-                        Console.WriteLine("checking jobs");
                         if (j.ReaderConfiguration != null)
                         {
-                            Console.WriteLine(((JobDone)x).FileId.ToString() + " " + j.ReaderConfiguration.SourcePathId.ToString());
-                            if (((JobDone)x).FileId == j.ReaderConfiguration.SourcePathId)
+                            _logger.LogInformation("Checking jobs");
+                            if (x.FileId == j.ReaderConfiguration.SourcePathId)
                             {
                                 SendAttempt(x, j);
                                 tbd = j;
@@ -157,11 +174,11 @@ namespace DataAnalyticsPlatform.Actors.Worker
                     {
                         ingestionJob.Remove(tbd);
                     }
-
                 }
-                Console.WriteLine(" Worker Node before Master Done");
+                _logger.LogInformation("Worker Node before Master Done");
             });
 
+            // Handles schema creation requests
             Receive<CreateSchemaPostgres>(x =>
             {
                 if (_ingestionMonitorActor != null)
@@ -169,35 +186,31 @@ namespace DataAnalyticsPlatform.Actors.Worker
                     _ingestionMonitorActor.Tell(x);
                 }
             });
+
+            // Handles model size data updates
             Receive<List<WriterActor.ModelSizeData>>(x =>
             {
-                Console.WriteLine("ModelSizeData");
+                _logger.LogInformation("ModelSizeData received");
                 foreach (var s in x)
                 {
                     foreach (var j in ingestionJob)
                     {
-                        if (j.ReaderConfiguration.TypeConfig != null)
+                        if (j.ReaderConfiguration.TypeConfig?.ModelInfoList != null)
                         {
-                            if (j.ReaderConfiguration.TypeConfig.ModelInfoList != null)
+                            foreach (var model in j.ReaderConfiguration.TypeConfig.ModelInfoList)
                             {
-                                foreach (var model in j.ReaderConfiguration.TypeConfig.ModelInfoList)
+                                if (model.ModelName == s.ModelName)
                                 {
-                                    if (model.ModelName == s.ModelName)
-                                    {
-                                        Console.WriteLine("ModelSizeData " + model.ModelName);
-                                        if (ingestionJob != null)
-                                        {
-                                            Console.WriteLine("ModelSizeData Updating");
-                                            string connectionString = j.ControlTableConnectionString;//"Server = localhost\\SQLEXPRESS; Database = dap_master; Trusted_Connection = True; ";// @"Server = dapdb.cqzm7ymwpoc8.us-east-1.rds.amazonaws.com; Database = dap_master; User Id = admin; Password = dapdata123";//// @"Server = localhost\\SQLEXPRESS; Database = dap_master; Trusted_Connection = True; ";
-                                            _connectionString = connectionString;
-                                            var options = SqlServerDbContextOptionsExtensions.UseSqlServer(new DbContextOptionsBuilder<DAPDbContext>(), connectionString).Options;
-                                            var dbContext = new DAPDbContext(options, connectionString);
-                                            _repo = new Repository(dbContext, null);
-                                            Console.WriteLine("ModelSizeData Updating Call");
-                                            _repo.UpdateModelSize(j.UserId, model.ModelId, (int)s.Size);
-                                            Console.WriteLine("ModelSizeData Updating done " + s.Size + " " + model.ModelId + " " + s.ModelName);
-                                        }
-                                    }
+                                    _logger.LogInformation("ModelSizeData {ModelName}", model.ModelName);
+                                    string connectionString = j.ControlTableConnectionString;
+                                    _connectionString = connectionString;
+                                    var options = SqlServerDbContextOptionsExtensions.UseSqlServer(new DbContextOptionsBuilder<DAPDbContext>(), connectionString).Options;
+                                    var dbContext = new DAPDbContext(options, connectionString);
+                                    _repo = new Repository(dbContext, null);
+
+                                    _logger.LogInformation("ModelSizeData Updating Call");
+                                    _repo.UpdateModelSize(j.UserId, model.ModelId, (int)s.Size);
+                                    _logger.LogInformation("ModelSizeData Updating done {Size} {ModelId} {ModelName}", s.Size, model.ModelId, s.ModelName);
                                 }
                             }
                         }
@@ -206,85 +219,85 @@ namespace DataAnalyticsPlatform.Actors.Worker
             });
         }
 
+        /// <summary>
+        /// Sends job completion notification to external service.
+        /// </summary>
         public async void SendAttempt(JobDone x, IngestionJob ij)
         {
-            if (ij.JobId == x.JobId)
+            if (ij.JobId == x.JobId && ij.ReaderConfiguration.TypeConfig?.ModelInfoList != null)
             {
-                if (ij.ReaderConfiguration.TypeConfig != null)
-                {
-                    if (ij.ReaderConfiguration.TypeConfig.ModelInfoList != null)
+                    // Retrieve secret URL from environment variable
+                    string baseUrl = Environment.GetEnvironmentVariable("WORKFLOW_ATTEMPT_URL");
+                    if (string.IsNullOrEmpty(baseUrl))
                     {
-                        string url = $"http://ec2basedservicealb-760561316.us-east-1.elb.amazonaws.com:6002/api/workflowattempts/projectrigger/{ij.ReaderConfiguration.ProjectId}";
-                        var client = new RestClient(url);
-                        foreach (var model in ij.ReaderConfiguration.TypeConfig.ModelInfoList)
-                        {
-                            IngestedData modeData = new IngestedData
-                            {
-                                UserId = ij.UserId,
-                                ModelId = model.ModelId,
-                                SchemaId = ij.ReaderConfiguration.TypeConfig.SchemaId,
-                                ProjectId = ij.ReaderConfiguration.ProjectId,
-                                jobId = x.JobId
-                            };
-
-                            Console.WriteLine($"ProjectTrigger|SchemaId {modeData.SchemaId} {url}");
-                            Console.WriteLine($"ProjectTrigger|ProjectId {modeData.ProjectId} ");
-                            var requestRest = new RestRequest(Method.POST);
-                            requestRest.AddHeader("Accept", "application/json");
-                            //requestRest.AddJsonBody(workflow);
-
-                            Console.WriteLine($"ProjectTrigger|model {model.ModelId} {modeData.jobId}");
-                            var json = JsonConvert.SerializeObject(modeData);
-                            Console.WriteLine($"json {json}");
-
-                            requestRest.AddParameter("application/json", json, ParameterType.RequestBody);
-                            IRestResponse response = await client.ExecuteAsync(requestRest);
-                            Console.WriteLine($"ProjectTrigger|done calling - {response.Content}");
-                        }
+                        _logger.LogError("Secret workflow attempt URL is not set.");
+                        return;
                     }
+                    string url = $"{baseUrl}/api/workflowattempts/projectrigger/{ij.ReaderConfiguration.ProjectId}";
+                var client = new RestClient(url);
+
+                foreach (var model in ij.ReaderConfiguration.TypeConfig.ModelInfoList)
+                {
+                    IngestedData modeData = new IngestedData
+                    {
+                        UserId = ij.UserId,
+                        ModelId = model.ModelId,
+                        SchemaId = ij.ReaderConfiguration.TypeConfig.SchemaId,
+                        ProjectId = ij.ReaderConfiguration.ProjectId,
+                        jobId = x.JobId
+                    };
+
+                    _logger.LogInformation("ProjectTrigger|SchemaId {SchemaId} {Url}", modeData.SchemaId, url);
+                    _logger.LogInformation("ProjectTrigger|ProjectId {ProjectId}", modeData.ProjectId);
+
+                    var requestRest = new RestRequest(Method.POST);
+                    requestRest.AddHeader("Accept", "application/json");
+
+                    _logger.LogInformation("ProjectTrigger|model {ModelId} {JobId}", model.ModelId, modeData.jobId);
+
+                    var json = JsonConvert.SerializeObject(modeData);
+                    _logger.LogInformation("json {Json}", json);
+
+                    requestRest.AddParameter("application/json", json, ParameterType.RequestBody);
+                    IRestResponse response = await client.ExecuteAsync(requestRest);
+
+                    _logger.LogInformation("ProjectTrigger|done calling - {Content}", response.Content);
                 }
             }
         }
 
+        /// <summary>
+        /// Initializes worker and monitor actors.
+        /// </summary>
         protected override void PreStart()
         {
             if (Context.Child(WorkerPool).Equals(ActorRefs.Nobody))
             {
-                _workerActors = Context.ActorOf(Props.Create(() => new WorkerActor(Self)).WithRouter(new RoundRobinPool(_maxNumberofConcurretWorker)), WorkerPool);
+                _workerActors = Context.ActorOf(
+                    Props.Create(() => new WorkerActor(Self))
+                        .WithRouter(new RoundRobinPool(_maxNumberofConcurretWorker)),
+                    WorkerPool);
                 Context.Watch(_workerActors);
             }
+
             if (Context.Child(IngestionMonitor).Equals(ActorRefs.Nobody))
             {
-
-                Console.WriteLine("Creating Ingestion Actor node.");
-
+                _logger.LogInformation("Creating Ingestion Actor node.");
                 var props = Props.Create(() => new IngestionMonitorActor());
-
                 _ingestionMonitorActor = Context.ActorOf(props, IngestionMonitor);
-
                 Context.Watch(_ingestionMonitorActor);
-
-                Console.WriteLine("Now watching ingestion monitor.");
+                _logger.LogInformation("Now watching ingestion monitor.");
             }
+
             base.PreStart();
         }
     }
 
     public class JobDone
     {
-        public JobDone()
-        {
-
-        }
-        public JobDone(int jobId)
-        {
-            this.JobId = jobId;
-        }
-        public JobDone(int jobId, int fileId)
-        {
-            this.JobId = jobId;
-            FileId = fileId;
-        }
+        public JobDone() { }
+        public JobDone(int jobId) { this.JobId = jobId; }
+        public JobDone(int jobId, int fileId) { this.JobId = jobId; FileId = fileId; }
         public int JobId { get; set; }
         public int FileId { get; set; }
     }

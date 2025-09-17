@@ -16,9 +16,12 @@ using System;
 
 namespace DataAnalyticsPlatform.Actors.Cluster
 {
+    using NLog;
+
     class TaskRouterManager : ReceiveActor
     {
-        private const string RouterName = "taskrouter";
+    private const string RouterName = "taskrouter";
+    private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         protected IActorRef ProcessRouter;
         private ICancelable cancelTimer;
         public Notifier _notifier;
@@ -43,17 +46,12 @@ namespace DataAnalyticsPlatform.Actors.Cluster
             {
                 var members = ProcessRouter.Ask<Routees>(new GetRoutees()).Result.Members;
 
-
                 if (members.GetEnumerator().MoveNext() == false)
                 {
-                    Console.WriteLine("task router  has no routees. Waiting.");
-
-
+                    logger.Warn("task router has no routees. Waiting.");
                     Context.System.Scheduler.ScheduleTellOnce(TimeSpan.FromSeconds(1), Self, new RouterCheck(), Self);
                     return;
                 }
-
-
                 Become(Ready);
             });
 

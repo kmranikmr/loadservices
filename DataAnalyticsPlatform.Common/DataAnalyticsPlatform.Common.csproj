@@ -30,5 +30,13 @@
     <Compile Remove="CodeCompilerHelper.cs" />
     <Compile Remove="Cord19Test.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Builders\JsonBuilder.cs" />
+    <Compile Include="Builders\PartialBuilder.cs" />
+    <Compile Include="Builders\TwitterBuilder.cs" />
+    <Compile Include="Builders\TypeConfigBuilder.cs" />
+    <Compile Include="Helpers\CodeGenHelpers.cs" />
+    <Compile Include="Helpers\ModelCompilers.cs" />
+  </ItemGroup>
   <PropertyGroup />
 </Project>

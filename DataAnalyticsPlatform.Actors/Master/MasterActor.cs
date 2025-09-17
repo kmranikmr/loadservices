@@ -30,6 +30,9 @@ using System.Collections.Generic;
 
 namespace DataAnalyticsPlatform.Actors.Master
 {
+    /// <summary>
+    /// Represents an ingestion job with configuration for readers and writers.
+    /// </summary>
     public class IngestionJob
     {
         public int JobId { get; private set; }
@@ -41,10 +44,9 @@ namespace DataAnalyticsPlatform.Actors.Master
         public ReaderConfiguration ReaderConfiguration { get; private set; }
 
         public WriterConfiguration[] WriterConfiguration { get; private set; }
-
-        //Transform Configuration
-        //public TransformConfiguration TransformConfiguration { get; private set; }
-
+      
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+       
         public IngestionJob(int jobId, ReaderConfiguration rConf, WriterConfiguration[] wConf)
         {
             JobId = jobId;
@@ -53,6 +55,9 @@ namespace DataAnalyticsPlatform.Actors.Master
         }
     }
 
+    /// <summary>
+    /// Holds an IngestionJob and a PreviewRegistry instance for job registration and management.
+    /// </summary>
     public class JobRegistry
     {
         public IngestionJob job;
@@ -64,6 +69,10 @@ namespace DataAnalyticsPlatform.Actors.Master
         }
     }
 
+    /// <summary>
+    /// Manages the distribution and monitoring of ingestion jobs to worker nodes.
+    /// Handles job queues, worker routing, and job completion notifications.
+    /// </summary>
     public class MasterActor : ReceiveActor
     {
 
@@ -84,7 +93,6 @@ namespace DataAnalyticsPlatform.Actors.Master
 
         private System.Notifier _notifier;
 
-        //const based on workernode * workeractor
         private const int MaxNummberOfParallerJob = 25;
 
         private int _numberOfRunningJob = 0;
@@ -102,9 +110,8 @@ namespace DataAnalyticsPlatform.Actors.Master
             PostgresConnection = postgresConnection;
             ElasticConnection = elasticconnstring;
             MongoConnection = mongoconnstring;
-
             ReceiveBlock();
-            //  MasterRouterActor = actorRef;
+
         }
 
         public MasterActor()
@@ -130,7 +137,7 @@ namespace DataAnalyticsPlatform.Actors.Master
 
             Receive<JobDone>(x =>
             {
-                Console.WriteLine(" Master Actor Job Done");
+                Logger.Info(" Master Actor Job Done");
                 _notifier?.Notify(x.JobId.ToString());
             });
 
@@ -153,8 +160,9 @@ namespace DataAnalyticsPlatform.Actors.Master
                 if (_numberOfRunningJob < MaxNummberOfParallerJob)
                 {
                     var job = _jobs.Dequeue();
-                    Console.WriteLine(" Model at dequeue " + job.ReaderConfiguration.TypeConfig.ModelInfoList[0].ModelId.ToString() + " " + job.ReaderConfiguration.TypeConfig.ModelInfoList[0].ModelName);
-                    //_workerActors.Tell(job);
+                    Logger.Info(" Dequeue Job " + job.JobId.ToString());
+
+                   Logger.Info(" Model at Dequeue " + job.ReaderConfiguration.TypeConfig.ModelInfoList[0].ModelId.ToString() + " " + job.ReaderConfiguration.TypeConfig.ModelInfoList[0].ModelName);
                     if (MasterRouterActor != null)
                     {
                         MasterRouterActor.Tell(job);
@@ -181,10 +189,7 @@ namespace DataAnalyticsPlatform.Actors.Master
                 _automationCoordinator = Context.ActorOf(
                       Props.Create(() => new AutomationCoordinator(Self, ConnectionString, PostgresConnection, ElasticConnection, MongoConnection)), AutomationCoordinator);
 
-
             }
-
-
 
             base.PreStart();
         }

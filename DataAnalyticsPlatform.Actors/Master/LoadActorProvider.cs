@@ -43,7 +43,7 @@ namespace DataAnalyticsPlatform.Actors.Master
             _notifier = new Notifier();
             _notifier.OnNotification += new EventHandler<System.NotificationArgumet>(NotifyEnd);
             this.previewRegistry = previewRegistry;
-            this.LoadInstance = actorSystem.ActorOf(Props.Create(() => new TaskRouterManager(_notifier, previewRegistry)), "tasker");//actorSystem.ActorOf(Props.Create(() => new MasterActor(_notifier, previewRegistry)), "masterNode");
+            this.LoadInstance = actorSystem.ActorOf(Props.Create(() => new TaskRouterManager(_notifier, previewRegistry)), "tasker");
 
         }
         public void NotifyEnd(object sender, System.NotificationArgumet ea)
