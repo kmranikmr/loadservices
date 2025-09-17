@@ -6,7 +6,45 @@ The Data Analytics Platform Load Services is a robust and scalable framework des
 
 ## System Architecture
 
-![System Architecture Diagram](https://github.com/kmranikmr/loadservices/raw/master/Presentation1.png)
+![System Architecture Diagram](https://github.com/kmranikmr/loadservices/raw/master/system_diagram.png)
+
+### Data Ingestion Pipeline
+
+The Data Analytics Platform implements a comprehensive data ingestion pipeline that can process various data formats:
+
+1. **Data Sources**:
+   - CSV files
+   - JSON data
+   - Third-party Twitter data (JSON format)
+   - Custom data sources
+
+2. **Processing Flow**:
+   - **FolderWatcher** monitors directories for new files to process
+   - **Database Watcher** tracks changes in database sources
+   - **Rest API Endpoint** accepts data through API requests
+   - **Automation Coordinator** orchestrates the ingestion workflow
+   - **Leader (Master)** delegates work to multiple Workers
+   - **Worker** nodes perform the actual data processing
+
+3. **Preview Services**:
+   - Schema detection and preview functionality
+   - CSV/JSON Schema Generator creates appropriate models
+   - UI-driven entity mapping (external component)
+   - Schema/Model storage in SQL Server database
+
+4. **Processing Components**:
+   - **Reader** components handle different data formats
+   - **Writer** components output to various destinations:
+     - Elasticsearch
+     - SQL databases
+     - MongoDB
+
+5. **Transformation Engine**:
+   - Dynamic code generation using C#
+   - Schema mapping and transformation
+   - Field-level data mapping and type conversion
+
+All components are configurable and can be extended to support additional data sources or destinations.
 
 ## Key Components
 
