@@ -1,4 +1,14 @@
-# Data Ana### Data Ingestion Pipeline
+# Data Analytics Platform Load Services
+
+## Overview
+
+The Data Analytics Platform Load Services is a robust and scalable framework designed to process, transform, and manage large datasets. It leverages actor-based concurrency to handle various data processing tasks efficiently.
+
+## System Architecture
+
+![System Architecture Diagram](https://github.com/kmranikmr/loadservices/raw/master/presentation1.png)
+
+### Data Ingestion Pipeline
 
 This platform handles data ingestion from various sources:
 - CSV files
@@ -20,30 +30,7 @@ The pipeline process:
    - SQL databases
    - MongoDB
 
-Preview endpoints allow users to view sample data and schema information before finalizing the mapping and processing.m Load Services
-
-## Overview
-
-The Data Analytics Platform Load Services is a robust and scalable framework designed to process, transform, and manage large datasets. It leverages actor-based concurrency to handle various data processing tasks efficiently.
-
-## System Architecture
-
-![System Architecture Diagram](https://github.com/kmranikmr/loadservices/raw/master/presentation1.png)
-
-### Data Ingestion Pipeline
-
-This platform handles data ingestion from various sources:
-- CSV files
-- JSON data 
-- Twitter API data
-- Custom sources
-
-The pipeline:
-1. Detects incoming data through file watchers or API endpoints
-2. Extracts and previews data schema
-3. Maps fields through a UI-driven process
-4. Transforms data using dynamic code generation
-5. Outputs to various destinations (Elasticsearch, PostgreSQL, MongoDB)
+Preview endpoints allow users to view sample data and schema information before finalizing the mapping and processing.
 
 ## Key Components
 
@@ -202,22 +189,6 @@ The platform can be extended with:
 - Custom writers for new destinations
 - Custom processors for specialized transformations
 - Custom actors for domain-specific processing
-
-
-### Open in Visual Studio
-Open the DAPLoadServices.sln solution file in Visual Studio.
-
-### Restore NuGet Packages
-Restore the required NuGet packages for the solution.
-
-### Build the Solution
-Build the solution to ensure all dependencies are correctly resolved.
-
-### Configure Application Settings
-Update the App.config file in the Application.Net project with the appropriate settings, such as database connection strings and API keys.
-
-### Run the Application
-Set the DataAnalyticsPlatform.Application.Net project as the startup project and run it.
 
 ## Usage
 The application provides forms and utilities to interact with the data processing actors:
